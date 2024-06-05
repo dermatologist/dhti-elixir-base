@@ -1,11 +1,15 @@
-# import pytest
+import pytest
 
 
-# @pytest.fixture
-# def chain():
-#     from dhti_elixir_base.chain import chain
-#     return chain
 
-# def test_chain(chain):
-#     result = chain.invoke(input = "Answer in one word: What is the capital of France?")
-#     assert result == 'Paris'
+@pytest.fixture(scope="session")
+def chain():
+    from dhti_elixir_base import BaseChain
+    return BaseChain()
+
+
+def test_base_agent(chain, capsys):
+    o = chain.name
+    print("Chain name: ", o)
+    captured = capsys.readouterr()
+    assert "Chain name:  base_chain" in captured.out

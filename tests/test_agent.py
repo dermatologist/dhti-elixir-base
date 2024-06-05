@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture(scope="session")
 def agent():
-    from dhti_elixir_base.agent import BaseAgent
+    from dhti_elixir_base import BaseAgent
     return BaseAgent()
 
 
