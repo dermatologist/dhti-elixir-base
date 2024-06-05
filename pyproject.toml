@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "dhti-elixir-template"
+name = "dhti-elixir-base"
 version = "0.0.1"
 description = ""
 authors = []
@@ -22,7 +22,7 @@ fastapi = "^0.104.0"
 sse-starlette = "^1.6.5"
 
 [tool.langserve]
-export_module = "dhti_elixir_template"
+export_module = "dhti_elixir_base"
 export_attr = "chain"
 
 

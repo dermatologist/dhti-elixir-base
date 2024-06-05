@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'dhti-elixir-template'
+project = 'dhti-elixir-base'
 copyright = '2024, Bell Eapen'
 author = 'Bell Eapen'
 

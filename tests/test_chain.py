@@ -3,7 +3,7 @@ import pytest
 
 @pytest.fixture
 def chain():
-    from dhti_elixir_template.chain import chain
+    from dhti_elixir_base.chain import chain
     return chain
 
 def test_chain(chain):

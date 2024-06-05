@@ -1,4 +1,4 @@
-# dhti-elixir-template
+# dhti-elixir-base
 
 A template for creating a new Gen AI Elixir package for the Dhanvantari framework.
 
