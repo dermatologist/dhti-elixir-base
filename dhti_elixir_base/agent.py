@@ -44,7 +44,10 @@ class BaseAgent:
     ):
         self.llm = llm
         if llm is None:
-                self.llm = di["function_llm"]
+                try:
+                    self.llm = di["base_function_llm"]
+                except KeyError:
+                    self.llm = di["function_llm"]
         self.prefix = prefix
         self.suffix = suffix
         self.tools = tools

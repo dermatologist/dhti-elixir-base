@@ -47,19 +47,28 @@ class BaseChain:
     @property
     def main_llm(self):
         if self._main_llm is None:
-            self._main_llm = di["main_llm"]
+            try:
+                self._main_llm = di["base_main_llm"]
+            except KeyError:
+                self._main_llm = di["main_llm"]
         return self._main_llm
 
     @property
     def clinical_llm(self):
         if self._clinical_llm is None:
-            self._clinical_llm = di["clinical_llm"]
+            try:
+                self._clinical_llm = di["base_clinical_llm"]
+            except KeyError:
+                self._clinical_llm = di["clinical_llm"]
         return self._clinical_llm
 
     @property
     def grounding_llm(self):
         if self._grounding_llm is None:
-            self._grounding_llm = di["grounding_llm"]
+            try:
+                self._grounding_llm = di["base_grounding_llm"]
+            except KeyError:
+                self._grounding_llm = di["grounding_llm"]
         return self._grounding_llm
 
     @property
