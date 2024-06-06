@@ -5,6 +5,7 @@ from .chain import BaseChain
 from .graph import BaseGraph
 from .llm import BaseLLM
 from .model import BaseModel
+from .server import BaseServer
 
 if sys.version_info[:2] >= (3, 8):
     # TODO: Import directly (no need for conditional) when `python_requires = >= 3.8`
