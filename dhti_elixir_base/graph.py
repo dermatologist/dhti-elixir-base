@@ -1,4 +1,5 @@
 import functools
+import re
 from kink import inject
 from langgraph.graph import END, StateGraph
 import operator
@@ -16,11 +17,11 @@ class BaseGraph:
         sender: str
 
     def __init__(self,
-                 agents=None, #required
-                 tools = None, #required
+                 agents=[], #required
+                 tools = [], #required
                  edges = None, # {"from": "agent1", "to": "agent2", "contitional": True} #required
-                 entry_point=None, #required
-                 ends=None, #required
+                 entry_point=[], #required
+                 ends=[], #required
                  nodes = None, #generated
                  workflow = None, #generated
                  router = None, #generated based on edges
@@ -35,7 +36,6 @@ class BaseGraph:
         self._entry_point = entry_point
         self._ends = ends
         self._recursion_limit = recursion_limit
-        self.init_graph()
 
     def init_graph(self):
         # We create a workflow that will be used to manage the state of the agents
@@ -84,6 +84,9 @@ class BaseGraph:
         )
         self._graph = self._workflow.compile()
 
+    @property
+    def name(self):
+        return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
 
     # Helper function to create a node for a given agent
     @staticmethod
