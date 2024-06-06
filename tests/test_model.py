@@ -9,5 +9,5 @@ def model():
         return BaseModel()
 
 
-def test_base_llm(model, capsys):
+def test_base_model(model, capsys):
     pass

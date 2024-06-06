@@ -9,5 +9,5 @@ def server():
         return BaseServer()
 
 
-def test_base_llm(server, capsys):
+def test_base_server(server, capsys):
     pass
