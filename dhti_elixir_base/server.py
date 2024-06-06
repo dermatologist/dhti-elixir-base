@@ -1,6 +1,6 @@
 import sys
 import logging
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Any
 from langchain.pydantic_v1 import BaseModel, Field
 import re
