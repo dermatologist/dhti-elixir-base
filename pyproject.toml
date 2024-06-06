@@ -9,7 +9,7 @@ readme = "README.md"
 python = ">=3.9.0,<4.0"
 langchain-core = ">=0.1.5"
 kink = "^0.8.0"
-pytest = "^8.2.1"
+pytest = "^8.2.2"
 python-dotenv = "^1.0.1"
 Sphinx = { version = "4.2.0", optional = true }
 sphinx-rtd-theme = { version = "1.0.0", optional = true }
