@@ -3,7 +3,7 @@ import re
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-
+from .mydi import get_di
 @inject
 class BaseChain:
 
@@ -47,28 +47,19 @@ class BaseChain:
     @property
     def main_llm(self):
         if self._main_llm is None:
-            try:
-                self._main_llm = di["base_main_llm"]
-            except KeyError:
-                self._main_llm = di["main_llm"]
+            self._main_llm = get_di("base_main_llm")
         return self._main_llm
 
     @property
     def clinical_llm(self):
         if self._clinical_llm is None:
-            try:
-                self._clinical_llm = di["base_clinical_llm"]
-            except KeyError:
-                self._clinical_llm = di["clinical_llm"]
+            self._clinical_llm = get_di("base_clinical_llm")
         return self._clinical_llm
 
     @property
     def grounding_llm(self):
         if self._grounding_llm is None:
-            try:
-                self._grounding_llm = di["base_grounding_llm"]
-            except KeyError:
-                self._grounding_llm = di["grounding_llm"]
+            self._grounding_llm = get_di("base_grounding_llm")
         return self._grounding_llm
 
     @property
