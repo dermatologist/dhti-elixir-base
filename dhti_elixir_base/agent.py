@@ -17,16 +17,12 @@
 
 import re
 from typing import List
-
-from kink import di, inject
 from langchain.agents import AgentType, initialize_agent
 from langchain_core.pydantic_v1 import BaseModel, Field
-
-
+from .mydi import get_di
 
 # from langchain_core.prompts import MessagesPlaceholder
 # from langchain.memory.buffer import ConversationBufferMemory
-@inject
 class BaseAgent:
 
     class AgentInput(BaseModel):
@@ -44,10 +40,7 @@ class BaseAgent:
     ):
         self.llm = llm
         if llm is None:
-                try:
-                    self.llm = di["base_function_llm"]
-                except KeyError:
-                    self.llm = di["function_llm"]
+            self.llm = get_di("base_function_llm")
         self.prefix = prefix
         self.suffix = suffix
         self.tools = tools
