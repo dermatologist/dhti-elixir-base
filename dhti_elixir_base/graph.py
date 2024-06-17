@@ -99,12 +99,17 @@ class BaseGraph:
     # Helper function to create a node for a given agent
     @staticmethod
     def create_agent_node(state, agent):
-        result = agent.invoke(state)
+        result = agent.invoke({"input": state})
         # We convert the agent output into a format that is suitable to append to the global state
         if isinstance(result, ToolMessage):
             pass
         else:
             result = AIMessage(**result.dict(exclude={"type", "name"}), name=agent.name)
+
+            # if type(result) is not dict:
+            #     result = AIMessage(**result.dict(exclude={"type", "name"}), name=agent.name)
+            # else:
+            #     result = AIMessage(**result, name=agent.name)
         return {
             "messages": [result],
             # Since we have a strict workflow, we can
@@ -113,7 +118,7 @@ class BaseGraph:
         }
 
     def agent_node(self, agent):
-        return functools.partial(self.create_agent_node, agent=agent, name = agent.name)
+        return functools.partial(self.create_agent_node, agent=agent)
 
     def router(self,state) -> Literal["call_tool", "__end__", "continue"]:
         # This is the router
