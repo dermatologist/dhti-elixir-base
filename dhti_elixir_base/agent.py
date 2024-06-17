@@ -20,6 +20,7 @@ from typing import List
 from langchain.agents import AgentType, initialize_agent
 from langchain_core.pydantic_v1 import BaseModel, Field
 from .mydi import get_di
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 # from langchain_core.prompts import MessagesPlaceholder
 # from langchain.memory.buffer import ConversationBufferMemory
@@ -36,15 +37,13 @@ class BaseAgent:
         description=None,
         llm = None,
         input_type: BaseModel = None,
-        prefix="You are an intelligent agent.",
-        suffix="Generate a response.",
+        prefix=None,
+        suffix=None,
         tools: List = [],
     ):
-        self.llm = llm
-        if llm is None:
-            self.llm = get_di("function_llm")
-        self.prefix = prefix
-        self.suffix = suffix
+        self.llm = llm or get_di("function_llm")
+        self.prefix = prefix or get_di("prefix")
+        self.suffix = suffix or get_di("suffix")
         self.tools = tools
         self._name = name or re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
         self._description = description or f"Agent for {self._name}"
@@ -88,3 +87,21 @@ class BaseAgent:
             handle_parsing_errors=True,
             agent_kwargs=self.agent_kwargs,
             verbose=True).with_types(input_type=self.input_type)
+
+    # Langgraph
+    def langgraph_agent(self):
+        """Create an agent."""
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    "{prefix}"
+                    " You have access to the following tools: {tool_names}.\n{system_message}",
+                ),
+                MessagesPlaceholder(variable_name="messages"),
+            ]
+        )
+        prompt = prompt.partial(prefix=self.prefix)
+        prompt = prompt.partial(system_message=self.suffix)
+        prompt = prompt.partial(tool_names=", ".join([tool.name for tool in self.tools]))
+        return prompt | self.llm.bind_tools(self.tools)
