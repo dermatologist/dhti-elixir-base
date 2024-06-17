@@ -32,18 +32,22 @@ class BaseAgent:
 
     def __init__(
         self,
+        name=None,
+        description=None,
         llm = None,
         input_type: BaseModel = None,
-        prefix=None,
-        suffix=None,
+        prefix="You are an intelligent agent.",
+        suffix="Generate a response.",
         tools: List = [],
     ):
         self.llm = llm
         if llm is None:
-            self.llm = get_di("base_function_llm")
+            self.llm = get_di("function_llm")
         self.prefix = prefix
         self.suffix = suffix
         self.tools = tools
+        self._name = name
+        self._description = description
         # current_patient_context = MessagesPlaceholder(variable_name="current_patient_context")
         # memory = ConversationBufferMemory(memory_key="current_patient_context", return_messages=True)
         self.agent_kwargs = {
@@ -60,7 +64,22 @@ class BaseAgent:
 
     @property
     def name(self):
-        return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+        if self._name is None:
+            return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+
+    @property
+    def description(self):
+        if self._description is None:
+            self._description = f"Agent for {self.name}"
+        return self._description
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @description.setter
+    def description(self, value):
+        self._description = value
 
     def get_agent(self):
         return initialize_agent(

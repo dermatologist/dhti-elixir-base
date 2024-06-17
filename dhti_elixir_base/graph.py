@@ -19,7 +19,7 @@ class BaseGraph:
     def __init__(self,
                  agents=[], #required
                  tools = [], #required
-                 edges = None, # {"from": "agent1", "to": "agent2", "contitional": True} #required
+                 edges = [], # [{"from": "agent1", "to": "agent2", "conditional": True}, {"from": "agent2", "to": "agent1", "conditional": True}] #required
                  entry_point=[], #required
                  ends=[], #required
                  nodes = None, #generated
@@ -62,7 +62,7 @@ class BaseGraph:
             self._router = self.router
         # Add  edges
         for edge in self._edges:
-            if edge["contitional"]:
+            if edge["conditional"]:
                 self._workflow.add_conditional_edges(
                     edge["from"],
                     self._router,
