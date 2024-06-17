@@ -20,8 +20,8 @@ class BaseGraph:
                  agents=[], #required
                  tools = [], #required
                  edges = [], # [{"from": "agent1", "to": "agent2", "conditional": True}, {"from": "agent2", "to": "agent1", "conditional": True}] #required
-                 entry_point=[], #required
-                 ends=[], #required
+                 entry_point="", #required agent_1
+                 ends=[], #required but can be empty
                  nodes = None, #generated
                  workflow = None, #generated
                  router = None, #generated based on edges
