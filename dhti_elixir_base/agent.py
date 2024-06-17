@@ -46,8 +46,8 @@ class BaseAgent:
         self.prefix = prefix
         self.suffix = suffix
         self.tools = tools
-        self._name = name
-        self._description = description
+        self._name = name or re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+        self._description = description or f"Agent for {self._name}"
         # current_patient_context = MessagesPlaceholder(variable_name="current_patient_context")
         # memory = ConversationBufferMemory(memory_key="current_patient_context", return_messages=True)
         self.agent_kwargs = {
@@ -64,13 +64,10 @@ class BaseAgent:
 
     @property
     def name(self):
-        if self._name is None:
-            return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+        return self._name
 
     @property
     def description(self):
-        if self._description is None:
-            self._description = f"Agent for {self.name}"
         return self._description
 
     @name.setter

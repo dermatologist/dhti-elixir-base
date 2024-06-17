@@ -25,6 +25,7 @@ class BaseGraph:
                  nodes = None, #generated
                  workflow = None, #generated
                  router = None, #generated based on edges
+                 name = None, #generated
                  recursion_limit=150 #default
     ):
         self._agents = agents
@@ -36,6 +37,7 @@ class BaseGraph:
         self._entry_point = entry_point
         self._ends = ends
         self._recursion_limit = recursion_limit
+        self._name = name
 
     def init_graph(self):
         # We create a workflow that will be used to manage the state of the agents
@@ -47,8 +49,8 @@ class BaseGraph:
             for agent in self._agents:
                 self._nodes.append(self.agent_node(agent))
         # We add the nodes to the workflow
-        for node in self._nodes:
-            self._workflow.add_node(node.name, node)
+        for node, agent in zip(self._nodes, self._agents):
+            self._workflow.add_node(agent.name, node)
         # We set the tool node
         self.tool_node = ToolNode(self._tools)
         self._workflow.add_node("tool_node", self.tool_node)
@@ -86,7 +88,13 @@ class BaseGraph:
 
     @property
     def name(self):
+        if self._name:
+            return self._name
         return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     # Helper function to create a node for a given agent
     @staticmethod
