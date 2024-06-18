@@ -44,12 +44,13 @@ class BaseGraph:
                  agents=[], #required
                  edges = [], # [{"from": "agent1", "to": "agent2", "conditional": True, "router": "default"}, {"from": "agent2", "to": "agent1", "conditional": True, "router": "default"}] #required
                  entry_point="", #required agent_1
-                 ends=[], #required but can be empty
-                 end_words=[], #required but can be empty ["exit", "quit", "bye", "sorry", "final"] The words that will trigger the end of the conversation
-                 nodes = None, #generated
-                 workflow = None, #generated
-                 name = None, #generated
-                 recursion_limit=150 #default
+                 ends=[], #optional
+                 end_words=[], #optional ["exit", "quit", "bye", "sorry", "final"] The words that will trigger the end of the conversation
+                 agent_state = None, #optional default AgentState above
+                 nodes = None, #optional, generated
+                 workflow = None, #optional, generated
+                 name = None, #optional, generated
+                 recursion_limit=15 #optional, default
     ):
         self.agents = agents
         self.edges = edges
@@ -57,6 +58,7 @@ class BaseGraph:
         self.nodes = nodes
         self.workflow = workflow
         self.entry_point = entry_point
+        self.agent_state = agent_state or self.AgentState
         self.ends = ends
         self.recursion_limit = recursion_limit
         self._name = name
@@ -64,7 +66,7 @@ class BaseGraph:
     def init_graph(self):
         # We create a workflow that will be used to manage the state of the agents
         if self.workflow is None:
-            self.workflow = StateGraph(self.AgentState)
+            self.workflow = StateGraph(self.agent_state)
         # We create the nodes for each agent
         if self.nodes is None:
             self.nodes = []
@@ -125,9 +127,8 @@ class BaseGraph:
                 result = AIMessage(content=result.content, name=agent.name)
         return {
             "messages": [result], # Yes, this should be an array!
-            # Since we have a strict workflow, we can
-            # track the sender so we know who to pass to next.
             "sender": agent.name,
+            # * Return other state variables if any
         }
 
     def agent_node(self, agent):
