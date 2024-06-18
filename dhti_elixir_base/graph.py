@@ -20,59 +20,61 @@ class BaseGraph:
                  edges = [], # [{"from": "agent1", "to": "agent2", "conditional": True}, {"from": "agent2", "to": "agent1", "conditional": True}] #required
                  entry_point="", #required agent_1
                  ends=[], #required but can be empty
+                 end_words=[], #required but can be empty
                  nodes = None, #generated
                  workflow = None, #generated
                  router = None, #generated based on edges
                  name = None, #generated
                  recursion_limit=150 #default
     ):
-        self._agents = agents
-        self._edges = edges
-        self._nodes = nodes
-        self._workflow = workflow
-        self._router = router
-        self._entry_point = entry_point
-        self._ends = ends
-        self._recursion_limit = recursion_limit
+        self.agents = agents
+        self.edges = edges
+        self.end_words = end_words
+        self.nodes = nodes
+        self.workflow = workflow
+        self.router = router
+        self.entry_point = entry_point
+        self.ends = ends
+        self.recursion_limit = recursion_limit
         self._name = name
 
     def init_graph(self):
         # We create a workflow that will be used to manage the state of the agents
-        if self._workflow is None:
-            self._workflow = StateGraph(self.AgentState)
+        if self.workflow is None:
+            self.workflow = StateGraph(self.AgentState)
         # We create the nodes for each agent
-        if self._nodes is None:
-            self._nodes = []
-            for agent in self._agents:
-                self._nodes.append(self.agent_node(agent))
+        if self.nodes is None:
+            self.nodes = []
+            for agent in self.agents:
+                self.nodes.append(self.agent_node(agent))
         # We add the nodes to the workflow
-        for node, agent in zip(self._nodes, self._agents):
-            self._workflow.add_node(agent.name, node)
+        for node, agent in zip(self.nodes, self.agents):
+            self.workflow.add_node(agent.name, node)
         # We set the entry point of the workflow
-        self._workflow.set_entry_point(self._entry_point)
+        self.workflow.set_entry_point(self.entry_point)
         # We set the end points of the workflow
-        for end in self._ends:
-            self._workflow.add_edge(end, END)
+        for end in self.ends:
+            self.workflow.add_edge(end, END)
         # We set the router
-        if self._router is None:
-            self._router = self.router
+        if self.router is None:
+            self.router = self._router
         # Add  edges
-        for edge in self._edges:
+        for edge in self.edges:
             if edge["conditional"]:
-                self._workflow.add_conditional_edges(
+                self.workflow.add_conditional_edges(
                     edge["from"],
-                    self._router,
+                    self.router,
                     {"continue": edge["to"], "__end__": END},
                 )
             else:
-                self._workflow.add_edge(edge["from"], edge["to"])
-        self._graph = self._workflow.compile()
+                self.workflow.add_edge(edge["from"], edge["to"])
+        self.graph = self.workflow.compile()
 
     @property
     def name(self):
         if self._name:
             return self._name
-        return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+        return re.sub(r'(?<!^)(?=[A-Z])', '_', self._class__.__name__).lower()
 
     @name.setter
     def name(self, value):
@@ -107,22 +109,16 @@ class BaseGraph:
     def agent_node(self, agent):
         return functools.partial(self.create_agent_node, agent=agent)
 
-    def router(self,state) -> Literal["call_tool", "__end__", "continue"]:
+    def _router(self,state) -> Literal["__end__", "continue"]:
         # This is the router
         messages = state["messages"]
         last_message = messages[-1]
-        try:
-            if "FINAL ANSWER" in last_message.content:
-                # Any agent decided the work is done
-                return "__end__"
-        except AttributeError:
-            if "FINAL ANSWER" in last_message["output"]:
-                # Any agent decided the work is done
-                return "__end__"
+        if any([exit.lower() in last_message.content.lower() for exit in self.end_words]):
+            return "__end__"
         return "continue"
 
     def invoke(self, message):
-        events = self._graph.stream(
+        events = self.graph.stream(
         {
                 "messages": [
                     HumanMessage(
@@ -131,6 +127,6 @@ class BaseGraph:
                 ],
             },
             # Maximum number of steps to take in the graph
-            {"recursion_limit": self._recursion_limit},
+            {"recursion_limit": self.recursion_limit},
         )
         return events
