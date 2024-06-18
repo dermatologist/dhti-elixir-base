@@ -43,7 +43,7 @@ def ask_question(*args, **kwargs) -> str:
         return "Yes you have fever. You should take a rest."
     return "I am not sure about that."
 
-
+# Agents can be CrewAI crew: https://github.com/joaomdmoura/crewAI-examples/tree/main/CrewAI-LangGraph
 doctor = DoctorAgent(
     suffix = "I am here to help you with your health issues",
     tools=[ask_question],
