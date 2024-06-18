@@ -5,7 +5,6 @@ from langgraph.graph import END, StateGraph
 import operator
 from typing import Annotated, Sequence, TypedDict, Literal
 from langchain_core.messages import AIMessage, BaseMessage, ToolMessage, HumanMessage
-from langgraph.prebuilt import ToolNode
 
 @inject
 class BaseGraph:
@@ -18,7 +17,6 @@ class BaseGraph:
 
     def __init__(self,
                  agents=[], #required
-                 tools = [], #required
                  edges = [], # [{"from": "agent1", "to": "agent2", "conditional": True}, {"from": "agent2", "to": "agent1", "conditional": True}] #required
                  entry_point="", #required agent_1
                  ends=[], #required but can be empty
@@ -29,7 +27,6 @@ class BaseGraph:
                  recursion_limit=150 #default
     ):
         self._agents = agents
-        self._tools = tools
         self._edges = edges
         self._nodes = nodes
         self._workflow = workflow
@@ -51,9 +48,6 @@ class BaseGraph:
         # We add the nodes to the workflow
         for node, agent in zip(self._nodes, self._agents):
             self._workflow.add_node(agent.name, node)
-        # We set the tool node
-        self.tool_node = ToolNode(self._tools)
-        self._workflow.add_node("tool_node", self.tool_node)
         # We set the entry point of the workflow
         self._workflow.set_entry_point(self._entry_point)
         # We set the end points of the workflow
@@ -68,22 +62,10 @@ class BaseGraph:
                 self._workflow.add_conditional_edges(
                     edge["from"],
                     self._router,
-                    {"continue": edge["to"], "call_tool": "tool_node", "__end__": END},
+                    {"continue": edge["to"], "__end__": END},
                 )
             else:
                 self._workflow.add_edge(edge["from"], edge["to"])
-        _call_tool_edges = {}
-        for agent in self._agents:
-            _call_tool_edges[agent.name] = agent.name
-        self._workflow.add_conditional_edges(
-            "tool_node",
-            # Each agent node updates the 'sender' field
-            # the tool calling node does not, meaning
-            # this edge will route back to the original agent
-            # who invoked the tool
-            lambda x: x["sender"],
-            _call_tool_edges,
-        )
         self._graph = self._workflow.compile()
 
     @property
@@ -129,14 +111,6 @@ class BaseGraph:
         # This is the router
         messages = state["messages"]
         last_message = messages[-1]
-        try:
-            if last_message.tool_call_id:
-                # The previous agent is invoking a tool
-                return "call_tool"
-        except AttributeError:
-            if last_message["sender"] == None:
-                # The previous agent is invoking a tool
-                return "call_tool"
         try:
             if "FINAL ANSWER" in last_message.content:
                 # Any agent decided the work is done
