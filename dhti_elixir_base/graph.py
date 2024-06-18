@@ -99,17 +99,22 @@ class BaseGraph:
     # Helper function to create a node for a given agent
     @staticmethod
     def create_agent_node(state, agent):
-        result = agent.invoke({"input": state})
+        try:
+            result = agent.invoke(state)
+        except ValueError as e:
+            _result = agent.invoke({"input": state})
+            result = _result["input"]["messages"][0]
+
+        if "output" in _result:
+            result = ToolMessage(content=_result["output"], tool_call_id="myTool")
         # We convert the agent output into a format that is suitable to append to the global state
         if isinstance(result, ToolMessage):
             pass
         else:
-            result = AIMessage(**result.dict(exclude={"type", "name"}), name=agent.name)
-
-            # if type(result) is not dict:
-            #     result = AIMessage(**result.dict(exclude={"type", "name"}), name=agent.name)
-            # else:
-            #     result = AIMessage(**result, name=agent.name)
+            try:
+                result = AIMessage(**result.dict(exclude={"type", "name"}), name=agent.name)
+            except Exception as e:
+                result = AIMessage(content=result.content, name=agent.name)
         return {
             "messages": [result],
             # Since we have a strict workflow, we can
@@ -124,12 +129,22 @@ class BaseGraph:
         # This is the router
         messages = state["messages"]
         last_message = messages[-1]
-        if last_message.tool_calls:
-            # The previous agent is invoking a tool
-            return "call_tool"
-        if "FINAL ANSWER" in last_message.content:
-            # Any agent decided the work is done
-            return "__end__"
+        try:
+            if last_message.tool_call_id:
+                # The previous agent is invoking a tool
+                return "call_tool"
+        except AttributeError:
+            if last_message["sender"] == None:
+                # The previous agent is invoking a tool
+                return "call_tool"
+        try:
+            if "FINAL ANSWER" in last_message.content:
+                # Any agent decided the work is done
+                return "__end__"
+        except AttributeError:
+            if "FINAL ANSWER" in last_message["output"]:
+                # Any agent decided the work is done
+                return "__end__"
         return "continue"
 
     def invoke(self, message):
