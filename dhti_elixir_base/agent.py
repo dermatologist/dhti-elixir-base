@@ -28,7 +28,6 @@ class BaseAgent:
 
     class AgentInput(BaseModel):
         """Chat history with the bot."""
-        current_patient_context: str
         input: str
 
     def __init__(
@@ -88,7 +87,7 @@ class BaseAgent:
             agent_kwargs=self.agent_kwargs,
             verbose=True).with_types(input_type=self.input_type)
 
-    # Langgraph
+    # ! This is currently supported only for models supporting llm.bind_tools. See function return
     def langgraph_agent(self):
         """Create an agent."""
         prompt = ChatPromptTemplate.from_messages(

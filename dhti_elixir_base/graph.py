@@ -1,29 +1,53 @@
-import functools
-import re
-from kink import inject
-from langgraph.graph import END, StateGraph
-import operator
-from typing import Annotated, Sequence, TypedDict, Literal
-from langchain_core.messages import AIMessage, BaseMessage, ToolMessage, HumanMessage
+"""
+ Copyright 2024 Bell Eapen
 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+"""
+
+
+import functools
+import operator
+import re
+from typing import Annotated, Literal, Sequence, TypedDict
+from kink import inject, di
+from langchain_core.messages import (AIMessage, BaseMessage, HumanMessage,
+                                     ToolMessage)
+from langgraph.graph import END, StateGraph
+
+
+"""_summary_
+
+    Helper class to add multi-agent support with langgraph.
+    The agents can be BaseAgent derived classes and support VertexAI.
+"""
 @inject
 class BaseGraph:
     # Ref 1: https://github.com/langchain-ai/langgraph/blob/main/examples/multi_agent/multi-agent-collaboration.ipynb
     # Ref 2: https://medium.com/@cplog/introduction-to-langgraph-a-beginners-guide-14f9be027141
-    # * call_tools = tool_node
+    # * call_tools = tool_node [ToolNode is currently not supported by VertexAI because of the lack of llm.bind_tools()]
+    # ! Tools are handled by the respective agents
     class AgentState(TypedDict):
         messages: Annotated[Sequence[BaseMessage], operator.add]
         sender: str
 
     def __init__(self,
                  agents=[], #required
-                 edges = [], # [{"from": "agent1", "to": "agent2", "conditional": True}, {"from": "agent2", "to": "agent1", "conditional": True}] #required
+                 edges = [], # [{"from": "agent1", "to": "agent2", "conditional": True, "router": "default"}, {"from": "agent2", "to": "agent1", "conditional": True, "router": "default"}] #required
                  entry_point="", #required agent_1
                  ends=[], #required but can be empty
-                 end_words=[], #required but can be empty
+                 end_words=[], #required but can be empty ["exit", "quit", "bye", "sorry", "final"] The words that will trigger the end of the conversation
                  nodes = None, #generated
                  workflow = None, #generated
-                 router = None, #generated based on edges
                  name = None, #generated
                  recursion_limit=150 #default
     ):
@@ -32,7 +56,6 @@ class BaseGraph:
         self.end_words = end_words
         self.nodes = nodes
         self.workflow = workflow
-        self.router = router
         self.entry_point = entry_point
         self.ends = ends
         self.recursion_limit = recursion_limit
@@ -55,15 +78,16 @@ class BaseGraph:
         # We set the end points of the workflow
         for end in self.ends:
             self.workflow.add_edge(end, END)
-        # We set the router
-        if self.router is None:
-            self.router = self._router
         # Add  edges
         for edge in self.edges:
             if edge["conditional"]:
+                if edge["router"] == "default":
+                    _router = self.router
+                else:
+                    _router = di[edge["router"]] # This is a dependency injection of router if needed
                 self.workflow.add_conditional_edges(
                     edge["from"],
-                    self.router,
+                    _router,
                     {"continue": edge["to"], "__end__": END},
                 )
             else:
@@ -100,7 +124,7 @@ class BaseGraph:
             except Exception as e:
                 result = AIMessage(content=result.content, name=agent.name)
         return {
-            "messages": [result],
+            "messages": [result], # Yes, this should be an array!
             # Since we have a strict workflow, we can
             # track the sender so we know who to pass to next.
             "sender": agent.name,
@@ -109,8 +133,8 @@ class BaseGraph:
     def agent_node(self, agent):
         return functools.partial(self.create_agent_node, agent=agent)
 
-    def _router(self,state) -> Literal["__end__", "continue"]:
-        # This is the router
+    def router(self,state) -> Literal["__end__", "continue"]:
+        # This is the default router
         messages = state["messages"]
         last_message = messages[-1]
         if any([exit.lower() in last_message.content.lower() for exit in self.end_words]):
