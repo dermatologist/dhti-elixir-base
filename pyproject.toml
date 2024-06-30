@@ -20,7 +20,7 @@ langgraph = "^0.0.64"
 agency = "^1.6.3"
 overrides = "^7.7.0"
 langchain-community = "^0.2.6"
-fhiry = "^3.2.2"
+fhiry = { git = "https://github.com/dermatologist/fhiry", branch = "feature/flatten_and_llm" }
 
 [tool.poetry.group.dev.dependencies]
 langchain-cli = ">=0.0.4"
