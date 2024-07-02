@@ -1,126 +1,149 @@
-import functools
-import re
-from kink import inject
-from langgraph.graph import END, StateGraph
-import operator
-from typing import Annotated, Sequence, TypedDict, Literal
-from langchain_core.messages import AIMessage, BaseMessage, ToolMessage, HumanMessage
-from langgraph.prebuilt import ToolNode
+"""
+ Copyright 2024 Bell Eapen
 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+"""
+
+
+import functools
+import operator
+import re
+from typing import Annotated, Literal, Sequence, TypedDict
+from kink import inject, di
+from langchain_core.messages import (AIMessage, BaseMessage, HumanMessage,
+                                     ToolMessage)
+from langgraph.graph import END, StateGraph
+
+
+"""_summary_
+
+    Helper class to add multi-agent support with langgraph.
+    The agents can be BaseAgent derived classes and support VertexAI.
+"""
 @inject
 class BaseGraph:
     # Ref 1: https://github.com/langchain-ai/langgraph/blob/main/examples/multi_agent/multi-agent-collaboration.ipynb
     # Ref 2: https://medium.com/@cplog/introduction-to-langgraph-a-beginners-guide-14f9be027141
-    # * call_tools = tool_node
+    # * call_tools = tool_node [ToolNode is currently not supported by VertexAI because of the lack of llm.bind_tools()]
+    # ! Tools are handled by the respective agents
     class AgentState(TypedDict):
         messages: Annotated[Sequence[BaseMessage], operator.add]
         sender: str
 
     def __init__(self,
                  agents=[], #required
-                 tools = [], #required
-                 edges = None, # {"from": "agent1", "to": "agent2", "contitional": True} #required
-                 entry_point=[], #required
-                 ends=[], #required
-                 nodes = None, #generated
-                 workflow = None, #generated
-                 router = None, #generated based on edges
-                 recursion_limit=150 #default
+                 edges = [], # [{"from": "agent1", "to": "agent2", "conditional": True, "router": "default"}, {"from": "agent2", "to": "agent1", "conditional": True, "router": "default"}] #required
+                 entry_point="", #required agent_1
+                 ends=[], #optional
+                 end_words=[], #optional ["exit", "quit", "bye", "sorry", "final"] The words that will trigger the end of the conversation
+                 agent_state = None, #optional default AgentState above
+                 nodes = None, #optional, generated
+                 workflow = None, #optional, generated
+                 name = None, #optional, generated
+                 recursion_limit=15 #optional, default
     ):
-        self._agents = agents
-        self._tools = tools
-        self._edges = edges
-        self._nodes = nodes
-        self._workflow = workflow
-        self._router = router
-        self._entry_point = entry_point
-        self._ends = ends
-        self._recursion_limit = recursion_limit
+        self.agents = agents
+        self.edges = edges
+        self.end_words = end_words
+        self.nodes = nodes
+        self.workflow = workflow
+        self.entry_point = entry_point
+        self.agent_state = agent_state or self.AgentState
+        self.ends = ends
+        self.recursion_limit = recursion_limit
+        self._name = name
 
     def init_graph(self):
         # We create a workflow that will be used to manage the state of the agents
-        if self._workflow is None:
-            self._workflow = StateGraph(self.AgentState)
+        if self.workflow is None:
+            self.workflow = StateGraph(self.agent_state)
         # We create the nodes for each agent
-        if self._nodes is None:
-            self._nodes = []
-            for agent in self._agents:
-                self._nodes.append(self.agent_node(agent))
+        if self.nodes is None:
+            self.nodes = []
+            for agent in self.agents:
+                self.nodes.append(self.agent_node(agent))
         # We add the nodes to the workflow
-        for node in self._nodes:
-            self._workflow.add_node(node.name, node)
-        # We set the tool node
-        self.tool_node = ToolNode(self._tools)
-        self._workflow.add_node("tool_node", self.tool_node)
+        for node, agent in zip(self.nodes, self.agents):
+            self.workflow.add_node(agent.name, node)
         # We set the entry point of the workflow
-        self._workflow.set_entry_point(self._entry_point)
+        self.workflow.set_entry_point(self.entry_point)
         # We set the end points of the workflow
-        for end in self._ends:
-            self._workflow.add_edge(end, END)
-        # We set the router
-        if self._router is None:
-            self._router = self.router
+        for end in self.ends:
+            self.workflow.add_edge(end, END)
         # Add  edges
-        for edge in self._edges:
-            if edge["contitional"]:
-                self._workflow.add_conditional_edges(
+        for edge in self.edges:
+            if edge["conditional"]:
+                if edge["router"] == "default":
+                    _router = self.router
+                else:
+                    _router = di[edge["router"]] # This is a dependency injection of router if needed
+                self.workflow.add_conditional_edges(
                     edge["from"],
-                    self._router,
-                    {"continue": edge["to"], "call_tool": "tool_node", "__end__": END},
+                    _router,
+                    {"continue": edge["to"], "__end__": END},
                 )
             else:
-                self._workflow.add_edge(edge["from"], edge["to"])
-        _call_tool_edges = {}
-        for agent in self._agents:
-            _call_tool_edges[agent.name] = agent.name
-        self._workflow.add_conditional_edges(
-            "tool_node",
-            # Each agent node updates the 'sender' field
-            # the tool calling node does not, meaning
-            # this edge will route back to the original agent
-            # who invoked the tool
-            lambda x: x["sender"],
-            _call_tool_edges,
-        )
-        self._graph = self._workflow.compile()
+                self.workflow.add_edge(edge["from"], edge["to"])
+        self.graph = self.workflow.compile()
 
     @property
     def name(self):
-        return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+        if self._name:
+            return self._name
+        return re.sub(r'(?<!^)(?=[A-Z])', '_', self._class__.__name__).lower()
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     # Helper function to create a node for a given agent
     @staticmethod
     def create_agent_node(state, agent):
-        result = agent.invoke(state)
+        try:
+            result = agent.invoke(state)
+        except ValueError as e:
+            _result = agent.invoke({"input": state})
+            result = _result["input"]["messages"][0]
+
+        if "output" in _result:
+            result = ToolMessage(content=_result["output"], tool_call_id="myTool")
         # We convert the agent output into a format that is suitable to append to the global state
         if isinstance(result, ToolMessage):
             pass
         else:
-            result = AIMessage(**result.dict(exclude={"type", "name"}), name=agent.name)
+            try:
+                result = AIMessage(**result.dict(exclude={"type", "name"}), name=agent.name)
+            except Exception as e:
+                result = AIMessage(content=result.content, name=agent.name)
         return {
-            "messages": [result],
-            # Since we have a strict workflow, we can
-            # track the sender so we know who to pass to next.
+            "messages": [result], # Yes, this should be an array!
             "sender": agent.name,
+            # * Return other state variables if any
         }
 
     def agent_node(self, agent):
-        return functools.partial(self.create_agent_node, agent=agent, name = agent.name)
+        return functools.partial(self.create_agent_node, agent=agent)
 
-    def router(self,state) -> Literal["call_tool", "__end__", "continue"]:
-        # This is the router
+    def router(self,state) -> Literal["__end__", "continue"]:
+        # This is the default router
         messages = state["messages"]
         last_message = messages[-1]
-        if last_message.tool_calls:
-            # The previous agent is invoking a tool
-            return "call_tool"
-        if "FINAL ANSWER" in last_message.content:
-            # Any agent decided the work is done
+        if any([exit.lower() in last_message.content.lower() for exit in self.end_words]):
             return "__end__"
         return "continue"
 
     def invoke(self, message):
-        events = self._graph.stream(
+        events = self.graph.stream(
         {
                 "messages": [
                     HumanMessage(
@@ -129,6 +152,6 @@ class BaseGraph:
                 ],
             },
             # Maximum number of steps to take in the graph
-            {"recursion_limit": self._recursion_limit},
+            {"recursion_limit": self.recursion_limit},
         )
         return events

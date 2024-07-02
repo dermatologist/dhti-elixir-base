@@ -13,6 +13,8 @@ class BaseChain:
     def __init__(self,
                  chain=None,
                  prompt={},
+                 name=None,
+                 description=None,
                  main_llm=None,
                  clinical_llm=None,
                  grounding_llm=None,
@@ -24,9 +26,10 @@ class BaseChain:
         self._main_llm = main_llm
         self._clinical_llm = clinical_llm
         self._grounding_llm = grounding_llm
-        self._input_type = input_type
+        self._input_type = input_type or self.ChainInput
         self._output_type = output_type
-        self._description = self.name
+        self._name = name
+        self._description = description
         self.init_prompt()
 
     @property
@@ -73,12 +76,15 @@ class BaseChain:
         return self._output_type
 
     @property
-    def description(self):
-        return self._description
+    def name(self):
+        if self._name is None:
+            return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
 
     @property
-    def name(self):
-        return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+    def description(self):
+        if self._description is None:
+            self._description = f"Chain for {self.name}"
+        return self._description
 
     @chain.setter
     def chain(self, value):
@@ -131,3 +137,15 @@ class BaseChain:
     def init_prompt(self):
         pass
 
+    def generate_llm_config(self):
+        _input_schema = self.input_type.schema()
+        function_schema = {
+            "name": self.name.lower().replace(" ", "_"),
+            "description": self.description,
+            "parameters": {
+                "type": _input_schema["type"],
+                "properties": _input_schema["properties"],
+                "required": _input_schema["required"],
+            },
+        }
+        return function_schema
