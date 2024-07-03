@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dhti-elixir-base"
-version = "0.0.2"
+version = "0.0.3"
 description = "Base classes for DHTI Elixir"
 authors = ["Bell Eapen <github.com/dermatologist>"]
 readme = "README.md"
@@ -20,7 +20,7 @@ langgraph = "^0.0.64"
 agency = "^1.6.3"
 overrides = "^7.7.0"
 langchain-community = "^0.2.6"
-fhiry = { git = "https://github.com/dermatologist/fhiry", branch = "feature/flatten_and_llm" }
+fhiry = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 langchain-cli = ">=0.0.4"

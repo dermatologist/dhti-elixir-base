@@ -100,7 +100,7 @@ class BaseGraph:
     def name(self):
         if self._name:
             return self._name
-        return re.sub(r'(?<!^)(?=[A-Z])', '_', self._class__.__name__).lower()
+        return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
 
     @name.setter
     def name(self, value):
