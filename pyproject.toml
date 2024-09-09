@@ -24,7 +24,7 @@ fhiry = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 langchain-cli = ">=0.0.4"
-fastapi = "^0.104.0"
+fastapi = "^0.114.0"
 sse-starlette = "^1.6.5"
 
 [tool.langserve]
