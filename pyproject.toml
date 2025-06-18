@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dhti-elixir-base"
-version = "0.0.3"
+version = "0.0.4"
 description = "Base classes for DHTI Elixir"
 authors = ["Bell Eapen <github.com/dermatologist>"]
 readme = "README.md"
