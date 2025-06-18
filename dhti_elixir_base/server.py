@@ -48,7 +48,7 @@ class BaseServer(ABC):
         return self.request_schema
 
     def predict(self, input: Any, **kwargs) -> Any:
-        _input = self.request_schema(**input)
+        _input = self.request_schema(**input) # type: ignore
         _result = self.model.predict(_input, **kwargs)
-        result = self.response_schema(**_result)
+        result = self.response_schema(**_result) # type: ignore
         return result

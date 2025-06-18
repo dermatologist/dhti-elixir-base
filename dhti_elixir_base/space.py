@@ -22,7 +22,7 @@ class BaseSpace(Agent):
         response_content = self.agent.invoke(message)
         self.send(
             {
-                "to": self.current_message()["from"],
+                "to": self.current_message()["from"], # type: ignore
                 "action": {
                     "name": "say",
                     "args": {

@@ -112,13 +112,14 @@ class BaseGraph:
     # Helper function to create a node for a given agent
     @staticmethod
     def create_agent_node(state, agent):
+        _result = None
         try:
             result = agent.invoke(state)
         except ValueError as e:
             _result = agent.invoke({"input": state})
             result = _result["input"]["messages"][0]
 
-        if "output" in _result:
+        if _result is not None and "output" in _result:
             result = ToolMessage(content=_result["output"], tool_call_id="myTool")
         # We convert the agent output into a format that is suitable to append to the global state
         if isinstance(result, ToolMessage):
