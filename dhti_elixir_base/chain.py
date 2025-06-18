@@ -1,26 +1,31 @@
-from kink import di, inject
 import re
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain.schema.runnable import RunnablePassthrough
+
+from kink import di, inject
 from langchain.schema.output_parser import StrOutputParser
+from langchain.schema.runnable import RunnablePassthrough
+from pydantic import BaseModel, Field
+
 from .mydi import get_di
+
+
 @inject
 class BaseChain:
 
     class ChainInput(BaseModel):
         question: str = Field()
 
-    def __init__(self,
-                 chain=None,
-                 prompt={},
-                 name=None,
-                 description=None,
-                 main_llm=None,
-                 clinical_llm=None,
-                 grounding_llm=None,
-                 input_type=None,
-                 output_type=None
-                ):
+    def __init__(
+        self,
+        chain=None,
+        prompt={},
+        name=None,
+        description=None,
+        main_llm=None,
+        clinical_llm=None,
+        grounding_llm=None,
+        input_type=None,
+        output_type=None,
+    ):
         self._chain = chain
         self._prompt = prompt
         self._main_llm = main_llm
@@ -37,9 +42,14 @@ class BaseChain:
         if self._chain is None:
             """Get the runnable chain."""
             """ RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch """
-            _cot = RunnablePassthrough.assign(
-                question = lambda x: x["question"],
-                ) | self.prompt | self.main_llm | StrOutputParser()
+            _cot = (
+                RunnablePassthrough.assign(
+                    question=lambda x: x["question"],
+                )
+                | self.prompt
+                | self.main_llm
+                | StrOutputParser()
+            )
             chain = _cot.with_types(input_type=self.input_type)
             return chain
 
@@ -78,7 +88,7 @@ class BaseChain:
     @property
     def name(self):
         if self._name is None:
-            return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+            return re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__).lower()
 
     @property
     def description(self):
@@ -124,6 +134,8 @@ class BaseChain:
         self._description = value
 
     def invoke(self, **kwargs):
+        if self.chain is None:
+            raise ValueError("Chain is not initialized.")
         return self.chain.invoke(kwargs)
 
     def __call__(self, **kwargs):
@@ -133,14 +145,14 @@ class BaseChain:
     def get_runnable(self, **kwargs):
         return self.chain
 
-    #* Override these methods in subclasses
+    # * Override these methods in subclasses
     def init_prompt(self):
         pass
 
     def generate_llm_config(self):
         _input_schema = self.input_type.schema()
         function_schema = {
-            "name": self.name.lower().replace(" ", "_"),
+            "name": (self.name or self.__class__.__name__).lower().replace(" ", "_"),
             "description": self.description,
             "parameters": {
                 "type": _input_schema["type"],
