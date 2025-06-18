@@ -5,7 +5,9 @@ from . import BaseAgent
 
 class BaseSpace(Agent):
 
-    def __init__(self, agent: BaseAgent = None, *args, **kwargs):
+    from typing import Optional
+
+    def __init__(self, agent: Optional[BaseAgent] = None, *args, **kwargs):
         if agent:
             self.agent = agent.get_agent()
             super().__init__(id=agent.name, *args, **kwargs)
