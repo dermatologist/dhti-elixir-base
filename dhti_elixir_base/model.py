@@ -21,7 +21,6 @@ class BaseModel(ABC):
     ) -> None:
         self.model = model
 
-
     @classmethod
     @abstractmethod
     def load(cls) -> None:
@@ -37,7 +36,7 @@ class BaseModel(ABC):
     @classmethod
     @abstractmethod
     def predict(cls, input: Any, **kwargs) -> Any:
-        assert input is not None and cls.model is not None # Sanity check
+        assert input is not None and cls.model is not None  # Sanity check
 
         # Make sure the model is loaded.
         cls.load()

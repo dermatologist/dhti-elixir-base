@@ -92,7 +92,9 @@ class BaseAgent:
             handle_parsing_errors=True,
             agent_kwargs=self.agent_kwargs,
             verbose=True,
-        ).with_types(input_type=self.input_type) # type: ignore
+        ).with_types(
+            input_type=self.input_type # type: ignore
+        )
 
     # ! This is currently supported only for models supporting llm.bind_tools. See function return
     def langgraph_agent(self):
@@ -112,4 +114,4 @@ class BaseAgent:
         prompt = prompt.partial(
             tool_names=", ".join([tool.name for tool in self.tools])
         )
-        return prompt | self.llm.bind_tools(self.tools) # type: ignore
+        return prompt | self.llm.bind_tools(self.tools)  # type: ignore

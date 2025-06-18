@@ -1,27 +1,25 @@
 """
- Copyright 2024 Bell Eapen
+Copyright 2024 Bell Eapen
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-     https://www.apache.org/licenses/LICENSE-2.0
+    https://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
-
 
 import functools
 import operator
 import re
 from typing import Annotated, Literal, Sequence, TypedDict
 from kink import inject, di
-from langchain_core.messages import (AIMessage, BaseMessage, HumanMessage,
-                                     ToolMessage)
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langgraph.graph import END, StateGraph
 
 
@@ -30,6 +28,8 @@ from langgraph.graph import END, StateGraph
     Helper class to add multi-agent support with langgraph.
     The agents can be BaseAgent derived classes and support VertexAI.
 """
+
+
 @inject
 class BaseGraph:
     # Ref 1: https://github.com/langchain-ai/langgraph/blob/main/examples/multi_agent/multi-agent-collaboration.ipynb
@@ -40,17 +40,18 @@ class BaseGraph:
         messages: Annotated[Sequence[BaseMessage], operator.add]
         sender: str
 
-    def __init__(self,
-                 agents=[], #required
-                 edges = [], # [{"from": "agent1", "to": "agent2", "conditional": True, "router": "default"}, {"from": "agent2", "to": "agent1", "conditional": True, "router": "default"}] #required
-                 entry_point="", #required agent_1
-                 ends=[], #optional
-                 end_words=[], #optional ["exit", "quit", "bye", "sorry", "final"] The words that will trigger the end of the conversation
-                 agent_state = None, #optional default AgentState above
-                 nodes = None, #optional, generated
-                 workflow = None, #optional, generated
-                 name = None, #optional, generated
-                 recursion_limit=15 #optional, default
+    def __init__(
+        self,
+        agents=[],  # required
+        edges=[],  # [{"from": "agent1", "to": "agent2", "conditional": True, "router": "default"}, {"from": "agent2", "to": "agent1", "conditional": True, "router": "default"}] #required
+        entry_point="",  # required agent_1
+        ends=[],  # optional
+        end_words=[],  # optional ["exit", "quit", "bye", "sorry", "final"] The words that will trigger the end of the conversation
+        agent_state=None,  # optional default AgentState above
+        nodes=None,  # optional, generated
+        workflow=None,  # optional, generated
+        name=None,  # optional, generated
+        recursion_limit=15,  # optional, default
     ):
         self.agents = agents
         self.edges = edges
@@ -86,7 +87,9 @@ class BaseGraph:
                 if edge["router"] == "default":
                     _router = self.router
                 else:
-                    _router = di[edge["router"]] # This is a dependency injection of router if needed
+                    _router = di[
+                        edge["router"]
+                    ]  # This is a dependency injection of router if needed
                 self.workflow.add_conditional_edges(
                     edge["from"],
                     _router,
@@ -100,7 +103,7 @@ class BaseGraph:
     def name(self):
         if self._name:
             return self._name
-        return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+        return re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__).lower()
 
     @name.setter
     def name(self, value):
@@ -122,11 +125,13 @@ class BaseGraph:
             pass
         else:
             try:
-                result = AIMessage(**result.dict(exclude={"type", "name"}), name=agent.name)
+                result = AIMessage(
+                    **result.dict(exclude={"type", "name"}), name=agent.name
+                )
             except Exception as e:
                 result = AIMessage(content=result.content, name=agent.name)
         return {
-            "messages": [result], # Yes, this should be an array!
+            "messages": [result],  # Yes, this should be an array!
             "sender": agent.name,
             # * Return other state variables if any
         }
@@ -134,17 +139,19 @@ class BaseGraph:
     def agent_node(self, agent):
         return functools.partial(self.create_agent_node, agent=agent)
 
-    def router(self,state) -> Literal["__end__", "continue"]:
+    def router(self, state) -> Literal["__end__", "continue"]:
         # This is the default router
         messages = state["messages"]
         last_message = messages[-1]
-        if any([exit.lower() in last_message.content.lower() for exit in self.end_words]):
+        if any(
+            [exit.lower() in last_message.content.lower() for exit in self.end_words]
+        ):
             return "__end__"
         return "continue"
 
     def invoke(self, message):
         events = self.graph.stream(
-        {
+            {
                 "messages": [
                     HumanMessage(
                         content=message,

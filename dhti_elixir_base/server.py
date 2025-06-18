@@ -5,12 +5,13 @@ from typing import Any
 from langchain.pydantic_v1 import BaseModel, Field
 import re
 from . import BaseModel
+
 # Set up logger
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 log = logging.getLogger(__name__)
 
-class BaseServer(ABC):
 
+class BaseServer(ABC):
     """A server class to lead the model and tokenizer"""
 
     class RequestSchema(BaseModel):
@@ -21,15 +22,12 @@ class BaseServer(ABC):
     class ResponseSchema(BaseModel):
         text: str = Field()
 
-
     request_schema = RequestSchema
     response_schema = ResponseSchema
 
-    def __init__(self,
-                model: BaseModel,
-                request_schema: Any = None,
-                response_schema: Any = None
-                 ) -> None:
+    def __init__(
+        self, model: BaseModel, request_schema: Any = None, response_schema: Any = None
+    ) -> None:
         self.model = model
         if request_schema is not None:
             self.request_schema = request_schema
@@ -38,7 +36,7 @@ class BaseServer(ABC):
 
     @property
     def name(self):
-        return re.sub(r'(?<!^)(?=[A-Z])', '_', self.__class__.__name__).lower()
+        return re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__).lower()
 
     def health_check(self) -> Any:
         """Health check endpoint"""

@@ -1,5 +1,6 @@
 from kink import di
 
+
 def get_di(mydi: str, default=None):
     try:
         _module = mydi.split("_", 1)[0]
