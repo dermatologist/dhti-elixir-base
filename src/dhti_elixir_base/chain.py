@@ -44,13 +44,13 @@ class BaseChain:
             """ RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch """
             if self.prompt is None:
                 raise ValueError("Prompt must not be None when building the chain.")
-            _cot = (
+            _sequential = (
                 RunnablePassthrough()
-                | self.prompt
+                | self.prompt # "{input}""
                 | self.main_llm
                 | StrOutputParser()
             )
-            chain = _cot.with_types(input_type=self.input_type)
+            chain = _sequential.with_types(input_type=self.input_type)
             return chain
 
     @property
