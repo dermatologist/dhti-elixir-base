@@ -10,6 +10,8 @@ license = "MPL-2.0"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Intended Audience :: Healthcare Industry",
 ]
 dependencies = [
     'importlib-metadata; python_version<"3.8"',
