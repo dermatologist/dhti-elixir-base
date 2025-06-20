@@ -27,10 +27,10 @@ class BaseChain:
         output_type=None,
     ):
         self._chain = chain
-        self._prompt = prompt
-        self._main_llm = main_llm
-        self._clinical_llm = clinical_llm
-        self._grounding_llm = grounding_llm
+        self._prompt = prompt or get_di("main_prompt")
+        self._main_llm = main_llm or get_di("base_main_llm")
+        self._clinical_llm = clinical_llm or get_di("base_clinical_llm")
+        self._grounding_llm = grounding_llm or get_di("base_grounding_llm")
         self._input_type = input_type or self.ChainInput
         self._output_type = output_type
         self._name = name
@@ -42,10 +42,10 @@ class BaseChain:
         if self._chain is None:
             """Get the runnable chain."""
             """ RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch """
+            if self.prompt is None:
+                raise ValueError("Prompt must not be None when building the chain.")
             _cot = (
-                RunnablePassthrough.assign(
-                    question=lambda x: x["question"],
-                )
+                RunnablePassthrough()
                 | self.prompt
                 | self.main_llm
                 | StrOutputParser()

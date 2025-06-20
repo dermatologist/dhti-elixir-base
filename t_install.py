@@ -1,14 +1,12 @@
 import requests
 
-from dhti_elixir_base.bootstrap import bootstrap
+from tests.bootstrap import bootstrap
 
 bootstrap()
-from dhti_elixir_base.chain import chain
+from dhti_elixir_base.chain import BaseChain
 
-try:
-    input = {"input": "Answer in one word: What is the capital of France?"}
-    result = chain.invoke(input=input)  # type: ignore
-    assert result == "Paris"
-except requests.exceptions.ConnectionError as e:
-    print("ConnectionError: Skipping test")
-    assert True
+input = {"input": "Answer in one word: What is the capital of France?"}
+result = BaseChain().chain.invoke(input=input)  # type: ignore
+print(result)
+assert result == "Paris"
+

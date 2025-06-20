@@ -1,13 +1,15 @@
 from kink import di
 from dotenv import load_dotenv
-from langchain_community.llms import Ollama
+from langchain_core.language_models.fake import FakeListLLM
 from langchain_core.prompts import PromptTemplate
 
 def bootstrap():
     load_dotenv()
     di["main_prompt"] = PromptTemplate.from_template("{input}")
-    di["main_llm"] = Ollama(model="phi3", verbose=True, base_url="http://localhost:11434")
-    di["function_llm"] = Ollama(model="phi3", verbose=True, base_url="http://localhost:11434")
+    fake_llm = FakeListLLM(responses=["Paris", "I don't know"])
+    di["main_llm"] = fake_llm
+    di["clinical_llm"] = fake_llm
+    di["grounding_llm"] = fake_llm
     di["prefix"] = """
                 " You are a helpful AI assistant, collaborating with other assistants."
                 " Use the provided tools to progress towards answering the question."
