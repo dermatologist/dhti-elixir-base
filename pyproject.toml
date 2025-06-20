@@ -3,8 +3,8 @@ requires = ["setuptools", "wheel", "pip"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "dhti-elixir-template"
-description = "DHTI Elixir Template"
+name = "dhti-elixir-base"
+description = "DHTI Elixir Base"
 authors = [{name = "dermatologist", email = "github@gulfdoctor.net"}]
 license = "MPL-2.0"
 classifiers = [
@@ -13,7 +13,16 @@ classifiers = [
 ]
 dependencies = [
     'importlib-metadata; python_version<"3.8"',
-    'dhti-elixir-base@ git+https://github.com/dermatologist/dhti-elixir-base',
+    'langchain-core',
+    'kink',
+    'pytest',
+    'python-dotenv',
+    'httpx',
+    'langgraph',
+    'agency',
+    'overrides',
+    'langchain-community',
+    'fhiry',
 ]
 dynamic = ["version"]
 
@@ -37,7 +46,7 @@ Documentation = "https://pyscaffold.org/"
 
 [project.optional-dependencies]
 # Add here additional requirements for extra features, to install with:
-# `pip install dhti-elixir-template[PDF]` like:
+# `pip install dhti-elixir-base[PDF]` like:
 # PDF = ReportLab; RXP
 # Add here test requirements (semicolon/line-separated)
 testing = [
@@ -49,10 +58,10 @@ testing = [
 [project.entry-points]
 # Add here console scripts like:
 # console_scripts =
-# script_name = dhti_elixir_template.module:function
+# script_name = dhti_elixir_base.module:function
 # For example:
 # console_scripts =
-# fibonacci = dhti_elixir_template.skeleton:run
+# fibonacci = dhti_elixir_base.skeleton:run
 # And any other entry points, for example:
 # pyscaffold.cli =
 # awesome = pyscaffoldext.awesome.extension:AwesomeExtension
@@ -82,7 +91,7 @@ namespaces = true
 # CAUTION: --cov flags may prohibit setting breakpoints while debugging.
 # Comment those flags to avoid this pytest issue.
 addopts = """
---cov dhti_elixir_template --cov-report term-missing
+--cov dhti_elixir_base --cov-report term-missing
 --verbose"""
 norecursedirs = [
     "dist",
@@ -118,7 +127,7 @@ docs/conf.py"""
 # PyScaffold's parameters when the project was created.
 # This will be used when updating. Do not change!
 version = "4.6"
-package = "dhti_elixir_template"
+package = "dhti_elixir_base"
 extensions = """
 markdown"""
 # This file is used to configure your project.

@@ -1,4 +1,4 @@
-# dhti-elixir-template
+# dhti-elixir-base
 
 DHTI Elixir Template
 
