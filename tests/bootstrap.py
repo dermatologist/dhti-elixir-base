@@ -6,9 +6,10 @@ from langchain_core.prompts import PromptTemplate
 def bootstrap():
     load_dotenv()
     di["main_prompt"] = PromptTemplate.from_template("{input}")
-    fake_llm = FakeListLLM(responses=["Paris", "I don't know"])
+    fake_llm = FakeListLLM(responses=["Paris", "Paris", "Paris"])
     di["main_llm"] = fake_llm
     di["clinical_llm"] = fake_llm
+    di["function_llm"] = fake_llm
     di["grounding_llm"] = fake_llm
     di["prefix"] = """
                 " You are a helpful AI assistant, collaborating with other assistants."
