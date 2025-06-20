@@ -19,7 +19,7 @@ from typing import List
 
 from langchain.agents import AgentType, initialize_agent
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from .mydi import get_di
 
@@ -30,8 +30,8 @@ class BaseAgent:
 
     class AgentInput(BaseModel):
         """Chat history with the bot."""
-
         input: str
+        model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
     def __init__(
         self,

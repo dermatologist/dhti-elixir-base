@@ -1,9 +1,9 @@
 import re
 
-from kink import di, inject
+from kink import inject
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
 from .mydi import get_di
 
@@ -12,7 +12,8 @@ from .mydi import get_di
 class BaseChain:
 
     class ChainInput(BaseModel):
-        question: str = Field()
+        question: str
+        model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
     def __init__(
         self,
