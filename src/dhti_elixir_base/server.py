@@ -1,9 +1,11 @@
-import sys
 import logging
+import re
+import sys
 from abc import ABC
 from typing import Any
-from langchain.pydantic_v1 import BaseModel, Field
-import re
+
+from pydantic import BaseModel, Field
+
 from . import BaseModel
 
 # Set up logger
@@ -48,7 +50,7 @@ class BaseServer(ABC):
         return self.request_schema
 
     def predict(self, input: Any, **kwargs) -> Any:
-        _input = self.request_schema(**input) # type: ignore
+        _input = self.request_schema(**input)  # type: ignore
         _result = self.model.predict(_input, **kwargs)
-        result = self.response_schema(**_result) # type: ignore
+        result = self.response_schema(**_result)  # type: ignore
         return result
