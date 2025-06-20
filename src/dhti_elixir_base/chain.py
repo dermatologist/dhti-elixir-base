@@ -161,3 +161,17 @@ class BaseChain:
             },
         }
         return function_schema
+
+
+# # Named chain according to the langchain template convention
+# # The description is used by the agents
+#! This is only in the inherited class, not in the base class here.
+# @tool(BaseChain().name or "test_chain", args_schema=BaseChain().input_type)
+# def chain(**kwargs):
+#     """
+#     This is a template chain that takes a text input and returns a summary of the text.
+
+#     The input is a dict with the following mandatory keys:
+#         input (str): The text to summarize.
+#     """
+#     return BaseChain().chain.invoke(kwargs)
