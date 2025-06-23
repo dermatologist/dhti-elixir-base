@@ -17,9 +17,9 @@ limitations under the License.
 import re
 from typing import List
 
-from langchain.agents import AgentType, initialize_agent
+from langchain.agents import AgentType, initialize_agent, AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from .mydi import get_di
 
@@ -30,8 +30,8 @@ class BaseAgent:
 
     class AgentInput(BaseModel):
         """Chat history with the bot."""
-
         input: str
+        model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
     def __init__(
         self,
@@ -97,8 +97,7 @@ class BaseAgent:
         )
 
     # ! This is currently supported only for models supporting llm.bind_tools. See function return
-    def langgraph_agent(self):
-        """Create an agent."""
+    def get_agent_prompt(self):
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -114,4 +113,72 @@ class BaseAgent:
         prompt = prompt.partial(
             tool_names=", ".join([tool.name for tool in self.tools])
         )
+        return prompt
+
+    def get_agent_chat_prompt_with_memory(self):
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", "You are a helpful assistant."),
+                # First put the history
+                ("placeholder", "{chat_history}"),
+                # Then the new input
+                ("human", "{input}"),
+                # Finally the scratchpad
+                ("placeholder", "{agent_scratchpad}"),
+            ]
+        )
+
+    def langgraph_agent(self):
+        """Create an agent."""
+        prompt = self.get_agent_prompt()
+        if not hasattr(self.llm, "bind_tools"):
+            raise ValueError(
+                "The LLM does not support binding tools. Please use a compatible LLM."
+            )
         return prompt | self.llm.bind_tools(self.tools)  # type: ignore
+
+    def get_langgraph_agent_executor(self):
+        """Get the agent executor."""
+        if self.llm is None:
+            raise ValueError("llm must not be None when initializing the agent executor.")
+        agent = create_tool_calling_agent(
+            llm=self.llm,
+            tools=self.tools,
+            prompt=self.get_agent_prompt(),
+        )
+        agent_executor = AgentExecutor(agent=agent, tools=self.tools)
+        return agent_executor
+
+    def get_langgraph_agent_executor_with_memory(self):
+        from langchain_core.chat_history import InMemoryChatMessageHistory
+        from langchain_core.runnables.history import RunnableWithMessageHistory
+        if self.llm is None:
+            raise ValueError(
+                "llm must not be None when initializing the agent executor."
+            )
+        memory = InMemoryChatMessageHistory()
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", "You are a helpful assistant."),
+                # First put the history
+                ("placeholder", "{chat_history}"),
+                # Then the new input
+                ("human", "{input}"),
+                # Finally the scratchpad
+                ("placeholder", "{agent_scratchpad}"),
+            ]
+        )
+        agent = create_tool_calling_agent(
+            llm=self.llm,
+            tools=self.tools,
+            prompt=prompt,
+        )
+        agent_executor = AgentExecutor(agent=agent, tools=self.tools)
+        return RunnableWithMessageHistory(
+            agent_executor,  # type: ignore
+            # This is needed because in most real world scenarios, a session id is needed
+            # It isn't really used here because we are using a simple in memory ChatMessageHistory
+            lambda session_id: memory,
+            input_messages_key="input",
+            history_messages_key="chat_history",
+        )

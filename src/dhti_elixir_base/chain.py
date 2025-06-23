@@ -1,9 +1,9 @@
 import re
 
-from kink import di, inject
+from kink import inject
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
 from .mydi import get_di
 
@@ -12,7 +12,8 @@ from .mydi import get_di
 class BaseChain:
 
     class ChainInput(BaseModel):
-        question: str = Field()
+        question: str
+        model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
     def __init__(
         self,
@@ -27,10 +28,10 @@ class BaseChain:
         output_type=None,
     ):
         self._chain = chain
-        self._prompt = prompt
-        self._main_llm = main_llm
-        self._clinical_llm = clinical_llm
-        self._grounding_llm = grounding_llm
+        self._prompt = prompt or get_di("main_prompt")
+        self._main_llm = main_llm or get_di("base_main_llm")
+        self._clinical_llm = clinical_llm or get_di("base_clinical_llm")
+        self._grounding_llm = grounding_llm or get_di("base_grounding_llm")
         self._input_type = input_type or self.ChainInput
         self._output_type = output_type
         self._name = name
@@ -42,15 +43,15 @@ class BaseChain:
         if self._chain is None:
             """Get the runnable chain."""
             """ RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch """
-            _cot = (
-                RunnablePassthrough.assign(
-                    question=lambda x: x["question"],
-                )
-                | self.prompt
+            if self.prompt is None:
+                raise ValueError("Prompt must not be None when building the chain.")
+            _sequential = (
+                RunnablePassthrough()
+                | self.prompt # "{input}""
                 | self.main_llm
                 | StrOutputParser()
             )
-            chain = _cot.with_types(input_type=self.input_type)
+            chain = _sequential.with_types(input_type=self.input_type)
             return chain
 
     @property
@@ -161,3 +162,17 @@ class BaseChain:
             },
         }
         return function_schema
+
+
+# # Named chain according to the langchain template convention
+# # The description is used by the agents
+#! This is only in the inherited class, not in the base class here.
+# @tool(BaseChain().name or "test_chain", args_schema=BaseChain().input_type)
+# def chain(**kwargs):
+#     """
+#     This is a template chain that takes a text input and returns a summary of the text.
+
+#     The input is a dict with the following mandatory keys:
+#         input (str): The text to summarize.
+#     """
+#     return BaseChain().chain.invoke(kwargs)
