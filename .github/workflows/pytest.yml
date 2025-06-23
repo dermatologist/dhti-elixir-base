@@ -1,6 +1,8 @@
 name: Python Test
 
 on:
+  schedule:
+    - cron: '1 1 2,16 * *'  # every 2nd and 16th at 01:01
   push:
     branches:
       - develop
