@@ -10,5 +10,6 @@ class BaseMCPServer(FastMCP):
 
     @property
     def name(self):
+        """Return the name of this MCP server instance."""
         return self._name
 
