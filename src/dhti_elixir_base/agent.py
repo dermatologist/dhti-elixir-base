@@ -44,7 +44,7 @@ class BaseAgent:
         prefix=None,
         suffix=None,
         tools: List = [],
-        mcp = None,  # MCP is not used in this class, but can be used for future extensions
+        mcp = None,
     ):
         self.llm = llm or get_di("function_llm")
         self.prefix = prefix or get_di("prefix")
@@ -192,6 +192,8 @@ class BaseAgent:
         """Get the agent executor for async execution."""
         if self.llm is None:
             raise ValueError("llm must not be None when initializing the agent executor.")
+        if self.client is None:
+            raise ValueError("MCP client must not be None when initializing the agent.")
         tools = await self.client.get_tools()
         agent = create_react_agent(
             model=self.llm,
