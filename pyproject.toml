@@ -24,7 +24,9 @@ dependencies = [
     'agency',
     'overrides',
     'langchain-community',
+    'langchain-mcp-adapters',
     'fhiry',
+    'mcp',
 ]
 dynamic = ["version"]
 
