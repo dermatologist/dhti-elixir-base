@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 
 class BaseServer(ABC):
-    """A server class to lead the model and tokenizer"""
+    """A server class to load the model and tokenizer"""
 
     class RequestSchema(BaseModel):
         text: str = Field()
