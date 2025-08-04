@@ -44,7 +44,7 @@ class BaseAgent:
         prefix=None,
         suffix=None,
         tools: List = [],
-        mcp: Dict | None = None,  # MCP is not used in this class, but can be used for future extensions
+        mcp = None,  # MCP is not used in this class, but can be used for future extensions
     ):
         self.llm = llm or get_di("function_llm")
         self.prefix = prefix or get_di("prefix")
