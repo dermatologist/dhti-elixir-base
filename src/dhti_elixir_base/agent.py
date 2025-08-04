@@ -15,11 +15,13 @@ limitations under the License.
 """
 
 import re
-from typing import List
+from typing import List, Dict
 
 from langchain.agents import AgentType, initialize_agent, AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field, ConfigDict
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from langgraph.prebuilt import create_react_agent
 
 from .mydi import get_di
 
@@ -42,6 +44,7 @@ class BaseAgent:
         prefix=None,
         suffix=None,
         tools: List = [],
+        mcp: Dict | None = None,  # MCP is not used in this class, but can be used for future extensions
     ):
         self.llm = llm or get_di("function_llm")
         self.prefix = prefix or get_di("prefix")
@@ -63,6 +66,8 @@ class BaseAgent:
             self.input_type = self.AgentInput
         else:
             self.input_type = input_type
+        if mcp is not None:
+            self.client = MultiServerMCPClient(mcp)
 
     @property
     def name(self):
@@ -182,3 +187,14 @@ class BaseAgent:
             input_messages_key="input",
             history_messages_key="chat_history",
         )
+
+    async def get_langgraph_mcp_agent(self):
+        """Get the agent executor for async execution."""
+        if self.llm is None:
+            raise ValueError("llm must not be None when initializing the agent executor.")
+        tools = await self.client.get_tools()
+        agent = create_react_agent(
+            model=self.llm,
+            tools=tools,
+        )
+        return agent
