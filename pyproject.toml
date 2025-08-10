@@ -1,20 +1,24 @@
-[build-system]
-build-backend = [ "hatchling.build",]
-requires = [ "hatchling", "uv-dynamic-versioning",]
-
-[dependency-groups]
-dev = [ "pytest>=7.2.0", "pre-commit>=2.20.0", "tox-uv>=1.11.3", "deptry>=0.23.0", "mypy>=0.991", "pytest-cov>=4.0.0", "ruff>=0.11.5", "mkdocs>=1.4.2", "mkdocs-material>=8.5.10", "mkdocstrings[python]>=0.26.1",]
-
 [project]
+name = "dhti-elixir-base"
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
 classifiers = [ "Development Status :: 4 - Beta", "Programming Language :: Python", "Topic :: Scientific/Engineering :: Artificial Intelligence", "Intended Audience :: Healthcare Industry", "Intended Audience :: Developers", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Topic :: Software Development :: Libraries :: Python Modules", "Topic :: Scientific/Engineering :: Information Analysis", "Topic :: Scientific/Engineering :: Medical Science Apps.", "Operating System :: OS Independent",]
 dependencies = [ "langchain-core", "kink", "pytest", "python-dotenv", "httpx", "langgraph", "agency", "overrides", "langchain-community", "langchain-mcp-adapters", "fhiry", "mcp",]
 description = "DHTI Elixir Base"
 dynamic = [ "version"]
 keywords = [ "python", "dhti", "Gen AI"]
 license = "MPL-2.0"
-name = "dhti-elixir-base"
-readme = "README.md"
-requires-python = ">=3.10,<4.0"
+
+
+
+[build-system]
+build-backend = "hatchling.build"
+requires = [ "hatchling", "uv-dynamic-versioning",]
+
+[dependency-groups]
+dev = [ "pytest>=7.2.0", "pre-commit>=2.20.0", "tox-uv>=1.11.3", "deptry>=0.23.0", "mypy>=0.991", "pytest-cov>=4.0.0", "ruff>=0.11.5", "mkdocs>=1.4.2", "mkdocs-material>=8.5.10", "mkdocstrings[python]>=0.26.1",]
+
+
 
 
 [[project.authors]]
@@ -26,9 +30,9 @@ name = "Bell Eapen"
 testing = [ "pytest", "pytest-cov",]
 
 [project.urls]
-Documentation = [ "https://pyscaffold.org/", "https://dermatologist.github.io/example-project/",]
-Homepage = [ "https://nuchange.ca", "https://dermatologist.github.io/example-project/",]
-Repository = "https://github.com/dermatologist/example-project"
+Documentation = "https://github.com/dermatologist/dhti"
+Homepage = "https://nuchange.ca"
+Repository = "https://github.com/dermatologist/dhti-elixir-base"
 
 [tool.flake8]
 exclude = ".tox\nbuild\ndist\n.eggs\ndocs/conf.py"
