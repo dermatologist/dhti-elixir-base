@@ -1,62 +1,12 @@
 # dhti-elixir-base
 
+[![Release](https://img.shields.io/github/v/release/dermatologist/dhti-elixir-template)](https://img.shields.io/github/v/release/dermatologist/dhti-elixir-template)
+[![Build status](https://img.shields.io/github/actions/workflow/status/dermatologist/dhti-elixir-template/main.yml?branch=main)](https://github.com/dermatologist/dhti-elixir-template/actions/workflows/main.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/dermatologist/dhti-elixir-template/branch/main/graph/badge.svg)](https://codecov.io/gh/dermatologist/dhti-elixir-template)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/dermatologist/dhti-elixir-template)](https://img.shields.io/github/commit-activity/m/dermatologist/dhti-elixir-template)
+[![License](https://img.shields.io/github/license/dermatologist/dhti-elixir-template)](https://img.shields.io/github/license/dermatologist/dhti-elixir-template)
+[![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/dhti-elixir-base/)
+
 * [DHTI](https://github.com/dermatologist/dhti) Elixir Template
 * WIP
 
-## Using the template
-* Use the template to create a new repository on GitHub with the default branch set to develop
-* Clone the repository to your local machine
-* rename `elixir-template` to your elixir-packagename
-* rename `elixir_template` to your elixir_packagename
-* rename the directory `dhti_elixir_base` to your dhti_elixir_packagename
-
-## Installation
-* poetry install
-* poetry install dhti-elixir-packagename --extras docs
-
-## Environment Setup
-
-Override [`dhti_elixir_base/bootstrap.py`](dhti_elixir_base/bootstrap.py) with your own configuration.
-
-## Usage
-
-To use this package, you should first have the LangChain CLI installed:
-
-```shell
-pip install -U langchain-cli
-```
-
-If you want to add this to an existing project, you can just run:
-
-```shell
-langchain app add --repo https://github.com/dermatologist/dhti-elixir-base --branch develop
-```
-
-And add the following code to your `server.py` file:
-```python
-from dhti_elixir_base.bootstrap import bootstrap
-bootstrap()
-from dhti_elixir_base.chain import chain as dhti_elixir_base_chain
-
-add_routes(app, dhti_elixir_base_chain, path="/dhti-elixir-base")
-```
-
-If you are inside this directory, then you can spin up a LangServe instance directly by:
-
-```shell
-langchain serve
-```
-
-This will start the FastAPI app with a server is running locally at
-[http://localhost:8000](http://localhost:8000)
-
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/dhti-elixir-base/playground](http://127.0.0.1:8000/dhti-elixir-base/playground)
-
-We can access the template from code with:
-
-```python
-from langserve.client import RemoteRunnable
-
-runnable = RemoteRunnable("http://localhost:8000/dhti-elixir-base")
-```

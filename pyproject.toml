@@ -60,8 +60,8 @@ email = "github_public@gulfdoctor.net"
 name = "Bell Eapen"
 
 
-[project.optional-dependencies]
-testing = ["pytest", "pytest-cov"]
+# [project.optional-dependencies]
+# testing = ["pytest", "pytest-cov"]
 
 [project.urls]
 Documentation = "https://github.com/dermatologist/dhti"
