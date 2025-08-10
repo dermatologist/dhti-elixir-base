@@ -83,6 +83,15 @@ no_vcs = "1"
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
 
+[tool.uv.build-backend]
+source-exclude = [
+  "tests/*",
+  "examples/*",
+  "docs/*",
+  "notes/*",
+  "notebooks/*"
+]
+
 [tool.pytest.ini_options]
 addopts = "--cov dhti_elixir_base --cov-report term-missing\n--verbose"
 norecursedirs = [ "dist", "build", ".tox",]
@@ -107,4 +116,4 @@ namespaces = true
 where = [ "src",]
 
 [tool.hatch.build.targets.wheel]
-packages = [ "src/dhti-elixir-base",]
+packages = [ "src/dhti_elixir_base",]
