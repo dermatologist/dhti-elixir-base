@@ -1,1 +1,1 @@
-::: example_project.foo
+::: dhti_elixir_base.foo

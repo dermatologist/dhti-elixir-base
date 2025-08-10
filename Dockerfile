@@ -18,4 +18,4 @@ COPY . /app
 # Sync the project
 RUN uv sync --frozen
 
-CMD [ "python", "example_project/foo.py" ]
+CMD [ "python", "dhti_elixir_base/foo.py" ]
