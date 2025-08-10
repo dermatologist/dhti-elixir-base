@@ -3,8 +3,10 @@ import pytest
 
 @pytest.fixture(scope="session")
 def agent():
-    from dhti_elixir_base import BaseAgent
+    from src.dhti_elixir_base import BaseAgent
+
     return BaseAgent()
+
 
 def test_agent_invoke(agent, capsys):
     input_data = {"input": "Answer in one word: What is the capital of France?"}
@@ -13,6 +15,7 @@ def test_agent_invoke(agent, capsys):
     print(result)
     captured = capsys.readouterr()
     assert "Paris" in captured.out
+
 
 def test_base_agent(agent, capsys):
     o = agent.name

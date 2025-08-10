@@ -117,7 +117,7 @@ copyright = "2025, dermatologist"
 # If you don’t need the separation provided between version and release,
 # just set them both to the same value.
 try:
-    from dhti_elixir_base import __version__ as version
+    from src.dhti_elixir_base import __version__ as version
 except ImportError:
     version = ""
 
