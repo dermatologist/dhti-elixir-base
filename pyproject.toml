@@ -83,6 +83,9 @@ no_vcs = "1"
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
 
+[tool.uv-dynamic-versioning]
+fallback-version = "0.1.0"
+
 [tool.uv.build-backend]
 source-exclude = [
   "tests/*",
