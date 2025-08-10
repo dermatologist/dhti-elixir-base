@@ -2,23 +2,57 @@
 name = "dhti-elixir-base"
 readme = "README.md"
 requires-python = ">=3.10,<4.0"
-classifiers = [ "Development Status :: 4 - Beta", "Programming Language :: Python", "Topic :: Scientific/Engineering :: Artificial Intelligence", "Intended Audience :: Healthcare Industry", "Intended Audience :: Developers", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Topic :: Software Development :: Libraries :: Python Modules", "Topic :: Scientific/Engineering :: Information Analysis", "Topic :: Scientific/Engineering :: Medical Science Apps.", "Operating System :: OS Independent",]
-dependencies = [ "langchain-core", "kink", "pytest", "python-dotenv", "httpx", "langgraph", "agency", "overrides", "langchain-community", "langchain-mcp-adapters", "fhiry", "mcp",]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Intended Audience :: Healthcare Industry",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "langchain-core",
+  "kink",
+  "pytest",
+  "python-dotenv",
+  "httpx",
+  "langgraph",
+  "agency",
+  "overrides",
+  "langchain-community",
+  "langchain-mcp-adapters",
+  "fhiry",
+  "mcp",
+]
 description = "DHTI Elixir Base"
-dynamic = [ "version"]
-keywords = [ "python", "dhti", "Gen AI"]
+dynamic = ["version"]
+keywords = ["python", "dhti", "Gen AI"]
 license = "MPL-2.0"
-
 
 
 [build-system]
 build-backend = "hatchling.build"
-requires = [ "hatchling", "uv-dynamic-versioning",]
+requires = ["hatchling", "uv-dynamic-versioning"]
 
 [dependency-groups]
-dev = [ "pytest>=7.2.0", "pre-commit>=2.20.0", "tox-uv>=1.11.3", "deptry>=0.23.0", "mypy>=0.991", "pytest-cov>=4.0.0", "ruff>=0.11.5", "mkdocs>=1.4.2", "mkdocs-material>=8.5.10", "mkdocstrings[python]>=0.26.1",]
-
-
+dev = [
+  "pytest>=7.2.0",
+  "pre-commit>=2.20.0",
+  "tox-uv>=1.11.3",
+  "deptry>=0.23.0",
+  "mypy>=0.991",
+  "pytest-cov>=4.0.0",
+  "ruff>=0.11.5",
+  "mkdocs>=1.4.2",
+  "mkdocs-material>=8.5.10",
+  "mkdocstrings[python]>=0.26.1",
+]
 
 
 [[project.authors]]
@@ -27,7 +61,7 @@ name = "Bell Eapen"
 
 
 [project.optional-dependencies]
-testing = [ "pytest", "pytest-cov",]
+testing = ["pytest", "pytest-cov"]
 
 [project.urls]
 Documentation = "https://github.com/dermatologist/dhti"
@@ -43,12 +77,11 @@ max_line_length = "88"
 check_untyped_defs = true
 disallow_any_unimported = true
 disallow_untyped_defs = true
-files = [ "src",]
+files = ["src"]
 no_implicit_optional = true
 show_error_codes = true
 warn_return_any = true
 warn_unused_ignores = true
-
 
 
 [tool.ruff]
@@ -58,8 +91,8 @@ target-version = "py39"
 
 [tool.setuptools]
 include-package-data = true
-license-files = [ "LICENSE.txt",]
-platforms = [ "any",]
+license-files = ["LICENSE.txt"]
+platforms = ["any"]
 zip-safe = false
 
 [tool.uv]
@@ -74,7 +107,7 @@ skip_empty = true
 
 [tool.coverage.run]
 branch = true
-source = [ "src",]
+source = ["src"]
 
 [tool.devpi.upload]
 formats = "bdist_wheel"
@@ -87,36 +120,47 @@ source = "uv-dynamic-versioning"
 fallback-version = "0.1.0"
 
 [tool.uv.build-backend]
-source-exclude = [
-  "tests/*",
-  "examples/*",
-  "docs/*",
-  "notes/*",
-  "notebooks/*"
-]
+source-exclude = ["tests/*", "examples/*", "docs/*", "notes/*", "notebooks/*"]
 
 [tool.pytest.ini_options]
 addopts = "--cov dhti_elixir_base --cov-report term-missing\n--verbose"
-norecursedirs = [ "dist", "build", ".tox",]
-testpaths = [ "tests",]
+norecursedirs = ["dist", "build", ".tox"]
+testpaths = ["tests"]
 
 [tool.ruff.format]
 preview = true
 
 [tool.ruff.lint]
-ignore = [ "E501", "E731",]
-select = [ "YTT", "S", "B", "A", "C4", "T10", "SIM", "I", "C90", "E", "W", "F", "PGH", "UP", "RUF", "TRY",]
+ignore = ["E501", "E731"]
+select = [
+  "YTT",
+  "S",
+  "B",
+  "A",
+  "C4",
+  "T10",
+  "SIM",
+  "I",
+  "C90",
+  "E",
+  "W",
+  "F",
+  "PGH",
+  "UP",
+  "RUF",
+  "TRY",
+]
 
 [tool.setuptools.package-dir]
 "" = "src"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = [ "S101",]
+"tests/*" = ["S101"]
 
 [tool.setuptools.packages.find]
-exclude = [ "tests",]
+exclude = ["tests"]
 namespaces = true
-where = [ "src",]
+where = ["src"]
 
 [tool.hatch.build.targets.wheel]
-packages = [ "src/dhti_elixir_base",]
+packages = ["src/dhti_elixir_base"]
