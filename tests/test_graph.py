@@ -1,8 +1,10 @@
 import pytest
 
+
 @pytest.fixture(scope="session")
 def graph():
-    from dhti_elixir_base import BaseGraph
+    from src.dhti_elixir_base import BaseGraph
+
     return BaseGraph()
 
 

@@ -1,10 +1,10 @@
 import pytest
 
 
-
 @pytest.fixture(scope="session")
 def space():
-    from dhti_elixir_base import BaseSpace
+    from src.dhti_elixir_base import BaseSpace
+
     return BaseSpace()
 
 
