@@ -1,39 +1,8 @@
-# dhti-elixir-base
+# example-project
 
-DHTI Elixir Template
+[![Release](https://img.shields.io/github/v/release/dermatologist/example-project)](https://img.shields.io/github/v/release/dermatologist/example-project)
+[![Build status](https://img.shields.io/github/actions/workflow/status/dermatologist/example-project/main.yml?branch=main)](https://github.com/dermatologist/example-project/actions/workflows/main.yml?query=branch%3Amain)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/dermatologist/example-project)](https://img.shields.io/github/commit-activity/m/dermatologist/example-project)
+[![License](https://img.shields.io/github/license/dermatologist/example-project)](https://img.shields.io/github/license/dermatologist/example-project)
 
-
-## Note
-
-> This is the main page of your project's [Sphinx] documentation. It is
-> formatted in [Markdown]. Add additional pages by creating md-files in
-> `docs` or rst-files (formatted in [reStructuredText]) and adding links to
-> them in the `Contents` section below.
->
-> Please check [Sphinx] and [MyST] for more information
-> about how to document your project and how to configure your preferences.
-
-
-## Contents
-
-```{toctree}
-:maxdepth: 2
-
-Overview <readme>
-Contributions & Help <contributing>
-License <license>
-Authors <authors>
-Changelog <changelog>
-Module Reference <api/modules>
-```
-
-## Indices and tables
-
-* {ref}`genindex`
-* {ref}`modindex`
-* {ref}`search`
-
-[Sphinx]: http://www.sphinx-doc.org/
-[Markdown]: https://daringfireball.net/projects/markdown/
-[reStructuredText]: http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
-[MyST]: https://myst-parser.readthedocs.io/en/latest/
+This is a template repository for Python projects that use uv for their dependency management.
