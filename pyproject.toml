@@ -87,7 +87,7 @@ warn_unused_ignores = true
 [tool.ruff]
 fix = true
 line-length = 120
-target-version = "py39"
+target-version = "py310"
 
 [tool.setuptools]
 include-package-data = true
