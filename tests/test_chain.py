@@ -9,7 +9,7 @@ def chain():
 
 
 def test_chain_invoke(chain, capsys):
-    input_data = input = {"input": "Answer in one word: What is the capital of France?"}
+    input_data = {"input": "Answer in one word: What is the capital of France?"}
     result = chain.chain.invoke(input=input_data)  # type: ignore
     print(result)
     captured = capsys.readouterr()
@@ -23,7 +23,7 @@ def test_base_chain(chain, capsys):
     assert "Chain name:  base_chain" in captured.out
 
 
-def generate_llm_config(chain):
+def test_generate_llm_config(chain):
     o = chain.generate_llm_config()
     print(o)
     assert o == {
@@ -31,7 +31,7 @@ def generate_llm_config(chain):
         "description": "Chain for base_chain",
         "parameters": {
             "type": "object",
-            "properties": {"question": {"title": "Question", "type": "string"}},
-            "required": ["question"],
+            "properties": {"input": {"title": "Input", "type": "string"}},
+            "required": ["input"],
         },
     }

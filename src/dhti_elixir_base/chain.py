@@ -12,7 +12,7 @@ from .mydi import get_di
 class BaseChain:
 
     class ChainInput(BaseModel):
-        question: str
+        input: str
         model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
     def __init__(
