@@ -1,1 +1,4 @@
-# dhti-elixir-base
+
+
+--8<-- "README.md"
+
