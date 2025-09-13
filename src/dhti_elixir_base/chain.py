@@ -5,7 +5,7 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
 from pydantic import BaseModel, ConfigDict
 
-from .cds_hook import CDSHookRequest
+from .cds_hook import CDSHookRequest, CDSHookCard
 from .mydi import get_di
 
 
@@ -38,6 +38,10 @@ class BaseChain:
         self._name = name
         self._description = description
         self.init_prompt()
+
+    def card(self, text: str) -> CDSHookCard:
+        """Create a CDSHookCard from text."""
+        return CDSHookCard(summary=text)  # type: ignore
 
     @property
     def chain(self):
