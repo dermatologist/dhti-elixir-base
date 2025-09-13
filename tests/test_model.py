@@ -3,10 +3,10 @@ import pytest
 
 @pytest.fixture(scope="session")
 def model():
-    from src.dhti_elixir_base import BaseModel
+    from src.dhti_elixir_base import BaseDhtiModel
 
     with pytest.raises(TypeError):
-        return BaseModel()  # type: ignore
+        return BaseDhtiModel()  # type: ignore
 
 
 def test_base_model(model, capsys):
