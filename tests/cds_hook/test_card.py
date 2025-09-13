@@ -2,11 +2,11 @@ import pytest
 
 @pytest.fixture(scope="session")
 def cds_hook_card():
-    from dhti_elixir_base.cds_hook.card import CDSHookCard
+    from src.dhti_elixir_base.cds_hook import CDSHookCard
 
     return CDSHookCard
 
-def test_cds_hook_card_model(cds_hook_card):
+def test_card_model(cds_hook_card):
     card_data = {
         "summary": "Patient is at high risk for opioid overdose.",
         "detail": "According to CDC guidelines, the patient's opioid dosage should be tapered to less than 50 MME. [Link to CDC Guideline](https://www.cdc.gov/drugoverdose/prescribing/guidelines.html)",
