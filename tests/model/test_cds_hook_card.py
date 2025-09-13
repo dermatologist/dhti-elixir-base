@@ -2,7 +2,7 @@ import pytest
 
 @pytest.fixture(scope="session")
 def cds_hook_card():
-    from src.dhti_elixir_base.model.cds_hook_card import CDSHookCard
+    from dhti_elixir_base.cds_hook.card import CDSHookCard
 
     return CDSHookCard
 

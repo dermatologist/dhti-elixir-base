@@ -4,7 +4,7 @@ from .agent import BaseAgent
 from .chain import BaseChain
 from .graph import BaseGraph
 from .llm import BaseLLM
-from .model import BaseModel
+from .cds_hook import BaseModel
 from .server import BaseServer
 from .space import BaseSpace
 from .mydi import get_di

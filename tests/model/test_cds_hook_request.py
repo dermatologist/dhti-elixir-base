@@ -2,7 +2,7 @@ import pytest
 
 @pytest.fixture(scope="session")
 def cds_hook_request_model():
-    from src.dhti_elixir_base.model.cds_hook_request import CDSHookRequest
+    from dhti_elixir_base.cds_hook.request import CDSHookRequest
     return CDSHookRequest
 
 def test_cds_hook_request_model_import(cds_hook_request_model):
