@@ -22,18 +22,18 @@ Example:
 """
 
 from typing import List, Optional, Literal
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, Field
 
 class CDSHookCardSource(BaseModel):
     """Source of the CDS Hook Card"""
     label: str = Field(..., description="Label for the source of the card")
-    url: Optional[HttpUrl] = Field(None, description="URL for the source of the card")
-    icon: Optional[HttpUrl] = Field(None, description="Icon URL for the source of the card")
+    url: Optional[str] = Field(None, description="URL for the source of the card")
+    icon: Optional[str] = Field(None, description="Icon URL for the source of the card")
 
 class CDSHookCardLink(BaseModel):
     """Link associated with the CDS Hook Card"""
     label: str = Field(..., description="Label for the link")
-    url: HttpUrl = Field(..., description="URL for the link")
+    url: str = Field(..., description="URL for the link")
 
 class CDSHookCard(BaseModel):
     """CDS Hook Card Model"""
