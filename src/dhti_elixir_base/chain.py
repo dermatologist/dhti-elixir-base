@@ -5,6 +5,7 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
 from pydantic import BaseModel, ConfigDict
 
+from .cds_hook import CDSHookRequest
 from .mydi import get_di
 
 
@@ -12,7 +13,7 @@ from .mydi import get_di
 class BaseChain:
 
     class ChainInput(BaseModel):
-        input: str
+        input: str | CDSHookRequest
         model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
     def __init__(

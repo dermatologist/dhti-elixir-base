@@ -31,7 +31,12 @@ def test_generate_llm_config(chain):
         "description": "Chain for base_chain",
         "parameters": {
             "type": "object",
-            "properties": {"input": {"title": "Input", "type": "string"}},
+            "properties": {
+                "input": {
+                    "anyOf": [{"type": "string"}, {"$ref": "#/$defs/CDSHookRequest"}],
+                    "title": "Input",
+                }
+            },
             "required": ["input"],
         },
     }
