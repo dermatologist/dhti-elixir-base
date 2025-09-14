@@ -40,7 +40,7 @@ class BaseChain:
         self._description = description
         self.init_prompt()
 
-    def card(self, text: str) -> CDSHookCard:
+    def outputCard(self, text: str) -> CDSHookCard:
         """Create a CDSHookCard from text."""
         return CDSHookCard(summary=text)  # type: ignore
 
@@ -59,11 +59,11 @@ class BaseChain:
                 raise ValueError("Prompt must not be None when building the chain.")
             _sequential = (
                 RunnablePassthrough()
-                | self.inputParser  
+                | self.inputParser
                 | self.prompt  # "{input}""
                 | self.main_llm
                 | StrOutputParser()
-                | self.card
+                | self.outputCard
             )
             chain = _sequential.with_types(input_type=self.input_type)
             return chain
