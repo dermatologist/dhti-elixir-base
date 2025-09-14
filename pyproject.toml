@@ -19,7 +19,6 @@ classifiers = [
 dependencies = [
   "langchain-core",
   "kink",
-  "pytest",
   "python-dotenv",
   "httpx",
   "langgraph",
@@ -60,8 +59,8 @@ email = "github_public@gulfdoctor.net"
 name = "Bell Eapen"
 
 
-[project.optional-dependencies]
-testing = ["pytest", "pytest-cov"]
+# [project.optional-dependencies]
+# testing = ["pytest", "pytest-cov"]
 
 [project.urls]
 Documentation = "https://github.com/dermatologist/dhti"
@@ -124,7 +123,7 @@ source-exclude = ["tests/*", "examples/*", "docs/*", "notes/*", "notebooks/*"]
 
 [tool.pytest.ini_options]
 addopts = """
---cov dhti_elixir_base --cov-report term-missing
+--cov src/dhti_elixir_base --cov-report term-missing
 --verbose
 """
 norecursedirs = ["dist", "build", ".tox"]

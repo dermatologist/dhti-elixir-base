@@ -5,11 +5,13 @@ site_description: This is a template repository for Python projects that use uv 
 site_author: Bell Eapen
 edit_uri: edit/main/docs/
 repo_name: dermatologist/dhti-elixir-base
-copyright: Maintained by <a href="https://dermatologist.com">dermatologist</a>.
+copyright: Maintained by <a href="https://github.com/dermatologist">dermatologist</a>.
 
 nav:
   - Home: index.md
   - Modules: modules.md
+  - Contributing: contributing.md
+
 plugins:
   - search
   - mkdocstrings:
@@ -44,9 +46,14 @@ extra:
       link: https://github.com/dermatologist/dhti-elixir-base
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/dhti-elixir-base
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/beapen
+    - icon: fontawesome/solid/home
+      link: https://nuchange.ca
 
 markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.snippets

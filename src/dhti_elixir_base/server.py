@@ -6,7 +6,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from . import BaseModel
+from . import BaseDhtiModel
 
 # Set up logger
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -28,7 +28,7 @@ class BaseServer(ABC):
     response_schema = ResponseSchema
 
     def __init__(
-        self, model: BaseModel, request_schema: Any = None, response_schema: Any = None
+        self, model: BaseDhtiModel, request_schema: Any = None, response_schema: Any = None
     ) -> None:
         self.model = model
         if request_schema is not None:

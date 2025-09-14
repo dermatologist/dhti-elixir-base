@@ -10,7 +10,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
-class BaseModel(ABC):
+class BaseDhtiModel(ABC):
     """A model class to lead the model and tokenizer"""
 
     model: Any = None
