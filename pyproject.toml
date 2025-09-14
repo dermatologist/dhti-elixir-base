@@ -19,7 +19,6 @@ classifiers = [
 dependencies = [
   "langchain-core",
   "kink",
-  "pytest",
   "python-dotenv",
   "httpx",
   "langgraph",
