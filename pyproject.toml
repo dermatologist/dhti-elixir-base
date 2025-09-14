@@ -19,7 +19,6 @@ classifiers = [
 dependencies = [
   "langchain-core",
   "kink",
-  "pytest",
   "python-dotenv",
   "httpx",
   "langgraph",
@@ -124,7 +123,7 @@ source-exclude = ["tests/*", "examples/*", "docs/*", "notes/*", "notebooks/*"]
 
 [tool.pytest.ini_options]
 addopts = """
---cov dhti_elixir_base --cov-report term-missing
+--cov src/dhti_elixir_base --cov-report term-missing
 --verbose
 """
 norecursedirs = ["dist", "build", ".tox"]

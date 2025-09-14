@@ -5,6 +5,7 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
 from pydantic import BaseModel, ConfigDict
 
+from .cds_hook import CDSHookRequest, CDSHookCard
 from .mydi import get_di
 
 
@@ -12,7 +13,7 @@ from .mydi import get_di
 class BaseChain:
 
     class ChainInput(BaseModel):
-        input: str
+        input: str | CDSHookRequest
         model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
     def __init__(
@@ -38,6 +39,10 @@ class BaseChain:
         self._description = description
         self.init_prompt()
 
+    def card(self, text: str) -> CDSHookCard:
+        """Create a CDSHookCard from text."""
+        return CDSHookCard(summary=text)  # type: ignore
+
     @property
     def chain(self):
         if self._chain is None:
@@ -47,7 +52,7 @@ class BaseChain:
                 raise ValueError("Prompt must not be None when building the chain.")
             _sequential = (
                 RunnablePassthrough()
-                | self.prompt # "{input}""
+                | self.prompt  # "{input}""
                 | self.main_llm
                 | StrOutputParser()
             )
@@ -151,14 +156,15 @@ class BaseChain:
         pass
 
     def generate_llm_config(self):
-        _input_schema = self.input_type.schema()
+        # Use Pydantic v2 API; `schema()` is deprecated in favor of `model_json_schema()`
+        _input_schema = self.input_type.model_json_schema()
         function_schema = {
             "name": (self.name or self.__class__.__name__).lower().replace(" ", "_"),
             "description": self.description,
             "parameters": {
-                "type": _input_schema["type"],
-                "properties": _input_schema["properties"],
-                "required": _input_schema["required"],
+                "type": _input_schema.get("type", "object"),
+                "properties": _input_schema.get("properties", {}),
+                "required": _input_schema.get("required", []),
             },
         }
         return function_schema
