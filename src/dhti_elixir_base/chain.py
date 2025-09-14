@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 from kink import inject
 from langchain.schema.output_parser import StrOutputParser
@@ -43,6 +44,12 @@ class BaseChain:
         """Create a CDSHookCard from text."""
         return CDSHookCard(summary=text)  # type: ignore
 
+    def inputParser(self, input: Any):
+        """Parse the input to a string."""
+        if isinstance(input, CDSHookRequest):
+            return input.context
+        return input
+
     @property
     def chain(self):
         if self._chain is None:
@@ -52,9 +59,11 @@ class BaseChain:
                 raise ValueError("Prompt must not be None when building the chain.")
             _sequential = (
                 RunnablePassthrough()
+                | self.inputParser  
                 | self.prompt  # "{input}""
                 | self.main_llm
                 | StrOutputParser()
+                | self.card
             )
             chain = _sequential.with_types(input_type=self.input_type)
             return chain
