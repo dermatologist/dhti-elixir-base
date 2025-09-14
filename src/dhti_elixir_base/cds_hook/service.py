@@ -18,16 +18,16 @@ Example:
 """
 
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class CDSHookService(BaseModel):
     """CDS Hook Service Model"""
-    hook: str = Field(..., description="The hook this service is associated with (e.g., 'patient-view')")
-    name: str = Field(..., description="Name of the CDS service")
-    description: Optional[str] = Field(None, description="Description of the CDS service")
-    id: str = Field(..., description="Unique identifier for the CDS service")
-    prefetch: Optional[dict] = Field(None, description="Prefetch templates for the CDS service")
+    hook: str
+    name: str
+    description: Optional[str] = None
+    id: str
+    prefetch: Optional[dict] = None
 
 class CDSHookServicesResponse(BaseModel):
     """Response model containing a list of CDS Hook Services"""
-    services: List[CDSHookService] = Field(..., description="List of CDS Hook services available")
+    services: List[CDSHookService]

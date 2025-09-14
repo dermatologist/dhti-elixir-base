@@ -18,9 +18,9 @@ from typing import Optional, Any
 
 class CDSHookRequest(BaseModel):
     """CDS Hook Request Model"""
-    hookInstance: Optional[str]
-    fhirServer: Optional[HttpUrl]
-    fhirAuthorization: Optional[Any]
-    hook: Optional[str]  # e.g., "patient-view", "order-select", etc.
-    context: Optional[Any]
-    prefetch: Optional[Any]
+    hookInstance: Optional[str] = None
+    fhirServer: Optional[HttpUrl] = None
+    fhirAuthorization: Optional[Any] = None
+    hook: Optional[str] = None  # e.g., "patient-view", "order-select", etc.
+    context: Optional[Any] = None
+    prefetch: Optional[Any] = None

@@ -22,26 +22,23 @@ Example:
 """
 
 from typing import List, Optional, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class CDSHookCardSource(BaseModel):
     """Source of the CDS Hook Card"""
-    label: str = Field(..., description="Label for the source of the card")
-    url: Optional[str] = Field(None, description="URL for the source of the card")
-    icon: Optional[str] = Field(None, description="Icon URL for the source of the card")
+    label: str
+    url: Optional[str] = None
+    icon: Optional[str] = None
 
 class CDSHookCardLink(BaseModel):
     """Link associated with the CDS Hook Card"""
-    label: str = Field(..., description="Label for the link")
-    url: str = Field(..., description="URL for the link")
+    label: str
+    url: str
 
 class CDSHookCard(BaseModel):
     """CDS Hook Card Model"""
-    summary: str = Field(..., description="A brief summary of the card")
-    detail: Optional[str] = Field(None, description="Detailed information about the card")
-    indicator: Optional[Literal["info", "warning", "hard-stop"]] = Field(
-        None,
-        description="Indicator for the card (e.g., 'info', 'warning', 'hard-stop')"
-    )
-    source: Optional[CDSHookCardSource] = Field(None, description="Source information for the card")
-    links: Optional[List[CDSHookCardLink]] = Field(None, description="List of links associated with the card")
+    summary: str
+    detail: Optional[str] = None
+    indicator: Optional[Literal["info", "warning", "hard-stop"]] = None
+    source: Optional[CDSHookCardSource] = None
+    links: Optional[List[CDSHookCardLink]] = None
