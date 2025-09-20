@@ -45,11 +45,12 @@ class BaseChain:
         return CDSHookCard(summary=text)  # type: ignore
 
     def inputParser(self, input: Any):
-        """Parse the input to a string."""
-        if isinstance(input, CDSHookRequest):
-            return input.context
-        return input
-
+        # if input: Dict has a key called "context" return it
+        try:
+            return input["context"]
+        except:
+            return input
+        
     @property
     def chain(self):
         if self._chain is None:
