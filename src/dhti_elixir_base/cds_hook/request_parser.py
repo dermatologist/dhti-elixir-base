@@ -31,14 +31,25 @@ def get_patient_id_from_request(patient_view):
     return None
 
 def get_context(input_data):
+    try:
+        order_select = get_content_string_from_order_select(input_data)
+    except:
+        order_select = None
+    try:
+        patient_id = get_patient_id_from_request(input_data)
+    except:
+        patient_id = None
     if input_data.get("input"):
         input_data = input_data.get("input")
+    context = {}
     try:
-        context = input_data.get("context", None)
-    except AttributeError as e:
+        context = input_data.get("context", {})
+    except:
+        pass
+    if order_select:
+        context["input"] = order_select
+    if patient_id:
+        context["patientId"] = patient_id
+    if context == {}:
         return input_data
-    try:
-        json.loads(context)
-        return context
-    except (TypeError, ValueError) as e:
-        return context
+    return context
