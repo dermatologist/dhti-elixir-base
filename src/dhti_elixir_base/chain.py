@@ -7,6 +7,8 @@ from langchain.schema.runnable import RunnablePassthrough
 from pydantic import BaseModel, ConfigDict
 
 from .cds_hook import CDSHookRequest, CDSHookCard
+from .cds_hook.request_parser import get_context
+from .cds_hook.generate_cards import add_card
 from .mydi import get_di
 
 
@@ -40,17 +42,6 @@ class BaseChain:
         self._description = description
         self.init_prompt()
 
-    def outputCard(self, text: str) -> CDSHookCard:
-        """Create a CDSHookCard from text."""
-        return CDSHookCard(summary=text)  # type: ignore
-
-    def inputParser(self, input: Any):
-        # if input: Dict has a key called "context" return it
-        try:
-            return input["context"]
-        except:
-            return input
-        
     @property
     def chain(self):
         if self._chain is None:
@@ -60,11 +51,11 @@ class BaseChain:
                 raise ValueError("Prompt must not be None when building the chain.")
             _sequential = (
                 RunnablePassthrough()
-                | self.inputParser
+                | get_context  # function to extract context from input
                 | self.prompt  # "{input}""
                 | self.main_llm
                 | StrOutputParser()
-                | self.outputCard
+                | add_card  # function to wrap output in CDSHookCard
             )
             chain = _sequential.with_types(input_type=self.input_type)
             return chain
