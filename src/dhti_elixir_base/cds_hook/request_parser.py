@@ -21,10 +21,18 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
+def remove_multiple_outer_inputs(input_data):
+    # remove multiple outer inputs
+    try:
+        while input_data.get("input") and isinstance(input_data.get("input"), dict) and len(input_data) == 1:
+            input_data = input_data.get("input")
+        return input_data
+    except:
+        return input_data
+
 # parse various cds hooks request formats
 def get_content_string_from_order_select(order_select):
-    if order_select.get("input"):
-        order_select = order_select.get("input")
+    order_select = remove_multiple_outer_inputs(order_select)
     entries = order_select.get("context", {}).get("draftOrders", {}).get("entry", [])
     # if resourceType is CommunicationRequest, return the contentString from payload
     for entry in entries:
@@ -41,8 +49,7 @@ def get_content_string_from_order_select(order_select):
 
 
 def get_patient_id_from_request(patient_view):
-    if patient_view.get("input"):
-        patient_view = patient_view.get("input")
+    patient_view = remove_multiple_outer_inputs(patient_view)
     patient_id = patient_view.get("context", {}).get("patientId")
     if patient_id:
         return patient_id
@@ -50,6 +57,7 @@ def get_patient_id_from_request(patient_view):
 
 
 def get_context(input_data):
+    input_data = remove_multiple_outer_inputs(input_data)
     try:
         order_select = get_content_string_from_order_select(input_data)
     except:
@@ -58,8 +66,6 @@ def get_context(input_data):
         patient_id = get_patient_id_from_request(input_data)
     except:
         patient_id = None
-    if input_data.get("input"):
-        input_data = input_data.get("input")
     context = {}
     try:
         context = input_data.get("context", {})
