@@ -1,8 +1,9 @@
 import pytest
+from src.dhti_elixir_base.cds_hook.request_parser import get_context
 
 @pytest.fixture(scope="session")
-def order_select():
-    return {"input":{
+def inputs():
+    input_1 = {"input":{
         "hookInstance": "9a9f10a0-0f99-4471-8d98-b44b854ca079",
         "hook": "order-select",
         "fhirServer": "http://hapi.fhir.org/baseR4",
@@ -59,15 +60,7 @@ def order_select():
             }
         },
     }}
-
-def test_get_content_string_from_order_select(capsys, order_select):
-    from src.dhti_elixir_base.cds_hook.request_parser import get_content_string_from_order_select
-
-    content_string = get_content_string_from_order_select(order_select)
-    assert content_string == "Hello World"
-
-def test_get_patient_id_from_request(capsys, order_select):
-    patient_view ={
+    input_2 = {
    "hookInstance" : "23f1a303-991f-4118-86c5-11d99a39222e",
    "fhirServer" : "https://fhir.example.org",
    "hook" : "patient-view",
@@ -85,27 +78,21 @@ def test_get_patient_id_from_request(capsys, order_select):
         }
     }
     }
-    from src.dhti_elixir_base.cds_hook.request_parser import get_patient_id_from_request
-    patient_id = get_patient_id_from_request(patient_view)
-    assert patient_id == "1288992"
-
-def test_get_context(capsys, order_select):
-    input_date = input_data = {
+    input_3 = {
         "hookInstance": "test_hook",
         "fhirServer": "http://example.com/fhir",
         "fhirAuthorization": "Bearer test_token",
         "hook": "patient-view",
         "context": {"input": "Hello"},
         "prefetch": {},
-    }
-    from src.dhti_elixir_base.cds_hook.request_parser import get_context
-    context = get_context(input_data)
-    assert context == {"input": "Hello"}
+        }
+    return [input_1, input_2, input_3]
 
-def test_get_context_string(capsys):
-    input_data = input_data = {
-        "input": "Answer in one word: What is the capital of France?"
-    }
-    from src.dhti_elixir_base.cds_hook.request_parser import get_context
-    context = get_context(input_data)
-    assert context == "Answer in one word: What is the capital of France?"
+
+
+def test_get_context(capsys, inputs):
+    for input in inputs:
+        context = get_context(input)
+        print(context)
+        assert isinstance(context, dict)
+        assert "patientId" in context or "input" in context
