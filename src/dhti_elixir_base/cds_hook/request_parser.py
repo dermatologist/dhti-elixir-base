@@ -1,8 +1,25 @@
+"""
+Copyright 2025 Bell Eapen
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import json
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
 
 # parse various cds hooks request formats
 def get_content_string_from_order_select(order_select):
@@ -22,6 +39,7 @@ def get_content_string_from_order_select(order_select):
                     return content_string
     return None
 
+
 def get_patient_id_from_request(patient_view):
     if patient_view.get("input"):
         patient_view = patient_view.get("input")
@@ -29,6 +47,7 @@ def get_patient_id_from_request(patient_view):
     if patient_id:
         return patient_id
     return None
+
 
 def get_context(input_data):
     try:
