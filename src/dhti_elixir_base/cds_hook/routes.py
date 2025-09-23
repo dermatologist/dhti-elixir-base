@@ -15,5 +15,11 @@ def add_invokes(app: FastAPI, path: str = "/langserve/dhti_elixir_template"):
         payload: dict,
     ):
         client = TestClient(app)
-        response = client.post(f"{path}/invoke", json=payload)
+        response = client.post(f"{path}/invoke", json=_add_inputs(payload))
         return response.json()["output"]
+
+def _add_inputs(payload:dict):
+    _input = {}
+    _input["input"] = {}
+    _input["input"]["input"] = payload
+    return _input
