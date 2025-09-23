@@ -23,7 +23,6 @@ dependencies = [
   "httpx",
   "langgraph",
   "agency",
-  "overrides",
   "langchain-community",
   "langchain-mcp-adapters",
   "fhiry",
