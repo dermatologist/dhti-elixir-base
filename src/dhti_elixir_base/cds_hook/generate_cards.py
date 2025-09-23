@@ -26,3 +26,12 @@ def add_card(output: str | CDSHookCard, input=[]) -> dict:
     else:
         raise ValueError("Output must be a string or CDSHookCard")
     return {"cards": input}
+
+def get_card(output: str | CDSHookCard) -> dict:
+    """Get a CDSHookCard as a dictionary."""
+    if isinstance(output, CDSHookCard):
+        return output.model_dump()
+    elif isinstance(output, str):
+        return CDSHookCard(summary=output).model_dump()
+    else:
+        raise ValueError("Output must be a string or CDSHookCard")
