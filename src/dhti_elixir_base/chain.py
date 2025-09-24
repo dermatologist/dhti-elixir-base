@@ -4,6 +4,7 @@ from typing import Any
 from kink import inject
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
+from langchain_mcp_adapters.tools import to_fastmcp
 from pydantic import BaseModel, ConfigDict
 
 from .cds_hook import CDSHookRequest, CDSHookCard
@@ -184,3 +185,9 @@ class BaseChain:
             args_schema=self.input_type,
         )
 
+    def get_chain_as_mcp_tool(self):
+        _fast_mcp = to_fastmcp(
+            self.get_chain_as_langchain_tool(),
+        )
+        _fast_mcp.title = self.name or self.__class__.__name__
+        return _fast_mcp

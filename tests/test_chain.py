@@ -10,6 +10,12 @@ def chain():
 
     return BaseChain()
 
+def test_get_chain_as_mcp_tool(chain, capsys):
+    tool = chain.get_chain_as_mcp_tool()
+    print(tool)
+    captured = capsys.readouterr()
+    assert "base_chain" in str(tool)
+
 def test_get_chain_as_langchain_tool(chain, capsys):
     tool = chain.get_chain_as_langchain_tool()
     print(tool)
