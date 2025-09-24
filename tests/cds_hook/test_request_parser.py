@@ -93,6 +93,5 @@ def inputs():
 def test_get_context(capsys, inputs):
     for input in inputs:
         context = get_context(input)
-        print(context)
         assert isinstance(context, dict)
         assert "patientId" in context or "input" in context
