@@ -33,6 +33,13 @@ from .mydi import get_di
 class BaseChain:
 
     class ChainInput(BaseModel):
+        """
+        Input model for BaseChain.
+
+        Attributes:
+            input (str | CDSHookRequest): The input string or CDSHookRequest object for the chain.
+        """
+
         input: str | CDSHookRequest
         model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
@@ -174,6 +181,12 @@ class BaseChain:
         pass
 
     def generate_llm_config(self):
+        """
+        Generate the configuration schema for the LLM function call.
+
+        Returns:
+            dict: A dictionary containing the function schema for the LLM, including name, description, and parameters.
+        """
         # Use Pydantic v2 API; `schema()` is deprecated in favor of `model_json_schema()`
         _input_schema = self.input_type.model_json_schema()
         function_schema = {
@@ -188,6 +201,12 @@ class BaseChain:
         return function_schema
 
     def get_chain_as_langchain_tool(self):
+        """
+        Convert the chain to a LangChain StructuredTool.
+
+        Returns:
+            StructuredTool: An instance of LangChain StructuredTool wrapping the chain.
+        """
         from langchain.tools import StructuredTool
 
         def _run(**kwargs):
@@ -202,6 +221,12 @@ class BaseChain:
         )
 
     def get_chain_as_mcp_tool(self):
+        """
+        Convert the chain to an MCP tool using the FastMCP adapter.
+
+        Returns:
+            Any: An MCP tool instance wrapping the chain.
+        """
         _fast_mcp = to_fastmcp(
             self.get_chain_as_langchain_tool(),
         )
