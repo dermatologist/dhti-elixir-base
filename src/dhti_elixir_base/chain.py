@@ -170,16 +170,17 @@ class BaseChain:
         }
         return function_schema
 
+    def get_chain_as_langchain_tool(self):
+        from langchain.tools import StructuredTool
 
-# # Named chain according to the langchain template convention
-# # The description is used by the agents
-#! This is only in the inherited class, not in the base class here.
-# @tool(BaseChain().name or "test_chain", args_schema=BaseChain().input_type)
-# def chain(**kwargs):
-#     """
-#     This is a template chain that takes a text input and returns a summary of the text.
+        def _run(**kwargs):
+            # Invoke the underlying runnable chain with provided kwargs
+            return self.chain.invoke(kwargs) # type: ignore
 
-#     The input is a dict with the following mandatory keys:
-#         input (str): The text to summarize.
-#     """
-#     return BaseChain().chain.invoke(kwargs)
+        return StructuredTool.from_function(
+            func=_run,
+            name=self.name or self.__class__.__name__,
+            description=self.description or f"Chain for {self.name}",
+            args_schema=self.input_type,
+        )
+

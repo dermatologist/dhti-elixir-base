@@ -10,6 +10,16 @@ def chain():
 
     return BaseChain()
 
+def test_get_chain_as_langchain_tool(chain, capsys):
+    tool = chain.get_chain_as_langchain_tool()
+    print(tool)
+    captured = capsys.readouterr()
+    assert "chain" in str(tool)
+    input_data = {"input": "Answer in one word: What is the capital of France?"}
+    result = tool.run(input_data)  # type: ignore
+    print(result)
+    captured = capsys.readouterr()
+    assert "Paris" in captured.out
 
 def test_chain_invoke(chain, capsys):
     input_data = {"input": "Answer in one word: What is the capital of France?"}
