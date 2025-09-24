@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from dhti_elixir_base.cds_hook.card import CDSHookCard
+from ..cds_hook.card import CDSHookCard
 
 
 def add_card(output: str | CDSHookCard, input=[]) -> dict:
