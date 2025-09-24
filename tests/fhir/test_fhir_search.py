@@ -106,20 +106,41 @@ def test_get_everything_for_patient(fhir_search, monkeypatch):
 
     patient_id = "example"
     results = fhir_search.get_everything_for_patient(patient_id)
-    print(results)
     assert "entry" in results
     assert len(results["entry"]) > 0
     for entry in results["entry"]:
         assert "resource" in entry
 
 
-def test_get_conditions_for_patient(fhir_search):
+def test_get_conditions_for_patient(fhir_search, monkeypatch):
     """
     Test fetching all Condition resources related to a specific patient using a mock response.
     """
 
+    def _mock_get_conditions_for_patient(self, patient_id):
+        return {
+            "entry": [
+                {
+                    "resource": {
+                        "resourceType": "Condition",
+                        "subject": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+                {
+                    "resource": {
+                        "resourceType": "Condition",
+                        "subject": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+            ]
+        }
+
+    monkeypatch.setattr(
+        "src.dhti_elixir_base.fhir.fhir_search.DhtiFhirSearch.get_conditions_for_patient",
+        _mock_get_conditions_for_patient,
+    )
+
     conditions = fhir_search.get_conditions_for_patient("example")
-    print(conditions)
     assert "entry" in conditions
     assert len(conditions["entry"]) > 0
     for entry in conditions["entry"]:
@@ -128,19 +149,42 @@ def test_get_conditions_for_patient(fhir_search):
         assert entry["resource"]["subject"]["reference"] == "Patient/example"
 
 
-def test_get_observations_for_patient(fhir_search):
+def test_get_observations_for_patient(fhir_search, monkeypatch):
     """
     Test fetching all Observation resources related to a specific patient using a mock response.
     """
 
+    def _mock_get_observations_for_patient(self, patient_id):
+        return {
+            "entry": [
+                {
+                    "resource": {
+                        "resourceType": "Observation",
+                        "subject": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+                {
+                    "resource": {
+                        "resourceType": "Observation",
+                        "subject": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+            ]
+        }
+
+    monkeypatch.setattr(
+        "src.dhti_elixir_base.fhir.fhir_search.DhtiFhirSearch.get_observations_for_patient",
+        _mock_get_observations_for_patient,
+    )
+
     observations = fhir_search.get_observations_for_patient("example")
-    print(observations)
     assert "entry" in observations
     assert len(observations["entry"]) > 0
     for entry in observations["entry"]:
         assert "resource" in entry
         assert entry["resource"]["resourceType"] == "Observation"
         assert entry["resource"]["subject"]["reference"] == "Patient/example"
+
 
 def test_get_patient_id(fhir_search):
     """
@@ -170,13 +214,36 @@ def test_get_patient_id(fhir_search):
     patient_id = fhir_search.get_patient_id({"name": "John Doe"})
     assert patient_id is None
 
-def test_get_procedures_for_patient(fhir_search):
+
+def test_get_procedures_for_patient(fhir_search, monkeypatch):
     """
     Test fetching all Procedure resources related to a specific patient using a mock response.
     """
 
+    def _mock_get_procedures_for_patient(self, patient_id):
+        return {
+            "entry": [
+                {
+                    "resource": {
+                        "resourceType": "Procedure",
+                        "subject": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+                {
+                    "resource": {
+                        "resourceType": "Procedure",
+                        "subject": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+            ]
+        }
+
+    monkeypatch.setattr(
+        "src.dhti_elixir_base.fhir.fhir_search.DhtiFhirSearch.get_procedures_for_patient",
+        _mock_get_procedures_for_patient,
+    )
+
     procedures = fhir_search.get_procedures_for_patient("example")
-    print(procedures)
     assert "entry" in procedures
     assert len(procedures["entry"]) > 0
     for entry in procedures["entry"]:
@@ -184,13 +251,36 @@ def test_get_procedures_for_patient(fhir_search):
         assert entry["resource"]["resourceType"] == "Procedure"
         assert entry["resource"]["subject"]["reference"] == "Patient/example"
 
-def test_get_medication_requests_for_patient(fhir_search):
+
+def test_get_medication_requests_for_patient(fhir_search, monkeypatch):
     """
     Test fetching all MedicationRequest resources related to a specific patient using a mock response.
     """
 
+    def _mock_get_medication_requests_for_patient(self, patient_id):
+        return {
+            "entry": [
+                {
+                    "resource": {
+                        "resourceType": "MedicationRequest",
+                        "subject": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+                {
+                    "resource": {
+                        "resourceType": "MedicationRequest",
+                        "subject": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+            ]
+        }
+
+    monkeypatch.setattr(
+        "src.dhti_elixir_base.fhir.fhir_search.DhtiFhirSearch.get_medication_requests_for_patient",
+        _mock_get_medication_requests_for_patient,
+    )
+
     medication_requests = fhir_search.get_medication_requests_for_patient("example")
-    print(medication_requests)
     assert "entry" in medication_requests
     assert len(medication_requests["entry"]) > 0
     for entry in medication_requests["entry"]:
@@ -198,13 +288,36 @@ def test_get_medication_requests_for_patient(fhir_search):
         assert entry["resource"]["resourceType"] == "MedicationRequest"
         assert entry["resource"]["subject"]["reference"] == "Patient/example"
 
-def test_get_allergy_intolerances_for_patient(fhir_search):
+
+def test_get_allergy_intolerances_for_patient(fhir_search, monkeypatch):
     """
     Test fetching all AllergyIntolerance resources related to a specific patient using a mock response.
     """
 
+    def _mock_get_allergy_intolerances_for_patient(self, patient_id):
+        return {
+            "entry": [
+                {
+                    "resource": {
+                        "resourceType": "AllergyIntolerance",
+                        "patient": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+                {
+                    "resource": {
+                        "resourceType": "AllergyIntolerance",
+                        "patient": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+            ]
+        }
+
+    monkeypatch.setattr(
+        "src.dhti_elixir_base.fhir.fhir_search.DhtiFhirSearch.get_allergy_intolerances_for_patient",
+        _mock_get_allergy_intolerances_for_patient,
+    )
+
     allergy_intolerances = fhir_search.get_allergy_intolerances_for_patient("example")
-    print(allergy_intolerances)
     assert "entry" in allergy_intolerances
     assert len(allergy_intolerances["entry"]) > 0
     for entry in allergy_intolerances["entry"]:
