@@ -1,3 +1,19 @@
+"""
+Copyright 2025 Bell Eapen
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import re
 from typing import Any
 
@@ -7,9 +23,9 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain_mcp_adapters.tools import to_fastmcp
 from pydantic import BaseModel, ConfigDict
 
-from .cds_hook import CDSHookRequest, CDSHookCard
-from .cds_hook.request_parser import get_context
+from .cds_hook import CDSHookCard, CDSHookRequest
 from .cds_hook.generate_cards import add_card
+from .cds_hook.request_parser import get_context
 from .mydi import get_di
 
 
@@ -176,7 +192,7 @@ class BaseChain:
 
         def _run(**kwargs):
             # Invoke the underlying runnable chain with provided kwargs
-            return self.chain.invoke(kwargs) # type: ignore
+            return self.chain.invoke(kwargs)  # type: ignore
 
         return StructuredTool.from_function(
             func=_run,
