@@ -12,6 +12,23 @@ class DhtiFhirSearch:
         self.requests_kwargs = get_di("fhir_requests_kwargs") or {}
 
 
+    def get_everything_for_patient(self, patient_id, fhirpath=None):
+        """Fetch all resources related to a specific patient using the $everything operation.
+
+        Args:
+            patient_id (str): The ID of the patient.
+
+        Returns:
+            dict: The bundle of resources related to the patient.
+        """
+        headers = {"Content-Type": "application/fhir+json"}
+        everything_url = f"{self.fhir_base_url}/Patient/{patient_id}/$everything"
+        r = requests.get(everything_url, headers=headers, **self.requests_kwargs)
+        r.raise_for_status()
+        if fhirpath:
+            return evaluate(r.json(), fhirpath, {})
+        return r.json()
+
 
     def search(self, resource_type="Patient", search_parameters={}, fhirpath=None):
         """Search the FHIR server and return the combined results.

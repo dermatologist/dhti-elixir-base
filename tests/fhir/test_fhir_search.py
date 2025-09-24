@@ -79,3 +79,17 @@ def test_fhir_search_with_fhirpath(fhir_search, mock_search):
     assert len(results) > 0
     for gender in results:
         assert "male" in gender
+
+
+def test_get_everything_for_patient(fhir_search):
+    """
+    Test fetching all resources related to a specific patient using the $everything operation.
+    """
+    # Using a known patient ID from the public HAPI FHIR test server
+    patient_id = "example"
+    results = fhir_search.get_everything_for_patient(patient_id)
+    print(results)
+    assert "entry" in results
+    assert len(results["entry"]) > 0
+    for entry in results["entry"]:
+        assert "resource" in entry
