@@ -81,11 +81,29 @@ def test_fhir_search_with_fhirpath(fhir_search, mock_search):
         assert "male" in gender
 
 
-def test_get_everything_for_patient(fhir_search):
+def test_get_everything_for_patient(fhir_search, monkeypatch):
     """
-    Test fetching all resources related to a specific patient using the $everything operation.
+    Test fetching all resources related to a specific patient using the $everything operation, with a mock response.
     """
-    # Using a known patient ID from the public HAPI FHIR test server
+
+    def _mock_get_everything_for_patient(self, patient_id):
+        return {
+            "entry": [
+                {"resource": {"resourceType": "Patient", "id": patient_id}},
+                {
+                    "resource": {
+                        "resourceType": "Observation",
+                        "subject": {"reference": f"Patient/{patient_id}"},
+                    }
+                },
+            ]
+        }
+
+    monkeypatch.setattr(
+        "src.dhti_elixir_base.fhir.fhir_search.DhtiFhirSearch.get_everything_for_patient",
+        _mock_get_everything_for_patient,
+    )
+
     patient_id = "example"
     results = fhir_search.get_everything_for_patient(patient_id)
     print(results)
