@@ -75,7 +75,7 @@ class BaseChain:
                 raise ValueError("Prompt must not be None when building the chain.")
             _sequential = (
                 RunnablePassthrough()
-                | get_context  # function to extract context from input
+                | get_context  # function to extract context from input # type: ignore
                 | self.prompt  # "{input}""
                 | self.main_llm
                 | StrOutputParser()
