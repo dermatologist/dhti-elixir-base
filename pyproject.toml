@@ -23,10 +23,10 @@ dependencies = [
   "httpx",
   "langgraph",
   "agency",
-  "overrides",
   "langchain-community",
   "langchain-mcp-adapters",
   "fhiry",
+  "fhirpathpy",
   "mcp",
 ]
 description = "DHTI Elixir Base"

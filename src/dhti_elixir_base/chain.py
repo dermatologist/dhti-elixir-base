@@ -1,12 +1,31 @@
+"""
+Copyright 2025 Bell Eapen
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import re
 from typing import Any
 
 from kink import inject
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
+from langchain_mcp_adapters.tools import to_fastmcp
 from pydantic import BaseModel, ConfigDict
 
-from .cds_hook import CDSHookRequest, CDSHookCard
+from .cds_hook import CDSHookCard, CDSHookRequest
+from .cds_hook.generate_cards import add_card
+from .cds_hook.request_parser import get_context
 from .mydi import get_di
 
 
@@ -14,6 +33,13 @@ from .mydi import get_di
 class BaseChain:
 
     class ChainInput(BaseModel):
+        """
+        Input model for BaseChain.
+
+        Attributes:
+            input (str | CDSHookRequest): The input string or CDSHookRequest object for the chain.
+        """
+
         input: str | CDSHookRequest
         model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
@@ -40,17 +66,6 @@ class BaseChain:
         self._description = description
         self.init_prompt()
 
-    def outputCard(self, text: str) -> CDSHookCard:
-        """Create a CDSHookCard from text."""
-        return CDSHookCard(summary=text)  # type: ignore
-
-    def inputParser(self, input: Any):
-        # if input: Dict has a key called "context" return it
-        try:
-            return input["context"]
-        except:
-            return input
-        
     @property
     def chain(self):
         if self._chain is None:
@@ -60,11 +75,11 @@ class BaseChain:
                 raise ValueError("Prompt must not be None when building the chain.")
             _sequential = (
                 RunnablePassthrough()
-                | self.inputParser
+                | get_context  # function to extract context from input # type: ignore
                 | self.prompt  # "{input}""
                 | self.main_llm
                 | StrOutputParser()
-                | self.outputCard
+                | add_card  # function to wrap output in CDSHookCard
             )
             chain = _sequential.with_types(input_type=self.input_type)
             return chain
@@ -166,6 +181,12 @@ class BaseChain:
         pass
 
     def generate_llm_config(self):
+        """
+        Generate the configuration schema for the LLM function call.
+
+        Returns:
+            dict: A dictionary containing the function schema for the LLM, including name, description, and parameters.
+        """
         # Use Pydantic v2 API; `schema()` is deprecated in favor of `model_json_schema()`
         _input_schema = self.input_type.model_json_schema()
         function_schema = {
@@ -179,16 +200,35 @@ class BaseChain:
         }
         return function_schema
 
+    def get_chain_as_langchain_tool(self):
+        """
+        Convert the chain to a LangChain StructuredTool.
 
-# # Named chain according to the langchain template convention
-# # The description is used by the agents
-#! This is only in the inherited class, not in the base class here.
-# @tool(BaseChain().name or "test_chain", args_schema=BaseChain().input_type)
-# def chain(**kwargs):
-#     """
-#     This is a template chain that takes a text input and returns a summary of the text.
+        Returns:
+            StructuredTool: An instance of LangChain StructuredTool wrapping the chain.
+        """
+        from langchain.tools import StructuredTool
 
-#     The input is a dict with the following mandatory keys:
-#         input (str): The text to summarize.
-#     """
-#     return BaseChain().chain.invoke(kwargs)
+        def _run(**kwargs):
+            # Invoke the underlying runnable chain with provided kwargs
+            return self.chain.invoke(kwargs)  # type: ignore
+
+        return StructuredTool.from_function(
+            func=_run,
+            name=self.name or self.__class__.__name__,
+            description=self.description or f"Chain for {self.name}",
+            args_schema=self.input_type,
+        )
+
+    def get_chain_as_mcp_tool(self):
+        """
+        Convert the chain to an MCP tool using the FastMCP adapter.
+
+        Returns:
+            Any: An MCP tool instance wrapping the chain.
+        """
+        _fast_mcp = to_fastmcp(
+            self.get_chain_as_langchain_tool(),
+        )
+        _fast_mcp.title = self.name or self.__class__.__name__
+        return _fast_mcp
