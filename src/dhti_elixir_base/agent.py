@@ -40,15 +40,17 @@ class BaseAgent:
         name=None,
         description=None,
         llm=None,
+        prompt={},
         input_type: type[BaseModel] | None = None,
         prefix=None,
         suffix=None,
         tools: List = [],
-        mcp = None,
+        mcp=None,
     ):
         self.llm = llm or get_di("function_llm")
         self.prefix = prefix or get_di("prefix")
         self.suffix = suffix or get_di("suffix")
+        self.prompt = prompt or get_di("agent_prompt") or "You are a helpful assistant."
         self.tools = tools
         self._name = (
             name or re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__).lower()
@@ -97,6 +99,17 @@ class BaseAgent:
             handle_parsing_errors=True,
             agent_kwargs=self.agent_kwargs,
             verbose=True,
+        ).with_types(
+            input_type=self.input_type # type: ignore
+        )
+
+    def get_react_agent(self):
+        if self.llm is None:
+            raise ValueError("llm must not be None when initializing the agent.")
+        return create_react_agent(
+            model=self.llm,
+            tools=self.tools,
+            prompt=self.prompt,
         ).with_types(
             input_type=self.input_type # type: ignore
         )
@@ -198,6 +211,7 @@ class BaseAgent:
         agent = create_react_agent(
             model=self.llm,
             tools=tools,
+            prompt=self.prompt,
         )
         return agent
 
