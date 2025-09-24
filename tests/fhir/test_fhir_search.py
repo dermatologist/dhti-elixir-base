@@ -111,3 +111,103 @@ def test_get_everything_for_patient(fhir_search, monkeypatch):
     assert len(results["entry"]) > 0
     for entry in results["entry"]:
         assert "resource" in entry
+
+
+def test_get_conditions_for_patient(fhir_search):
+    """
+    Test fetching all Condition resources related to a specific patient using a mock response.
+    """
+
+    conditions = fhir_search.get_conditions_for_patient("example")
+    print(conditions)
+    assert "entry" in conditions
+    assert len(conditions["entry"]) > 0
+    for entry in conditions["entry"]:
+        assert "resource" in entry
+        assert entry["resource"]["resourceType"] == "Condition"
+        assert entry["resource"]["subject"]["reference"] == "Patient/example"
+
+
+def test_get_observations_for_patient(fhir_search):
+    """
+    Test fetching all Observation resources related to a specific patient using a mock response.
+    """
+
+    observations = fhir_search.get_observations_for_patient("example")
+    print(observations)
+    assert "entry" in observations
+    assert len(observations["entry"]) > 0
+    for entry in observations["entry"]:
+        assert "resource" in entry
+        assert entry["resource"]["resourceType"] == "Observation"
+        assert entry["resource"]["subject"]["reference"] == "Patient/example"
+
+def test_get_patient_id(fhir_search):
+    """
+    Test extracting patient ID from various input formats.
+    """
+    # Test with direct patient ID string
+    patient_id = fhir_search.get_patient_id("example")
+    assert patient_id == "example"
+
+    # Test with dictionary containing 'id' key
+    patient_id = fhir_search.get_patient_id({"id": "example"})
+    assert patient_id == "example"
+
+    # Test with dictionary containing 'patient' key
+    patient_id = fhir_search.get_patient_id({"patient": "example"})
+    assert patient_id == "example"
+
+    # Test with dictionary containing 'Patient' key
+    patient_id = fhir_search.get_patient_id({"Patient": "example"})
+    assert patient_id == "example"
+
+    # Test with dictionary containing 'subject' key
+    patient_id = fhir_search.get_patient_id({"subject": "example"})
+    assert patient_id == "example"
+
+    # Test with dictionary missing patient ID keys
+    patient_id = fhir_search.get_patient_id({"name": "John Doe"})
+    assert patient_id is None
+
+def test_get_procedures_for_patient(fhir_search):
+    """
+    Test fetching all Procedure resources related to a specific patient using a mock response.
+    """
+
+    procedures = fhir_search.get_procedures_for_patient("example")
+    print(procedures)
+    assert "entry" in procedures
+    assert len(procedures["entry"]) > 0
+    for entry in procedures["entry"]:
+        assert "resource" in entry
+        assert entry["resource"]["resourceType"] == "Procedure"
+        assert entry["resource"]["subject"]["reference"] == "Patient/example"
+
+def test_get_medication_requests_for_patient(fhir_search):
+    """
+    Test fetching all MedicationRequest resources related to a specific patient using a mock response.
+    """
+
+    medication_requests = fhir_search.get_medication_requests_for_patient("example")
+    print(medication_requests)
+    assert "entry" in medication_requests
+    assert len(medication_requests["entry"]) > 0
+    for entry in medication_requests["entry"]:
+        assert "resource" in entry
+        assert entry["resource"]["resourceType"] == "MedicationRequest"
+        assert entry["resource"]["subject"]["reference"] == "Patient/example"
+
+def test_get_allergy_intolerances_for_patient(fhir_search):
+    """
+    Test fetching all AllergyIntolerance resources related to a specific patient using a mock response.
+    """
+
+    allergy_intolerances = fhir_search.get_allergy_intolerances_for_patient("example")
+    print(allergy_intolerances)
+    assert "entry" in allergy_intolerances
+    assert len(allergy_intolerances["entry"]) > 0
+    for entry in allergy_intolerances["entry"]:
+        assert "resource" in entry
+        assert entry["resource"]["resourceType"] == "AllergyIntolerance"
+        assert entry["resource"]["patient"]["reference"] == "Patient/example"
