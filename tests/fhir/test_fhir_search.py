@@ -20,3 +20,15 @@ def test_fhir_search(fhir_search):
         assert "name" in entry["resource"]
         family_names = [name.get("family", "") for name in entry["resource"]["name"]]
         assert any("Smith" in family for family in family_names)
+
+def test_fhir_search_with_fhirpath(fhir_search):
+    # Test searching for Patient resources and applying a FHIRPath expression
+    search_params = {"family": "Smith", "_count": 2}
+    fhirpath_expr = "Bundle.entry.resource.gender"
+    results = fhir_search.search(resource_type="Patient", search_parameters=search_params, fhirpath=fhirpath_expr)
+
+    print(results)  # For debugging purposes
+    assert isinstance(results, list)
+    assert len(results) > 0
+    for gender in results:
+        assert "male" in gender

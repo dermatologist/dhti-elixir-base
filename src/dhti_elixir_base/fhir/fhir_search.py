@@ -1,5 +1,6 @@
 import os
 import requests
+from fhirpathpy import evaluate
 from ..mydi import get_di
 
 class DhtiFhirSearch:
@@ -12,7 +13,7 @@ class DhtiFhirSearch:
 
 
 
-    def search(self, resource_type="Patient", search_parameters={}):
+    def search(self, resource_type="Patient", search_parameters={}, fhirpath=None):
         """Search the FHIR server and return the combined results.
 
         Args:
@@ -37,4 +38,6 @@ class DhtiFhirSearch:
             **self.requests_kwargs,
         )
         r.raise_for_status()
+        if fhirpath:
+            return evaluate(r.json(), fhirpath, {})
         return r.json()

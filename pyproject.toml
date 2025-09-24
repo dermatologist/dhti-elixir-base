@@ -26,6 +26,7 @@ dependencies = [
   "langchain-community",
   "langchain-mcp-adapters",
   "fhiry",
+  "fhirpathpy",
   "mcp",
 ]
 description = "DHTI Elixir Base"
