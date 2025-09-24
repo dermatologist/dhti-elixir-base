@@ -32,6 +32,6 @@ def get_card(output: str | CDSHookCard) -> dict:
     if isinstance(output, CDSHookCard):
         return output.model_dump()
     elif isinstance(output, str):
-        return CDSHookCard(summary=output).model_dump()
+        return {"cards": [CDSHookCard(summary=output).model_dump()]}
     else:
         raise ValueError("Output must be a string or CDSHookCard")
