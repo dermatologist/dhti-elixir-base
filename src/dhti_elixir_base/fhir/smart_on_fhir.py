@@ -105,8 +105,10 @@ class SmartOnFhirSearch:
         if token:
             self.access_token = token if token_type.lower() == "bearer" else token
             # Set a small safety margin of 30 seconds
+            import time
+
             self._token_expires_at = (
-                int(os.getenv("EPOCH", "0")) + int(expires_in) - 30 if expires_in else 0
+                int(time.time()) + int(expires_in) - 30 if expires_in else 0
             )
             self._apply_auth_to_server()
 
