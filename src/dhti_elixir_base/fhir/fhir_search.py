@@ -1,4 +1,3 @@
-import os
 import requests
 from fhirpathpy import evaluate
 from ..mydi import get_di
@@ -6,10 +5,10 @@ from ..mydi import get_di
 class DhtiFhirSearch:
 
     def __init__(self):
-        os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
         self.fhir_base_url = get_di("fhir_base_url") or "http://hapi.fhir.org/baseR4"
         self.page_size = get_di("fhir_page_size") or 10
         self.requests_kwargs = get_di("fhir_requests_kwargs") or {}
+        self.access_token = get_di("fhir_access_token") or ""
 
     def get_patient_id(self, input):
         # patient_id is the value for key patientId or patient_id or id or PatientId, patientID, PatientID etc
@@ -31,7 +30,6 @@ class DhtiFhirSearch:
         except AttributeError:
             return input
 
-
     def get_everything_for_patient(self, input={}, fhirpath=None):
         """Fetch all resources related to a specific patient using the $everything operation.
         Args:
@@ -43,7 +41,11 @@ class DhtiFhirSearch:
         patient_id = self.get_patient_id(input)
         if not patient_id:
             raise ValueError("Patient ID is required.")
-        headers = {"Content-Type": "application/fhir+json"}
+        headers = {
+            "Authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/fhir+json",
+            "Accept": "application/fhir+json",
+        }
         everything_url = f"{self.fhir_base_url}/Patient/{patient_id}/$everything"
         r = requests.get(everything_url, headers=headers, **self.requests_kwargs)
         r.raise_for_status()

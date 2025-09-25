@@ -24,11 +24,16 @@ logger.setLevel(logging.DEBUG)
 def remove_multiple_outer_inputs(input_data):
     # remove multiple outer inputs
     try:
-        while input_data.get("input") and isinstance(input_data.get("input"), dict) and len(input_data) == 1:
+        while (
+            input_data.get("input")
+            and isinstance(input_data.get("input"), dict)
+            and len(input_data) == 1
+        ):
             input_data = input_data.get("input")
         return input_data
     except:
         return input_data
+
 
 # parse various cds hooks request formats
 def get_content_string_from_order_select(order_select):
@@ -57,7 +62,24 @@ def get_patient_id_from_request(patient_view):
 
 
 def get_context(input_data):
-    input_data = remove_multiple_outer_inputs(input_data)
+    if isinstance(input_data, dict) and "input" in input_data:
+        input_data = input_data["input"]
+    if (
+        not isinstance(input_data, dict)
+        and hasattr(input_data, "model_dump_json")
+        and callable(getattr(input_data, "model_dump_json", None))
+    ):
+        input_data = remove_multiple_outer_inputs(input_data.model_dump_json())
+    else:
+        input_data = remove_multiple_outer_inputs(input_data)
+    context = {}
+    try:
+        input_data = (
+            json.loads(input_data) if isinstance(input_data, str) else input_data
+        )
+        context = input_data.get("context", {})
+    except:
+        pass
     try:
         order_select = get_content_string_from_order_select(input_data)
     except:
@@ -66,15 +88,11 @@ def get_context(input_data):
         patient_id = get_patient_id_from_request(input_data)
     except:
         patient_id = None
-    context = {}
-    try:
-        context = input_data.get("context", {})
-    except:
-        pass
     if order_select:
         context["input"] = order_select
     if patient_id:
         context["patientId"] = patient_id
     if context == {}:
         return input_data
+    logger.debug(f"Extracted context: {context}")
     return context
