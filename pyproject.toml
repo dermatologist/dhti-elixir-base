@@ -29,6 +29,7 @@ dependencies = [
   "fhirpathpy",
   "fhirclient",
   "mcp",
+  "fastapi",
 ]
 description = "DHTI Elixir Base"
 dynamic = ["version"]
