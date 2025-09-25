@@ -172,22 +172,12 @@ class SmartOnFhirSearch:
 
         # Ensure token present for authenticated endpoints
         self._ensure_token()
-        # Prefer using fhirclient's server request if available
+        # Use explicit HTTP for predictable headers and testing
         path = f"Patient/{patient_id}/$everything"
-        data = None
-        try:
-            server = getattr(self.smart, "server", None)
-            if server is not None and hasattr(server, "request_json"):
-                data = server.request_json(path)
-        except Exception:
-            data = None
-
-        if data is None:
-            # Fallback to raw HTTP
-            url = f"{self.fhir_base_url}/{path}"
-            r = requests.get(url, headers=self._headers(), **self.requests_kwargs)
-            r.raise_for_status()
-            data = r.json()
+        url = f"{self.fhir_base_url}/{path}"
+        r = requests.get(url, headers=self._headers(), **self.requests_kwargs)
+        r.raise_for_status()
+        data = r.json()
 
         return evaluate(data, fhirpath, {}) if fhirpath else data
 
