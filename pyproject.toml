@@ -21,6 +21,7 @@ dependencies = [
   "kink",
   "python-dotenv",
   "httpx",
+  "langserve",
   "langgraph",
   "agency",
   "langchain-community",
