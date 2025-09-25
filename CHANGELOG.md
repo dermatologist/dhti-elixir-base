@@ -2,7 +2,7 @@
 
 ## [Unreleased](https://github.com/dermatologist/dhti-elixir-base/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v0.4.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v0.5.0...HEAD)
 
 **Merged pull requests:**
 
@@ -12,6 +12,10 @@
 - Feature/cds hooks 1 [\#41](https://github.com/dermatologist/dhti-elixir-base/pull/41) ([dermatologist](https://github.com/dermatologist))
 - Feature/uv build 1 [\#40](https://github.com/dermatologist/dhti-elixir-base/pull/40) ([dermatologist](https://github.com/dermatologist))
 - Feature/mcp 1 [\#39](https://github.com/dermatologist/dhti-elixir-base/pull/39) ([dermatologist](https://github.com/dermatologist))
+
+## [v0.5.0](https://github.com/dermatologist/dhti-elixir-base/tree/v0.5.0) (2025-09-25)
+
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v0.4.0...v0.5.0)
 
 ## [v0.4.0](https://github.com/dermatologist/dhti-elixir-base/tree/v0.4.0) (2025-09-20)
 
