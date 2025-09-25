@@ -65,7 +65,7 @@ class SmartOnFhirSearch:
             "Content-Type": "application/fhir+json",
             "Accept": "application/fhir+json",
         }
-        if self.access_token:
+        if self.access_token and self.access_token.strip():
             headers["Authorization"] = f"Bearer {self.access_token}"
         return headers
 
