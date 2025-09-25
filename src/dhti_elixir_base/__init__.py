@@ -24,4 +24,13 @@ except PackageNotFoundError:  # pragma: no cover
 finally:
     del version, PackageNotFoundError
 
-__all__ = ["chain"]
+__all__ = [
+    "BaseAgent",
+    "BaseChain",
+    "BaseGraph",
+    "BaseLLM",
+    "BaseDhtiModel",
+    "BaseServer",
+    "BaseSpace",
+    "get_di",
+]
