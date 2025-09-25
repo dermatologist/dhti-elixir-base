@@ -1,4 +1,3 @@
-import os
 import requests
 from fhirpathpy import evaluate
 from ..mydi import get_di
@@ -6,7 +5,6 @@ from ..mydi import get_di
 class DhtiFhirSearch:
 
     def __init__(self):
-        os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
         self.fhir_base_url = get_di("fhir_base_url") or "http://hapi.fhir.org/baseR4"
         self.page_size = get_di("fhir_page_size") or 10
         self.requests_kwargs = get_di("fhir_requests_kwargs") or {}
