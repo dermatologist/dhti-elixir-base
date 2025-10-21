@@ -5,6 +5,7 @@
 [![Build status](https://img.shields.io/github/actions/workflow/status/dermatologist/dhti-elixir-base/pytest.yml?branch=develop)](https://github.com/dermatologist/dhti-elixir-base/actions/workflows/pytest.yml?query=branch%3Adevelop)
 [![codecov](https://codecov.io/gh/dermatologist/dhti-elixir-base/branch/develop/graph/badge.svg)](https://codecov.io/gh/dermatologist/dhti-elixir-base)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/dermatologist/dhti-elixir-base)](https://img.shields.io/github/commit-activity/m/dermatologist/dhti-elixir-base)
+[![Downloads](https://img.shields.io/pypi/dm/dhti-elixir-base)](https://pypi.org/project/dhti-elixir-base)
 [![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/dhti-elixir-base/)
 
 Base library for creating new [DHTI](https://github.com/dermatologist/dhti) Elixirs.
