@@ -5,6 +5,7 @@
 [![Build status](https://img.shields.io/github/actions/workflow/status/dermatologist/dhti-elixir-base/pytest.yml?branch=develop)](https://github.com/dermatologist/dhti-elixir-base/actions/workflows/pytest.yml?query=branch%3Adevelop)
 [![codecov](https://codecov.io/gh/dermatologist/dhti-elixir-base/branch/develop/graph/badge.svg)](https://codecov.io/gh/dermatologist/dhti-elixir-base)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/dermatologist/dhti-elixir-base)](https://img.shields.io/github/commit-activity/m/dermatologist/dhti-elixir-base)
+[![Downloads](https://img.shields.io/pypi/dm/dhti-elixir-base)](https://pypi.org/project/dhti-elixir-base)
 [![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/dhti-elixir-base/)
 
 Base library for creating new [DHTI](https://github.com/dermatologist/dhti) Elixirs.
@@ -27,6 +28,31 @@ This package exposes lightweight, composable base classes:
 
 Use these to rapidly create a new Elixir with a consistent structure, tests, and docs.
 
+### Dependency Injection (mydi.py / di)
+
+The codebase uses a simple dependency injection pattern via `mydi.py` and the `get_di` function. This allows you to:
+- Configure FHIR endpoints, authentication, and other settings at runtime
+- Swap out implementations for testing or customization
+- Keep your code modular and maintainable
+
+### CDS Hook Module (Frontend Integration)
+
+The `cds_hook` module now provides  request parsing and context extraction for CDS Hooks workflows. It supports:
+- Parsing various CDS Hooks request formats
+- Extracting patient and order context
+
+This enables integration with frontend CDS Hooks clients.
+
+### FHIR Module (Backend Integration: SMART on FHIR & FHIRPath)
+
+The `fhir` module  includes advanced backend features:
+- **SMART on FHIR**: The `SmartOnFhirSearch` class provides secure, standards-based access to FHIR resources using OAuth2 and the SMART on FHIR protocol. It supports:
+	- Patient-centric resource queries (Conditions, Observations, Procedures, MedicationRequests, AllergyIntolerances)
+	- $everything operation for comprehensive patient data
+	- Automatic token management and authentication
+- **FHIRPath Support**: All resource queries can apply FHIRPath expressions for flexible data extraction and transformation.
+
+[![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/dhti-elixir-base/)
 
 ## Project layout
 
