@@ -14,7 +14,7 @@ class BaseLLM(LLM):
     model: Optional[str] = Field(None, alias="model")
     api_key: Optional[str] = Field(None, alias="api_key")
     params: Mapping[str, Any] = Field(default_factory=dict, alias="params")
-    timeout: Optional[int] = 60
+    timeout: int = 60
     backend: Optional[str] = "dhti"
     temperature: Optional[float] = 0.1
     top_p: Optional[float] = 0.8
