@@ -37,10 +37,10 @@ class BaseChain:
         Input model for BaseChain.
 
         Attributes:
-            input (str | CDSHookRequest): The input string or CDSHookRequest object for the chain.
+            input (Any): The input string or CDSHookRequest object for the chain.
         """
 
-        input: str | CDSHookRequest
+        input: Any
         model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
     def __init__(
