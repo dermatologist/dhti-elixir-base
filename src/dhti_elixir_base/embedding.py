@@ -33,8 +33,9 @@ class BaseEmbedding(Embeddings):
             data=json.dumps(payload),
         )
         response.raise_for_status()
-        embeddings = response.json().get("data", [])
-        return [item["embedding"] for item in embeddings]
+        embeddings = response.json()["embeddings"]
+        # embeddings is a list of lists
+        return embeddings
 
     def embed_query(self, text: str) -> List[float]:
         """Embed a single query."""
@@ -55,5 +56,5 @@ class BaseEmbedding(Embeddings):
             data=json.dumps(payload),
         )
         response.raise_for_status()
-        embeddings = response.json().get("data", [])
-        return embeddings[0]["embedding"]
+        embeddings = response.json()["embeddings"]
+        return embeddings[0]
