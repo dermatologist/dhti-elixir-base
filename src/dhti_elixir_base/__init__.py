@@ -4,6 +4,7 @@ from .agent import BaseAgent
 from .chain import BaseChain
 from .graph import BaseGraph
 from .llm import BaseLLM
+from .embedding import BaseEmbedding
 from .model import BaseDhtiModel
 from .server import BaseServer
 from .space import BaseSpace
@@ -29,6 +30,7 @@ __all__ = [
     "BaseChain",
     "BaseGraph",
     "BaseLLM",
+    "BaseEmbedding",
     "BaseDhtiModel",
     "BaseServer",
     "BaseSpace",
