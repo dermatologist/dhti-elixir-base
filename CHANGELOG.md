@@ -2,10 +2,12 @@
 
 ## [Unreleased](https://github.com/dermatologist/dhti-elixir-base/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v0.9.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v0.9.1...HEAD)
 
 **Merged pull requests:**
 
+- Feature/rag 1 [\#52](https://github.com/dermatologist/dhti-elixir-base/pull/52) ([dermatologist](https://github.com/dermatologist))
+- \[GitHub Dependents Info\] Updated markdown file [\#51](https://github.com/dermatologist/dhti-elixir-base/pull/51) ([github-actions[bot]](https://github.com/apps/github-actions))
 - Feature/embed 1 [\#49](https://github.com/dermatologist/dhti-elixir-base/pull/49) ([dermatologist](https://github.com/dermatologist))
 - fix: Update input type in BaseChain to Any for better flexibility [\#48](https://github.com/dermatologist/dhti-elixir-base/pull/48) ([dermatologist](https://github.com/dermatologist))
 - feat: Update langchain dependency to version \>=0.3.0,\<0.4.0 and refac… [\#47](https://github.com/dermatologist/dhti-elixir-base/pull/47) ([dermatologist](https://github.com/dermatologist))
@@ -17,6 +19,10 @@
 - Feature/cds hooks 1 [\#41](https://github.com/dermatologist/dhti-elixir-base/pull/41) ([dermatologist](https://github.com/dermatologist))
 - Feature/uv build 1 [\#40](https://github.com/dermatologist/dhti-elixir-base/pull/40) ([dermatologist](https://github.com/dermatologist))
 - Feature/mcp 1 [\#39](https://github.com/dermatologist/dhti-elixir-base/pull/39) ([dermatologist](https://github.com/dermatologist))
+
+## [v0.9.1](https://github.com/dermatologist/dhti-elixir-base/tree/v0.9.1) (2025-10-24)
+
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v0.9.0...v0.9.1)
 
 ## [v0.9.0](https://github.com/dermatologist/dhti-elixir-base/tree/v0.9.0) (2025-10-23)
 
