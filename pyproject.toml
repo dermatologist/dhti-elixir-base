@@ -32,6 +32,7 @@ dependencies = [
   "fhirclient",
   "mcp",
   "fastapi",
+  "pdfminer.six",
 ]
 description = "DHTI Elixir Base"
 dynamic = ["version"]
