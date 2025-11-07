@@ -42,7 +42,7 @@ class FileProcessingRequest(CustomUserType):
 
 
 def process_file(request: FileProcessingRequest, text_splitter) -> tuple[str, list]:
-    """Extract the text from the first page of the PDF."""
+    """Extract text from all pages of PDF file(s) and split into chunks."""
     # if request.file is a single PDF file
     # if file has .pdf extension
     contents = []
@@ -71,7 +71,6 @@ def process_file(request: FileProcessingRequest, text_splitter) -> tuple[str, li
         split_docs = text_splitter.create_documents([doc_text])
         metadata = {"filename": request.filename, "year": request.year}
         for doc in split_docs:
-            doc.page_content = doc.page_content
             doc.metadata = metadata
             docs.append(doc)
     return text, docs
@@ -87,6 +86,7 @@ def combine_documents(documents: list, document_separator="\n\n") -> str:
         return "No information found. The vectorstore may still be indexing. Please try again later."
     return combined_text.strip()
 
-def search_vectorstore(query_engine, query: str, k: int) -> str:
+
+def search_vectorstore(query_engine, query: str, k: int) -> list:
     """Search the vectorstore for the given query."""
     return query_engine.as_retriever().get_relevant_documents(query, k=k)
