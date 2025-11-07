@@ -1,6 +1,7 @@
 """CDS Hook Request Model
 
-Pydantic Model for CDS Hook Request
+Pydantic Model for CDS Hook Request.
+Typically context has "patientId" and "input" keys.
 
 Example:
 {
