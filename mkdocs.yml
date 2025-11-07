@@ -11,6 +11,7 @@ nav:
   - Home: index.md
   - Modules: modules.md
   - Contributing: contributing.md
+  - Dependents: github-dependents-info.md
 
 plugins:
   - search
