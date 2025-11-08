@@ -1,8 +1,9 @@
+import json
 from abc import abstractmethod
 from typing import Any, List, Mapping, Optional
+
 import requests
-import json
-from langchain.llms.base import LLM
+from langchain_core.language_models.llms import LLM
 from pydantic import Field
 
 
@@ -64,9 +65,8 @@ class BaseLLM(LLM):
         # Basic chat messages wrapper; user prompt placed as single user message
         return {
             "model": self.model,
-            "messages": [
-                {"role": "user", "content": prompt}
-            ]
+            "options": self._get_model_default_parameters,
+            "messages": [{"role": "user", "content": prompt}],
         }
 
     def _call(
@@ -74,7 +74,7 @@ class BaseLLM(LLM):
         prompt: str,
         stop: Optional[List[str]] = None,
         run_manager: Optional[Any] = None,
-        **kwargs
+        **kwargs,
     ) -> str:
         """
         Args:
@@ -92,7 +92,7 @@ class BaseLLM(LLM):
             "Authorization": f"Bearer {self.api_key}",
         }
         resp = requests.post(
-            self.base_url, headers=headers, json=payload, timeout=self.timeout # type: ignore
+            self.base_url, headers=headers, json=payload, timeout=self.timeout  # type: ignore
         )
         try:
             resp.raise_for_status()
