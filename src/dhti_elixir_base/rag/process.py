@@ -34,7 +34,7 @@ class FileProcessingRequest(CustomUserType):
     """Request including a base64 encoded file."""
 
     # The extra field is used to specify a widget for the playground UI.
-    file: str = Field(..., json_schema_extra={"widget": {"type": "base64file"}})
+    file: str = Field(..., extra={"widget": {"type": "base64file"}})  # type: ignore
     filename: str = Field(
         default="UNKNOWN", json_schema_extra={"widget": {"type": "text"}}
     )
