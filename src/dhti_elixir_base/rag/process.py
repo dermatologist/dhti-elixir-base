@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 import base64
-import datetime
 
 from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
 from langchain_core.document_loaders import Blob
@@ -37,10 +36,10 @@ class FileProcessingRequest(CustomUserType):
     # The extra field is used to specify a widget for the playground UI.
     file: str = Field(..., extra={"widget": {"type": "base64file"}})  # type: ignore
     filename: str = Field(
-        default="UNKNOWN", json_schema_extra={"widget": {"type": "text"}}
+        default="", json_schema_extra={"widget": {"type": "text"}}
     )
     year: int = Field(
-        default_factory=lambda: datetime.datetime.now().year,
+        default=0,
         json_schema_extra={"widget": {"type": "number"}},
     )
 
