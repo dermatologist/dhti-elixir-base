@@ -81,6 +81,9 @@ def process_file(request: FileProcessingRequest) -> dict:
         for doc in split_docs:
             doc.metadata = metadata
             docs.append(doc)
+    vectorstore = get_di("vectorstore", None)
+    if vectorstore is not None:
+        vectorstore.add_documents(docs)
     return {"text": text, "documents": docs}
 
 
