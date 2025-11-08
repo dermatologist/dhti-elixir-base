@@ -44,47 +44,22 @@ class FileProcessingRequest(CustomUserType):
     )
 
 
-def process_file(request: FileProcessingRequest) -> dict:
-    """Extract text from all pages of PDF file(s) and split into chunks."""
-    # if request.file is a single PDF file
-    # if file has .pdf extension
-    contents = []
-    text_splitter = get_di("text_splitter")
-    if text_splitter is None:
-        raise RuntimeError(
-            "text_splitter dependency is not available. Make sure it is provided by DI or properly monkeypatched in tests."
-        )
-    if request.filename.endswith(".pdf"):
-        content = base64.b64decode(request.file.encode("utf-8"))
-        contents.append(content)
-    # if request.filename is a zip file containing multiple PDFs,
-    # we need to extract the PDFs from the zip file
-    if request.filename.endswith(".zip"):
-        zip_content = base64.b64decode(request.file.encode("utf-8"))
-        with zipfile.ZipFile(io.BytesIO(zip_content)) as z:
-            for filename in z.namelist():
-                if filename.endswith(".pdf"):
-                    content = z.read(filename)
-                    contents.append(content)
-
-    text = ""
-    docs = []
-    for content in contents:
-        blob = Blob(data=content)
-        documents = list(PDFMinerParser().lazy_parse(blob))
-        doc_text = ""
-        for doc in documents:
-            doc_text += doc.page_content
-        text += doc_text + "\n"
-        split_docs = text_splitter.create_documents([doc_text])
-        metadata = {"filename": request.filename, "year": request.year}
-        for doc in split_docs:
-            doc.metadata = metadata
-            docs.append(doc)
-    vectorstore = get_di("vectorstore", None)
-    if vectorstore is not None:
-        vectorstore.add_documents(docs)
-    return {"text": text, "documents": docs}
+def process_file(request: FileProcessingRequest) -> str:
+    """Extract the text from the first page of the PDF."""
+    content = base64.b64decode(request.file.encode("utf-8"))
+    blob = Blob(data=content)
+    documents = list(PDFMinerParser().lazy_parse(blob))
+    pages = ""
+    for doc in documents:
+        pages += doc.page_content
+    docs = get_di("text_splitter").create_documents([pages]) # type: ignore
+    metadata = {"filename": request.filename, "year": request.year}
+    _docs = []
+    for doc in docs:
+        doc.metadata = metadata
+        _docs.append(doc)
+    get_di("vectorstore").add_documents(_docs) # type: ignore
+    return pages
 
 
 def combine_documents(documents: list, document_separator="\n\n") -> str:
