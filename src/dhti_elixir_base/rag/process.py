@@ -25,6 +25,7 @@ from langchain_core.prompts import PromptTemplate
 from langserve import CustomUserType
 from pydantic import Field
 
+from ..mydi import get_di
 
 # *  Inherit from CustomUserType instead of BaseModel otherwise
 #    the server will decode it into a dict instead of a pydantic model.
@@ -92,6 +93,7 @@ def combine_documents(documents: list, document_separator="\n\n") -> str:
     return combined_text.strip()
 
 
-def search_vectorstore(query_engine, query: str, k: int = 5) -> list:
+def search_vectorstore(query: str, k: int = 5) -> list:
     """Search the vectorstore for the given query."""
-    return query_engine.as_retriever().get_relevant_documents(query, k=k)
+    vectorstore = get_di("vectorstore")
+    return vectorstore.as_retriever().get_relevant_documents(query, k=k) # type: ignore
