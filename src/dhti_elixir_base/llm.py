@@ -63,7 +63,11 @@ class BaseLLM(LLM):
 
     def _prepare_payload(self, prompt: str) -> dict:
         # Basic chat messages wrapper; user prompt placed as single user message
-        return {"model": self.model, "messages": [{"role": "user", "content": prompt}]}
+        return {
+            "model": self.model,
+            "options": self._get_model_default_parameters,
+            "messages": [{"role": "user", "content": prompt}],
+        }
 
     def _call(
         self,
