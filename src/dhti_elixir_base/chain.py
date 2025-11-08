@@ -18,12 +18,12 @@ import re
 from typing import Any
 
 from kink import inject
-from langchain.schema.output_parser import StrOutputParser
-from langchain.schema.runnable import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_community.tools import StructuredTool
 from langchain_mcp_adapters.tools import to_fastmcp
 from pydantic import BaseModel, ConfigDict
 
-from .cds_hook import CDSHookCard, CDSHookRequest
 from .cds_hook.generate_cards import add_card
 from .cds_hook.request_parser import get_context
 from .mydi import get_di
@@ -45,7 +45,6 @@ class BaseChain:
 
     def __init__(
         self,
-        chain=None,
         prompt={},
         name=None,
         description=None,
@@ -55,7 +54,6 @@ class BaseChain:
         input_type=None,
         output_type=None,
     ):
-        self._chain = chain
         self._prompt = prompt or get_di("main_prompt")
         self._main_llm = main_llm or get_di("base_main_llm")
         self._clinical_llm = clinical_llm or get_di("base_clinical_llm")
@@ -68,21 +66,20 @@ class BaseChain:
 
     @property
     def chain(self):
-        if self._chain is None:
-            """Get the runnable chain."""
-            """ RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch """
-            if self.prompt is None:
-                raise ValueError("Prompt must not be None when building the chain.")
-            _sequential = (
-                RunnablePassthrough()
-                | get_context  # function to extract context from input # type: ignore
-                | self.prompt  # "{input}""
-                | self.main_llm
-                | StrOutputParser()
-                | add_card  # function to wrap output in CDSHookCard
-            )
-            chain = _sequential.with_types(input_type=self.input_type)
-            return chain
+        """Get the runnable chain."""
+        """ RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch """
+        if self.prompt is None:
+            raise ValueError("Prompt must not be None when building the chain.")
+        _sequential = (
+            RunnablePassthrough()
+            | get_context  # function to extract context from input # type: ignore
+            | self.prompt  # "{input}""
+            | self.main_llm
+            | StrOutputParser()
+            | add_card  # function to wrap output in CDSHookCard
+        )
+        chain = _sequential.with_types(input_type=self.input_type)
+        return chain
 
     @property
     def prompt(self):
@@ -126,10 +123,6 @@ class BaseChain:
         if self._description is None:
             self._description = f"Chain for {self.name}"
         return self._description
-
-    @chain.setter
-    def chain(self, value):
-        self._chain = value
 
     @prompt.setter
     def prompt(self, value):
@@ -207,7 +200,6 @@ class BaseChain:
         Returns:
             StructuredTool: An instance of LangChain StructuredTool wrapping the chain.
         """
-        from langchain.tools import StructuredTool
 
         def _run(**kwargs):
             # Invoke the underlying runnable chain with provided kwargs
