@@ -43,7 +43,7 @@ class FileProcessingRequest(CustomUserType):
     )
 
 
-def process_file(request: FileProcessingRequest, text_splitter) -> tuple[str, list]:
+def process_file(request: FileProcessingRequest, text_splitter) -> dict:
     """Extract text from all pages of PDF file(s) and split into chunks."""
     # if request.file is a single PDF file
     # if file has .pdf extension
@@ -75,7 +75,7 @@ def process_file(request: FileProcessingRequest, text_splitter) -> tuple[str, li
         for doc in split_docs:
             doc.metadata = metadata
             docs.append(doc)
-    return text, docs
+    return {"text": text, "documents": docs}
 
 
 def combine_documents(documents: list, document_separator="\n\n") -> str:

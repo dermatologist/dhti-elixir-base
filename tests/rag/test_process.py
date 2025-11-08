@@ -54,7 +54,9 @@ def test_process_file_single_pdf(monkeypatch, base64_pdf):
             file=base64_pdf + ".pdf", filename="file.pdf", year=2024
         )
         text_splitter = DummyTextSplitter()
-        text, docs = process_file(request, text_splitter)
+        output = process_file(request, text_splitter)
+        text = output["text"]
+        docs = output["documents"]
         assert "PDF content" in text
         assert len(docs) == 1
         assert docs[0].metadata["filename"] == "file.pdf"
@@ -73,7 +75,9 @@ def test_process_file_zip_with_pdf(monkeypatch, base64_zip_with_pdf):
             file=base64_zip_with_pdf + ".zip", filename="archive.zip", year=2023
         )
         text_splitter = DummyTextSplitter()
-        text, docs = process_file(request, text_splitter)
+        output = process_file(request, text_splitter)
+        text = output["text"]
+        docs = output["documents"]
         assert "Zipped PDF content" in text
         assert len(docs) == 1
         assert docs[0].metadata["filename"] == "archive.zip"
