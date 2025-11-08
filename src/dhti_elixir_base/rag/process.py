@@ -45,7 +45,7 @@ class FileProcessingRequest(CustomUserType):
 
 
 def process_file(request: FileProcessingRequest) -> str:
-    """Extract the text from the first page of the PDF."""
+    """Extract the text from all pages of the PDF."""
     content = base64.b64decode(request.file.encode("utf-8"))
     blob = Blob(data=content)
     documents = list(PDFMinerParser().lazy_parse(blob))
@@ -71,14 +71,15 @@ def combine_documents(documents: list, document_separator="\n\n") -> str:
     combined_text = ""
     DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}\n")
     for document in documents:
-        # Fallback: use PromptTemplate's format method directly
         filename = document.metadata.get("filename", "")
         year = document.metadata.get("year", 0)
         if filename and year:
-            document_separator = f"[{filename} ({year})]\n\n"
+            current_separator = f"[{filename} ({year})]\n\n"
+        else:
+            current_separator = document_separator
         combined_text += (
             DEFAULT_DOCUMENT_PROMPT.format(page_content=document.page_content)
-            + document_separator
+            + current_separator
         )
     if len(combined_text) < 3:
         return "No information found. The vectorstore may still be indexing. Please try again later."
