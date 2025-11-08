@@ -16,8 +16,6 @@ limitations under the License.
 
 import base64
 import datetime
-import io
-import zipfile
 
 from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
 from langchain_core.document_loaders import Blob
@@ -26,6 +24,9 @@ from langserve import CustomUserType
 from pydantic import Field
 
 from ..mydi import get_di
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 # *  Inherit from CustomUserType instead of BaseModel otherwise
@@ -58,8 +59,12 @@ def process_file(request: FileProcessingRequest) -> str:
     for doc in docs:
         doc.metadata = metadata
         _docs.append(doc)
-    get_di("vectorstore").add_documents(_docs) # type: ignore
-    return pages
+    try:
+        get_di("vectorstore").add_documents(_docs) # type: ignore
+    except Exception as e:
+        return f"Error adding documents to vectorstore: {e}"
+    # return first 100 characters of the extracted text
+    return pages[:100]
 
 
 def combine_documents(documents: list, document_separator="\n\n") -> str:
@@ -80,4 +85,4 @@ def combine_documents(documents: list, document_separator="\n\n") -> str:
 def search_vectorstore(query: str) -> list:
     """Search the vectorstore for the given query."""
     vectorstore = get_di("vectorstore")
-    return vectorstore.as_retriever().get_relevant_documents(query, k=get_di("rag_k", 5))  # type: ignore
+    return vectorstore.similarity_search(query, k=get_di("rag_k", 5))  # type: ignore
