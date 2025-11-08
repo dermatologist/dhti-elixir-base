@@ -27,6 +27,7 @@ from pydantic import Field
 
 from ..mydi import get_di
 
+
 # *  Inherit from CustomUserType instead of BaseModel otherwise
 #    the server will decode it into a dict instead of a pydantic model.
 class FileProcessingRequest(CustomUserType):
@@ -43,17 +44,22 @@ class FileProcessingRequest(CustomUserType):
     )
 
 
-def process_file(request: FileProcessingRequest, text_splitter) -> dict:
+def process_file(request: FileProcessingRequest) -> dict:
     """Extract text from all pages of PDF file(s) and split into chunks."""
     # if request.file is a single PDF file
     # if file has .pdf extension
     contents = []
-    if request.file.endswith(".pdf"):
+    text_splitter = get_di("text_splitter")
+    if text_splitter is None:
+        raise RuntimeError(
+            "text_splitter dependency is not available. Make sure it is provided by DI or properly monkeypatched in tests."
+        )
+    if request.filename.endswith(".pdf"):
         content = base64.b64decode(request.file.encode("utf-8"))
         contents.append(content)
-    # if request.file is a zip file containing multiple PDFs,
+    # if request.filename is a zip file containing multiple PDFs,
     # we need to extract the PDFs from the zip file
-    if request.file.endswith(".zip"):
+    if request.filename.endswith(".zip"):
         zip_content = base64.b64decode(request.file.encode("utf-8"))
         with zipfile.ZipFile(io.BytesIO(zip_content)) as z:
             for filename in z.namelist():
