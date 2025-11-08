@@ -72,6 +72,10 @@ def combine_documents(documents: list, document_separator="\n\n") -> str:
     DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}\n")
     for document in documents:
         # Fallback: use PromptTemplate's format method directly
+        filename = document.metadata.get("filename", "")
+        year = document.metadata.get("year", 0)
+        if filename and year:
+            document_separator = f"[{filename} ({year})]\n\n"
         combined_text += (
             DEFAULT_DOCUMENT_PROMPT.format(page_content=document.page_content)
             + document_separator
