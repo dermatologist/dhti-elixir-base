@@ -15,15 +15,16 @@ limitations under the License.
 """
 
 import base64
+import datetime
 import io
 import zipfile
-import datetime
+
 from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
 from langchain_core.document_loaders import Blob
+from langchain_core.prompts import PromptTemplate
 from langserve import CustomUserType
 from pydantic import Field
-from langchain.schema import format_document
-from langchain.prompts.prompt import PromptTemplate
+
 
 # *  Inherit from CustomUserType instead of BaseModel otherwise
 #    the server will decode it into a dict instead of a pydantic model.
@@ -81,7 +82,11 @@ def combine_documents(documents: list, document_separator="\n\n") -> str:
     combined_text = ""
     DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}\n")
     for document in documents:
-        combined_text += format_document(document, DEFAULT_DOCUMENT_PROMPT) + document_separator
+        # Fallback: use PromptTemplate's format method directly
+        combined_text += (
+            DEFAULT_DOCUMENT_PROMPT.format(page_content=document.page_content)
+            + document_separator
+        )
     if len(combined_text) < 3:
         return "No information found. The vectorstore may still be indexing. Please try again later."
     return combined_text.strip()

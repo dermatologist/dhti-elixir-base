@@ -18,12 +18,12 @@ import re
 from typing import Any
 
 from kink import inject
-from langchain.schema.output_parser import StrOutputParser
-from langchain.schema.runnable import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_community.tools import StructuredTool
 from langchain_mcp_adapters.tools import to_fastmcp
 from pydantic import BaseModel, ConfigDict
 
-from .cds_hook import CDSHookCard, CDSHookRequest
 from .cds_hook.generate_cards import add_card
 from .cds_hook.request_parser import get_context
 from .mydi import get_di
@@ -200,7 +200,6 @@ class BaseChain:
         Returns:
             StructuredTool: An instance of LangChain StructuredTool wrapping the chain.
         """
-        from langchain.tools import StructuredTool
 
         def _run(**kwargs):
             # Invoke the underlying runnable chain with provided kwargs
