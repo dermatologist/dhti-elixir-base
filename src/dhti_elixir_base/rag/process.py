@@ -93,7 +93,7 @@ def combine_documents(documents: list, document_separator="\n\n") -> str:
     return combined_text.strip()
 
 
-def search_vectorstore(query: str, k: int = 5) -> list:
+def search_vectorstore(query: str) -> list:
     """Search the vectorstore for the given query."""
     vectorstore = get_di("vectorstore")
-    return vectorstore.as_retriever().get_relevant_documents(query, k=k) # type: ignore
+    return vectorstore.as_retriever().get_relevant_documents(query, k=get_di("rag_k", 5))  # type: ignore

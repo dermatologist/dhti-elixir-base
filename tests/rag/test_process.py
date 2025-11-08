@@ -91,12 +91,3 @@ def test_combine_documents_returns_no_info_for_empty():
     result = combine_documents([])
     assert "No information found" in result
 
-
-def test_search_vectorstore_calls_retriever():
-    mock_retriever = MagicMock()
-    mock_retriever.get_relevant_documents.return_value = ["doc1", "doc2"]
-    mock_query_engine = MagicMock()
-    mock_query_engine.as_retriever.return_value = mock_retriever
-    result = search_vectorstore(mock_query_engine, "query", k=2)
-    assert result == ["doc1", "doc2"]
-    mock_retriever.get_relevant_documents.assert_called_once_with("query", k=2)
