@@ -1,5 +1,8 @@
 # [DHTI ELIXIR BASE](https://github.com/dermatologist/dhti)
 
+<p align="center">
+  <img src="https://github.com/dermatologist/dhti/blob/develop/notes/dhti-logo.jpg" />
+</p>
 
 [![Release](https://img.shields.io/github/v/release/dermatologist/dhti-elixir-base)](https://img.shields.io/github/v/release/dermatologist/dhti-elixir-base)
 [![Build status](https://img.shields.io/github/actions/workflow/status/dermatologist/dhti-elixir-base/pytest.yml?branch=develop)](https://github.com/dermatologist/dhti-elixir-base/actions/workflows/pytest.yml?query=branch%3Adevelop)
