@@ -64,22 +64,24 @@ def get_context(input_data):
         and hasattr(input_data, "model_dump_json")
         and callable(getattr(input_data, "model_dump_json", None))
     ):
-        input_data = remove_multiple_outer_inputs(input_data.model_dump_json())
+        input_data = remove_multiple_outer_inputs(
+            json.loads(input_data.model_dump_json())
+        )
     else:
         input_data = remove_multiple_outer_inputs(input_data)
-        
+
     context = {}
     try:
         context = input_data.get("context", {}) # type: ignore
-    except:
+    except Exception:
         pass
     try:
         order_select = get_content_string_from_order_select(input_data)
-    except:
+    except Exception:
         order_select = None
     try:
         patient_id = get_patient_id_from_request(input_data)
-    except:
+    except Exception:
         patient_id = None
     if order_select:
         context["input"] = order_select
