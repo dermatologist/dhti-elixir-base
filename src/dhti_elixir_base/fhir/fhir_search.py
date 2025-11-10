@@ -42,7 +42,7 @@ class DhtiFhirSearch:
         if not patient_id:
             raise ValueError("Patient ID is required.")
         headers = {
-            "Authorization": f"Bearer {self.access_token}",
+            "Authorization": f"Basic {self.access_token}",
             "Content-Type": "application/fhir+json",
             "Accept": "application/fhir+json",
         }
