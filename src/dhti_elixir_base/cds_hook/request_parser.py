@@ -24,21 +24,16 @@ logger.setLevel(logging.DEBUG)
 def remove_multiple_outer_inputs(input_data):
     # remove multiple outer inputs
     try:
-        while (
-            input_data.get("input")
-            and isinstance(input_data.get("input"), dict)
-            and len(input_data) == 1
-        ):
-            input_data = input_data.get("input")
-        return input_data
-    except:
+        while input_data := input_data["input"]:
+            pass
+    except Exception:
         return input_data
 
 
 # parse various cds hooks request formats
 def get_content_string_from_order_select(order_select):
     order_select = remove_multiple_outer_inputs(order_select)
-    entries = order_select.get("context", {}).get("draftOrders", {}).get("entry", [])
+    entries = order_select.get("context", {}).get("draftOrders", {}).get("entry", []) # type: ignore
     # if resourceType is CommunicationRequest, return the contentString from payload
     for entry in entries:
         resource = entry.get("resource", {})
@@ -55,15 +50,15 @@ def get_content_string_from_order_select(order_select):
 
 def get_patient_id_from_request(patient_view):
     patient_view = remove_multiple_outer_inputs(patient_view)
-    patient_id = patient_view.get("context", {}).get("patientId")
+    patient_id = patient_view.get("context", {}).get("patientId") # type: ignore
     if patient_id:
         return patient_id
     return None
 
 
 def get_context(input_data):
-    if isinstance(input_data, dict) and "input" in input_data:
-        input_data = input_data["input"]
+    input_data = json.loads(input_data) if isinstance(input_data, str) else input_data
+
     if (
         not isinstance(input_data, dict)
         and hasattr(input_data, "model_dump_json")
@@ -72,12 +67,10 @@ def get_context(input_data):
         input_data = remove_multiple_outer_inputs(input_data.model_dump_json())
     else:
         input_data = remove_multiple_outer_inputs(input_data)
+        
     context = {}
     try:
-        input_data = (
-            json.loads(input_data) if isinstance(input_data, str) else input_data
-        )
-        context = input_data.get("context", {})
+        context = input_data.get("context", {}) # type: ignore
     except:
         pass
     try:
