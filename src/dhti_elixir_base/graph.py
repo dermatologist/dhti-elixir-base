@@ -76,7 +76,7 @@ class BaseGraph:
             for agent in self.agents:
                 self.nodes.append(self.agent_node(agent))
         # We add the nodes to the workflow
-        for node, agent in zip(self.nodes, self.agents, strict=False):
+        for node, agent in zip(self.nodes, self.agents):
             self.workflow.add_node(agent.name, node)
         # We set the entry point of the workflow
         self.workflow.set_entry_point(self.entry_point)
