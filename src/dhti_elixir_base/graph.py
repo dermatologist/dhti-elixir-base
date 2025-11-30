@@ -16,13 +16,14 @@ limitations under the License.
 
 import functools
 import operator
-import re
 from collections.abc import Sequence
 from typing import Annotated, Literal, TypedDict
 
 from kink import di, inject
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langgraph.graph import END, StateGraph
+
+from .mydi import camel_to_snake
 
 """_summary_
 
@@ -43,25 +44,25 @@ class BaseGraph:
 
     def __init__(
         self,
-        agents=[],  # required
-        edges=[],  # [{"from": "agent1", "to": "agent2", "conditional": True, "router": "default"}, {"from": "agent2", "to": "agent1", "conditional": True, "router": "default"}] #required
+        agents=None,  # required
+        edges=None,  # [{"from": "agent1", "to": "agent2", "conditional": True, "router": "default"}, {"from": "agent2", "to": "agent1", "conditional": True, "router": "default"}] #required
         entry_point="",  # required agent_1
-        ends=[],  # optional
-        end_words=[],  # optional ["exit", "quit", "bye", "sorry", "final"] The words that will trigger the end of the conversation
+        ends=None,  # optional
+        end_words=None,  # optional ["exit", "quit", "bye", "sorry", "final"] The words that will trigger the end of the conversation
         agent_state=None,  # optional default AgentState above
         nodes=None,  # optional, generated
         workflow=None,  # optional, generated
         name=None,  # optional, generated
         recursion_limit=15,  # optional, default
     ):
-        self.agents = agents
-        self.edges = edges
-        self.end_words = end_words
+        self.agents = agents if agents is not None else []
+        self.edges = edges if edges is not None else []
+        self.end_words = end_words if end_words is not None else []
         self.nodes = nodes
         self.workflow = workflow
         self.entry_point = entry_point
         self.agent_state = agent_state or self.AgentState
-        self.ends = ends
+        self.ends = ends if ends is not None else []
         self.recursion_limit = recursion_limit
         self._name = name
 
@@ -104,7 +105,7 @@ class BaseGraph:
     def name(self):
         if self._name:
             return self._name
-        return re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__).lower()
+        return camel_to_snake(self.__class__.__name__)
 
     @name.setter
     def name(self, value):

@@ -1,5 +1,4 @@
 import logging
-import re
 import sys
 from abc import ABC
 from typing import Any
@@ -7,6 +6,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from . import BaseDhtiModel
+from .mydi import camel_to_snake
 
 # Set up logger
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -38,7 +38,7 @@ class BaseServer(ABC):
 
     @property
     def name(self):
-        return re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__).lower()
+        return camel_to_snake(self.__class__.__name__)
 
     def health_check(self) -> Any:
         """Health check endpoint"""

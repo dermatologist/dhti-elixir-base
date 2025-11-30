@@ -160,13 +160,15 @@ class SmartOnFhirSearch:
 
     # ---------------------- operations ---------------------
     def get_everything_for_patient(
-        self, input: dict | str = {}, fhirpath: str | None = None
+        self, input_data: dict | str | None = None, fhirpath: str | None = None
     ):
         """Fetch resources related to a patient using $everything operation.
 
         Returns JSON Bundle like DhtiFhirSearch.
         """
-        patient_id = self.get_patient_id(input)
+        if input_data is None:
+            input_data = {}
+        patient_id = self.get_patient_id(input_data)
         if not patient_id:
             raise ValueError("Patient ID is required.")
 
@@ -182,9 +184,11 @@ class SmartOnFhirSearch:
         return evaluate(data, fhirpath, {}) if fhirpath else data
 
     def get_conditions_for_patient(
-        self, input: dict | str = {}, fhirpath: str | None = None
+        self, input_data: dict | str | None = None, fhirpath: str | None = None
     ):
-        patient_id = self.get_patient_id(input)
+        if input_data is None:
+            input_data = {}
+        patient_id = self.get_patient_id(input_data)
         if not patient_id:
             raise ValueError("Patient ID is required.")
         self._ensure_token()
@@ -196,9 +200,11 @@ class SmartOnFhirSearch:
         return evaluate(data, fhirpath, {}) if fhirpath else data
 
     def get_observations_for_patient(
-        self, input: dict | str = {}, fhirpath: str | None = None
+        self, input_data: dict | str | None = None, fhirpath: str | None = None
     ):
-        patient_id = self.get_patient_id(input)
+        if input_data is None:
+            input_data = {}
+        patient_id = self.get_patient_id(input_data)
         if not patient_id:
             raise ValueError("Patient ID is required.")
         self._ensure_token()
@@ -210,9 +216,11 @@ class SmartOnFhirSearch:
         return evaluate(data, fhirpath, {}) if fhirpath else data
 
     def get_procedures_for_patient(
-        self, input: dict | str = {}, fhirpath: str | None = None
+        self, input_data: dict | str | None = None, fhirpath: str | None = None
     ):
-        patient_id = self.get_patient_id(input)
+        if input_data is None:
+            input_data = {}
+        patient_id = self.get_patient_id(input_data)
         if not patient_id:
             raise ValueError("Patient ID is required.")
         self._ensure_token()
@@ -224,9 +232,11 @@ class SmartOnFhirSearch:
         return evaluate(data, fhirpath, {}) if fhirpath else data
 
     def get_medication_requests_for_patient(
-        self, input: dict | str = {}, fhirpath: str | None = None
+        self, input_data: dict | str | None = None, fhirpath: str | None = None
     ):
-        patient_id = self.get_patient_id(input)
+        if input_data is None:
+            input_data = {}
+        patient_id = self.get_patient_id(input_data)
         if not patient_id:
             raise ValueError("Patient ID is required.")
         self._ensure_token()
@@ -238,9 +248,11 @@ class SmartOnFhirSearch:
         return evaluate(data, fhirpath, {}) if fhirpath else data
 
     def get_allergy_intolerances_for_patient(
-        self, input: dict | str = {}, fhirpath: str | None = None
+        self, input_data: dict | str | None = None, fhirpath: str | None = None
     ):
-        patient_id = self.get_patient_id(input)
+        if input_data is None:
+            input_data = {}
+        patient_id = self.get_patient_id(input_data)
         if not patient_id:
             raise ValueError("Patient ID is required.")
         self._ensure_token()
