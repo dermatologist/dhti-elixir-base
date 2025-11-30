@@ -15,12 +15,12 @@ limitations under the License.
 """
 
 import re
-from typing import List
 
 from langchain.agents import create_agent
-from pydantic import BaseModel, ConfigDict
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_mcp_adapters.tools import load_mcp_tools
+from pydantic import BaseModel, ConfigDict
+
 from .mydi import get_di
 
 
@@ -40,7 +40,7 @@ class BaseAgent:
         llm=None,
         prompt={},
         input_type: type[BaseModel] | None = None,
-        tools: List = [],
+        tools: list = [],
         mcp=None,
     ):
         self.llm = llm or get_di("function_llm")

@@ -18,9 +18,9 @@ import re
 from typing import Any
 
 from kink import inject
+from langchain_community.tools import StructuredTool
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain_community.tools import StructuredTool
 from langchain_mcp_adapters.tools import to_fastmcp
 from pydantic import BaseModel, ConfigDict
 

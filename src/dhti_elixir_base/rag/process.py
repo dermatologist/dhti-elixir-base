@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import base64
+import logging
 
 from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
 from langchain_core.document_loaders import Blob
@@ -24,7 +25,6 @@ from pydantic import Field
 
 from ..mydi import get_di
 
-import logging
 logger = logging.getLogger(__name__)
 
 

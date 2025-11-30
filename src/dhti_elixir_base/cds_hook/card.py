@@ -21,14 +21,16 @@ Example:
 
 """
 
-from typing import List, Optional, Literal
+from typing import Literal
+
 from pydantic import BaseModel
+
 
 class CDSHookCardSource(BaseModel):
     """Source of the CDS Hook Card"""
     label: str
-    url: Optional[str] = None
-    icon: Optional[str] = None
+    url: str | None = None
+    icon: str | None = None
 
 class CDSHookCardLink(BaseModel):
     """Link associated with the CDS Hook Card"""
@@ -38,7 +40,7 @@ class CDSHookCardLink(BaseModel):
 class CDSHookCard(BaseModel):
     """CDS Hook Card Model"""
     summary: str
-    detail: Optional[str] = None
-    indicator: Optional[Literal["info", "warning", "hard-stop"]] = None
-    source: Optional[CDSHookCardSource] = None
-    links: Optional[List[CDSHookCardLink]] = None
+    detail: str | None = None
+    indicator: Literal["info", "warning", "hard-stop"] | None = None
+    source: CDSHookCardSource | None = None
+    links: list[CDSHookCardLink] | None = None

@@ -17,11 +17,12 @@ limitations under the License.
 import functools
 import operator
 import re
-from typing import Annotated, Literal, Sequence, TypedDict
-from kink import inject, di
+from collections.abc import Sequence
+from typing import Annotated, Literal, TypedDict
+
+from kink import di, inject
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langgraph.graph import END, StateGraph
-
 
 """_summary_
 
@@ -74,7 +75,7 @@ class BaseGraph:
             for agent in self.agents:
                 self.nodes.append(self.agent_node(agent))
         # We add the nodes to the workflow
-        for node, agent in zip(self.nodes, self.agents):
+        for node, agent in zip(self.nodes, self.agents, strict=False):
             self.workflow.add_node(agent.name, node)
         # We set the entry point of the workflow
         self.workflow.set_entry_point(self.entry_point)
@@ -115,7 +116,7 @@ class BaseGraph:
         _result = None
         try:
             result = agent.invoke(state)
-        except ValueError as e:
+        except ValueError:
             _result = agent.invoke({"input": state})
             result = _result["input"]["messages"][0]
 
@@ -129,7 +130,7 @@ class BaseGraph:
                 result = AIMessage(
                     **result.dict(exclude={"type", "name"}), name=agent.name
                 )
-            except Exception as e:
+            except Exception:
                 result = AIMessage(content=result.content, name=agent.name)
         return {
             "messages": [result],  # Yes, this should be an array!

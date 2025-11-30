@@ -1,5 +1,4 @@
 import importlib
-import os
 
 import requests
 from fhirclient import client
@@ -7,7 +6,6 @@ from fhirclient.models.allergyintolerance import AllergyIntolerance
 from fhirclient.models.condition import Condition
 from fhirclient.models.medicationrequest import MedicationRequest
 from fhirclient.models.observation import Observation
-from fhirclient.models.patient import Patient
 from fhirclient.models.procedure import Procedure
 from fhirpathpy import evaluate
 

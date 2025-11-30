@@ -1,6 +1,6 @@
 import json
-from abc import abstractmethod
-from typing import Any, List, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any
 
 import requests
 from langchain_core.language_models.llms import LLM
@@ -9,23 +9,23 @@ from pydantic import Field
 
 class BaseLLM(LLM):
 
-    base_url: Optional[str] = Field(
+    base_url: str | None = Field(
         None, alias="base_url"
     )  #! Alias is important when inheriting from LLM
-    model: Optional[str] = Field(None, alias="model")
-    api_key: Optional[str] = Field(None, alias="api_key")
+    model: str | None = Field(None, alias="model")
+    api_key: str | None = Field(None, alias="api_key")
     params: Mapping[str, Any] = Field(default_factory=dict, alias="params")
     timeout: int = 60
-    backend: Optional[str] = "dhti"
-    temperature: Optional[float] = 0.1
-    top_p: Optional[float] = 0.8
-    top_k: Optional[int] = 40
-    n_batch: Optional[int] = 8
-    n_threads: Optional[int] = 4
-    n_predict: Optional[int] = 256
-    max_output_tokens: Optional[int] = 512
-    repeat_last_n: Optional[int] = 64
-    repeat_penalty: Optional[float] = 1.18
+    backend: str | None = "dhti"
+    temperature: float | None = 0.1
+    top_p: float | None = 0.8
+    top_k: int | None = 40
+    n_batch: int | None = 8
+    n_threads: int | None = 4
+    n_predict: int | None = 256
+    max_output_tokens: int | None = 512
+    repeat_last_n: int | None = 64
+    repeat_penalty: float | None = 1.18
 
     def __init__(self, base_url: str, model: str, **kwargs):
         super().__init__(**kwargs)
@@ -72,8 +72,8 @@ class BaseLLM(LLM):
     def _call(
         self,
         prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[Any] = None,
+        stop: list[str] | None = None,
+        run_manager: Any | None = None,
         **kwargs,
     ) -> str:
         """

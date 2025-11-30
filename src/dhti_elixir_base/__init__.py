@@ -2,13 +2,13 @@ import sys
 
 from .agent import BaseAgent
 from .chain import BaseChain
+from .embedding import BaseEmbedding
 from .graph import BaseGraph
 from .llm import BaseLLM
-from .embedding import BaseEmbedding
 from .model import BaseDhtiModel
+from .mydi import get_di
 from .server import BaseServer
 from .space import BaseSpace
-from .mydi import get_di
 
 if sys.version_info[:2] >= (3, 8):
     # TODO: Import directly (no need for conditional) when `python_requires = >= 3.8`
@@ -28,10 +28,10 @@ finally:
 __all__ = [
     "BaseAgent",
     "BaseChain",
+    "BaseDhtiModel",
+    "BaseEmbedding",
     "BaseGraph",
     "BaseLLM",
-    "BaseEmbedding",
-    "BaseDhtiModel",
     "BaseServer",
     "BaseSpace",
     "get_di",

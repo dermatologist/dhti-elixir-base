@@ -1,9 +1,5 @@
 import base64
-import io
-import zipfile
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from src.dhti_elixir_base.rag.process import (
     FileProcessingRequest,

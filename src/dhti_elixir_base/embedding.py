@@ -1,7 +1,8 @@
-from typing import List
-import requests
 import json
+
+import requests
 from langchain_core.embeddings import Embeddings
+
 
 class BaseEmbedding(Embeddings):
     """Base class for DHTI embeddings."""
@@ -15,16 +16,16 @@ class BaseEmbedding(Embeddings):
         self.model = model
         self.api_key = api_key
 
-    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
         """Embed a list of documents."""
         return self._get_embeddings(texts)
 
-    def embed_query(self, text: str) -> List[float]:
+    def embed_query(self, text: str) -> list[float]:
         """Embed a single query."""
         embeddings = self._get_embeddings([text])
         return embeddings[0]
 
-    def _get_embeddings(self, texts: List[str]) -> List[List[float]]:
+    def _get_embeddings(self, texts: list[str]) -> list[list[float]]:
         """Helper method to get embeddings for a list of texts."""
         headers = {
             "Content-Type": "application/json",
