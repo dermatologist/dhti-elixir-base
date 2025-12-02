@@ -1,4 +1,3 @@
-import pytest
 from src.dhti_elixir_base.cds_hook.generate_cards import add_card
 
 

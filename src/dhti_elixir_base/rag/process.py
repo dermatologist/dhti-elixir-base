@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import base64
+import logging
 
 from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
 from langchain_core.document_loaders import Blob
@@ -24,7 +25,6 @@ from pydantic import Field
 
 from ..mydi import get_di
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -49,9 +49,9 @@ def process_file(request: FileProcessingRequest) -> str:
     content = base64.b64decode(request.file.encode("utf-8"))
     blob = Blob(data=content)
     documents = list(PDFMinerParser().lazy_parse(blob))
-    pages = ""
-    for doc in documents:
-        pages += doc.page_content
+    # Use list and join for O(n) instead of repeated string concatenation O(n²)
+    page_contents = [doc.page_content for doc in documents]
+    pages = "".join(page_contents)
     docs = get_di("text_splitter").create_documents([pages]) # type: ignore
     metadata = {"filename": request.filename, "year": request.year}
     _docs = []
@@ -68,19 +68,18 @@ def process_file(request: FileProcessingRequest) -> str:
 
 def combine_documents(documents: list, document_separator="\n\n") -> str:
     """Combine documents into a single string."""
-    combined_text = ""
+    # Use list and join for O(n) instead of repeated string concatenation O(n²)
+    parts = []
     DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}\n")
     for document in documents:
         filename = document.metadata.get("filename", "")
         year = document.metadata.get("year", 0)
-        if filename and year:
-            current_separator = f"[{filename} ({year})]\n\n"
-        else:
-            current_separator = document_separator
-        combined_text += (
+        current_separator = f"[{filename} ({year})]\n\n" if filename and year else document_separator
+        parts.append(
             DEFAULT_DOCUMENT_PROMPT.format(page_content=document.page_content)
             + current_separator
         )
+    combined_text = "".join(parts)
     if len(combined_text) < 3:
         return "No information found. The vectorstore may still be indexing. Please try again later."
     return combined_text.strip()

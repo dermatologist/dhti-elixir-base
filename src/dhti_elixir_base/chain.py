@@ -14,19 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import re
 from typing import Any
 
 from kink import inject
+from langchain_community.tools import StructuredTool
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain_community.tools import StructuredTool
 from langchain_mcp_adapters.tools import to_fastmcp
 from pydantic import BaseModel, ConfigDict
 
 from .cds_hook.generate_cards import add_card
 from .cds_hook.request_parser import get_context
-from .mydi import get_di
+from .mydi import camel_to_snake, get_di
 
 
 @inject
@@ -45,7 +44,7 @@ class BaseChain:
 
     def __init__(
         self,
-        prompt={},
+        prompt=None,
         name=None,
         description=None,
         main_llm=None,
@@ -116,7 +115,7 @@ class BaseChain:
     @property
     def name(self):
         if self._name is None:
-            return re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__).lower()
+            return camel_to_snake(self.__class__.__name__)
 
     @property
     def description(self):

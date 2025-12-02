@@ -14,14 +14,16 @@ Example:
 }
 """
 
+from typing import Any
+
 from pydantic import BaseModel, HttpUrl
-from typing import Optional, Any
+
 
 class CDSHookRequest(BaseModel):
     """CDS Hook Request Model"""
-    hookInstance: Optional[str] = None
-    fhirServer: Optional[HttpUrl] = None
-    fhirAuthorization: Optional[Any] = None
-    hook: Optional[str] = None  # e.g., "patient-view", "order-select", etc.
-    context: Optional[Any] = None
-    prefetch: Optional[Any] = None
+    hookInstance: str | None = None
+    fhirServer: HttpUrl | None = None
+    fhirAuthorization: Any | None = None
+    hook: str | None = None  # e.g., "patient-view", "order-select", etc.
+    context: Any | None = None
+    prefetch: Any | None = None

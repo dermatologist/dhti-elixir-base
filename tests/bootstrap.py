@@ -1,7 +1,8 @@
-from kink import di
 from dotenv import load_dotenv
+from kink import di
 from langchain_core.language_models.fake import FakeListLLM
 from langchain_core.prompts import PromptTemplate
+
 
 def bootstrap():
     load_dotenv()
