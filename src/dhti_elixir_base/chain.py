@@ -72,7 +72,7 @@ class BaseChain:
         Example usage of an agent in the chain:
         BaseAgent takes llm, prompt, tools as input. If tools is not provided, it loads tools from MCP. default llm is function_llm from DI.
         Default prompt is "You are a helpful assistant."
-        self.my_agent = BaseAgent().get_agent_response() # in __init__
+        self.my_agent = BaseAgent().get_agent_response # in __init__
         _chain = (
             RunnablePassthrough()
             | get_string_message_to_agent
