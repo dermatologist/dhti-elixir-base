@@ -13,8 +13,35 @@ class BaseChatLLM(BaseChatModel):
     """
     BaseChatLLM extends BaseChatModel to support chat-based LLM invocations.
     
-    This class handles message-based interactions (HumanMessage, AIMessage, etc.)
+    This class handles message-based interactions (HumanMessage, AIMessage, SystemMessage)
     instead of plain string prompts, making it suitable for conversational AI applications.
+    
+    Args:
+        base_url: The API endpoint URL for the chat model
+        model: The name/identifier of the model to use
+        api_key: Authentication key for API access
+        temperature: Controls randomness in output (0.0-1.0, default: 0.1)
+        max_output_tokens: Maximum tokens in the response (default: 512)
+        top_p: Nucleus sampling parameter (default: 0.8)
+        top_k: Top-k sampling parameter (default: 40)
+        timeout: Request timeout in seconds (default: 60)
+    
+    Example:
+        >>> from dhti_elixir_base import BaseChatLLM
+        >>> from langchain_core.messages import HumanMessage, SystemMessage
+        >>> 
+        >>> chatllm = BaseChatLLM(
+        ...     base_url="https://api.example.com/chat",
+        ...     model="gpt-4",
+        ...     api_key="your-api-key",
+        ...     temperature=0.7
+        ... )
+        >>> 
+        >>> messages = [
+        ...     SystemMessage(content="You are a helpful assistant."),
+        ...     HumanMessage(content="What is the weather like?")
+        ... ]
+        >>> response = chatllm.invoke(messages)
     """
 
     base_url: str | None = Field(
