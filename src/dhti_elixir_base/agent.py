@@ -78,9 +78,14 @@ class BaseAgent:
     def get_agent_response(self, context: str) -> str:
         if self.llm is None:
             raise ValueError("llm must not be None when initializing the agent.")
+        result = "Agent encountered an error while processing your request."
         try:
-            tools = asyncio.run(self.client.get_tools())
-            _agent = create_agent(model=self.llm, tools=tools, system_prompt=self.prompt)
+            # if self.tools is an empty list, load tools from MCP
+            if not self.tools:
+                _tools = asyncio.run(self.client.get_tools())
+            else:
+                _tools = self.tools
+            _agent = create_agent(model=self.llm, tools=_tools, system_prompt=self.prompt)
 
             result = asyncio.run(_agent.ainvoke(
                 {"messages": [{"role": "user", "content": context}]}
@@ -89,7 +94,7 @@ class BaseAgent:
             return str(ai_message)
         except Exception as e:
             logger.error(f"Error in agent processing: {e}")
-            return "Agent encountered an error while processing your request."
+            return str(result)
 
     async def get_langgraph_mcp_agent(self):
         """Get the agent executor for async execution."""

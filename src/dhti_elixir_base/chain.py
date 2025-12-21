@@ -67,8 +67,21 @@ class BaseChain:
 
     @property
     def chain(self):
-        """Get the runnable chain."""
-        """ RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch """
+        """Get the runnable chain.
+
+        Example usage of an agent in the chain:
+        BaseAgent takes llm, prompt, tools as input. If tools is not provided, it loads tools from MCP. default llm is function_llm from DI.
+        Default prompt is "You are a helpful assistant."
+        self.my_agent = BaseAgent().get_agent_response() # in __init__
+        _chain = (
+            RunnablePassthrough()
+            | get_string_message_to_agent
+            | self.my_agent
+            | StrOutputParser()
+        )
+
+        RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch
+        """
         if self.prompt is None:
             raise ValueError("Prompt must not be None when building the chain.")
         _sequential = (
