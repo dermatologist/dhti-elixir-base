@@ -1,6 +1,6 @@
 import json
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, Sequence
 
 import requests
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -12,10 +12,10 @@ from pydantic import Field
 class BaseChatLLM(BaseChatModel):
     """
     BaseChatLLM extends BaseChatModel to support chat-based LLM invocations.
-    
+
     This class handles message-based interactions (HumanMessage, AIMessage, SystemMessage)
     instead of plain string prompts, making it suitable for conversational AI applications.
-    
+
     Args:
         base_url: The API endpoint URL for the chat model
         model: The name/identifier of the model to use
@@ -25,18 +25,18 @@ class BaseChatLLM(BaseChatModel):
         top_p: Nucleus sampling parameter (default: 0.8)
         top_k: Top-k sampling parameter (default: 40)
         timeout: Request timeout in seconds (default: 60)
-    
+
     Example:
         >>> from dhti_elixir_base import BaseChatLLM
         >>> from langchain_core.messages import HumanMessage, SystemMessage
-        >>> 
+        >>>
         >>> chatllm = BaseChatLLM(
         ...     base_url="https://api.example.com/chat",
         ...     model="gpt-4",
         ...     api_key="your-api-key",
         ...     temperature=0.7
         ... )
-        >>> 
+        >>>
         >>> messages = [
         ...     SystemMessage(content="You are a helpful assistant."),
         ...     HumanMessage(content="What is the weather like?")
@@ -99,10 +99,10 @@ class BaseChatLLM(BaseChatModel):
     def _prepare_payload(self, messages: list[BaseMessage]) -> dict:
         """
         Prepare the API payload from a list of messages.
-        
+
         Args:
             messages: List of BaseMessage objects (HumanMessage, AIMessage, SystemMessage, etc.)
-            
+
         Returns:
             Dictionary payload for the API request
         """
@@ -120,12 +120,12 @@ class BaseChatLLM(BaseChatModel):
                 role = role_map.get(message.type, "user")
             else:
                 role = "user"
-            
+
             api_messages.append({
                 "role": role,
                 "content": message.content
             })
-        
+
         return {
             "model": self.model,
             "options": self._get_model_default_parameters,
@@ -141,13 +141,13 @@ class BaseChatLLM(BaseChatModel):
     ) -> ChatResult:
         """
         Generate a chat response from a list of messages.
-        
+
         Args:
             messages: List of BaseMessage objects representing the conversation history
             stop: Optional list of strings to stop generation when encountered
             run_manager: Optional run manager for callbacks and tracing
             **kwargs: Additional keyword arguments
-            
+
         Returns:
             ChatResult containing the generated response
         """
@@ -167,7 +167,7 @@ class BaseChatLLM(BaseChatModel):
             )
 
         data = resp.json()
-        
+
         # Parse the response to extract the assistant's message
         message_content = None
         if "choices" in data and len(data["choices"]) > 0:
@@ -181,14 +181,32 @@ class BaseChatLLM(BaseChatModel):
                 message_content = choice["message"].get("content")
             elif "text" in choice:
                 message_content = choice.get("text")
-        
+
         # If we couldn't extract content, use raw JSON as fallback
         if message_content is None:
             message_content = json.dumps(data)
-        
+
         # Create an AIMessage with the response
         message = AIMessage(content=message_content)
-        
+
         # Wrap in ChatGeneration and ChatResult
         generation = ChatGeneration(message=message)
         return ChatResult(generations=[generation])
+
+    def bind_tools(
+        self, tools: Sequence[Any], tool_choice: Any = None, **kwargs
+    ) -> "BaseChatLLM":
+        """
+        Bind external tools or functions to the LLM instance.
+
+        Args:
+            tools: Sequence of tool objects, types, or callables to be used by the LLM.
+            tool_choice: Optional tool selection logic or identifier.
+            **kwargs: Additional keyword arguments for tool binding.
+        Returns:
+            self (to allow chaining)
+        """
+        if not hasattr(self, "_bound_tools"):
+            self._bound_tools = []
+        self._bound_tools.extend(tools)
+        return self

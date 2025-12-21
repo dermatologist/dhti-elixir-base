@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 from typing import Any
-
+import logging
 from kink import inject
 from langchain_community.tools import StructuredTool
 from langchain_core.output_parsers import StrOutputParser
@@ -27,6 +27,8 @@ from .cds_hook.generate_cards import add_card
 from .cds_hook.request_parser import get_context
 from .mydi import camel_to_snake, get_di
 
+
+logger = logging.getLogger(__name__)
 
 @inject
 class BaseChain:
@@ -223,3 +225,7 @@ class BaseChain:
         )
         _fast_mcp.title = self.name or self.__class__.__name__
         return _fast_mcp
+
+    def print_log(self, message):
+        logger.info(message)
+        return message
