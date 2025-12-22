@@ -18,7 +18,7 @@ classifiers = [
 ]
 dependencies = [
   "langchain-core",
-  "langchain>=1.0.0,<1.1.0",
+  "langchain>=1.0.0,<1.3.0",
   "kink",
   "python-dotenv",
   "httpx",
