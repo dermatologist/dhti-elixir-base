@@ -2,6 +2,7 @@ from importlib.metadata import PackageNotFoundError, version
 
 from .agent import BaseAgent
 from .chain import BaseChain
+from .chatllm import BaseChatLLM
 from .embedding import BaseEmbedding
 from .graph import BaseGraph
 from .llm import BaseLLM
@@ -22,6 +23,7 @@ finally:
 __all__ = [
     "BaseAgent",
     "BaseChain",
+    "BaseChatLLM",
     "BaseDhtiModel",
     "BaseEmbedding",
     "BaseGraph",
