@@ -1,9 +1,8 @@
-import sys
 import logging
+import sys
 from abc import ABC, abstractmethod
-from typing import Any
 from time import perf_counter
-
+from typing import Any
 
 # Set up logger
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)

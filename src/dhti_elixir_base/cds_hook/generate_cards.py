@@ -17,15 +17,17 @@ limitations under the License.
 from ..cds_hook.card import CDSHookCard
 
 
-def add_card(output: str | CDSHookCard, input=[]) -> dict:
+def add_card(output: str | CDSHookCard, cards: list | None = None) -> dict:
     """Add a CDSHookCard to the output list."""
+    if cards is None:
+        cards = []
     if isinstance(output, CDSHookCard):
-        input.append(output)
+        cards.append(output)
     elif isinstance(output, str):
-        input.append(CDSHookCard(summary=output))
+        cards.append(CDSHookCard(summary=output))
     else:
         raise ValueError("Output must be a string or CDSHookCard")
-    return {"cards": input}
+    return {"cards": cards}
 
 def get_card(output: str | CDSHookCard) -> dict:
     """Get a CDSHookCard as a dictionary."""

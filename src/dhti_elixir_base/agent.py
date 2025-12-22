@@ -14,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import re
-from typing import List
-
 from langchain.agents import create_agent
-from pydantic import BaseModel, ConfigDict
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_mcp_adapters.tools import load_mcp_tools
-from .mydi import get_di
+from pydantic import BaseModel, ConfigDict
+import asyncio
+import logging
+from .mydi import camel_to_snake, get_di
 
 
+logger = logging.getLogger(__name__)
 # from langchain_core.prompts import MessagesPlaceholder
 # from langchain.memory.buffer import ConversationBufferMemory
 class BaseAgent:
@@ -38,24 +38,26 @@ class BaseAgent:
         name=None,
         description=None,
         llm=None,
-        prompt={},
+        prompt=None,
         input_type: type[BaseModel] | None = None,
-        tools: List = [],
-        mcp=None,
+        tools: list | None = None,
+        mcp={
+            "mcpx": {
+                "transport": "http",
+                "url": "http://mcpx:9000/mcp",
+            }
+        },
     ):
         self.llm = llm or get_di("function_llm")
         self.prompt = prompt or get_di("agent_prompt") or "You are a helpful assistant."
-        self.tools = tools
-        self._name = (
-            name or re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__).lower()
-        )
+        self.tools = tools if tools is not None else []
+        self._name = name or camel_to_snake(self.__class__.__name__)
         self._description = description or f"Agent for {self._name}"
         if input_type is None:
             self.input_type = self.AgentInput
         else:
             self.input_type = input_type
-        if mcp is not None:
-            self.client = MultiServerMCPClient(mcp)
+        self.client = MultiServerMCPClient(mcp)
 
     @property
     def name(self):
@@ -73,15 +75,26 @@ class BaseAgent:
     def description(self, value):
         self._description = value
 
-    def get_agent(self):
+    def get_agent_response(self, context: str) -> str:
         if self.llm is None:
             raise ValueError("llm must not be None when initializing the agent.")
-        return create_agent(
-            model=self.llm,
-            tools=self.tools,
-            system_prompt=self.prompt,
-        )
+        result = "Agent encountered an error while processing your request."
+        try:
+            # if self.tools is an empty list, load tools from MCP
+            if not self.tools:
+                _tools = asyncio.run(self.client.get_tools())
+            else:
+                _tools = self.tools
+            _agent = create_agent(model=self.llm, tools=_tools, system_prompt=self.prompt)
 
+            result = asyncio.run(_agent.ainvoke(
+                {"messages": [{"role": "user", "content": context}]}
+            ))
+            ai_message = result["messages"][-1].content
+            return str(ai_message)
+        except Exception as e:
+            logger.error(f"Error in agent processing: {e}")
+            return str(result)
 
     async def get_langgraph_mcp_agent(self):
         """Get the agent executor for async execution."""

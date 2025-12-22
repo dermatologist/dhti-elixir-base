@@ -17,17 +17,18 @@ Example:
 
 """
 
-from typing import List, Optional
+
 from pydantic import BaseModel
+
 
 class CDSHookService(BaseModel):
     """CDS Hook Service Model"""
     hook: str
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     id: str
-    prefetch: Optional[dict] = None
+    prefetch: dict | None = None
 
 class CDSHookServicesResponse(BaseModel):
     """Response model containing a list of CDS Hook Services"""
-    services: List[CDSHookService]
+    services: list[CDSHookService]

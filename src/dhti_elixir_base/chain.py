@@ -14,20 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import re
 from typing import Any
-
+import logging
 from kink import inject
+from langchain_community.tools import StructuredTool
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain_community.tools import StructuredTool
 from langchain_mcp_adapters.tools import to_fastmcp
 from pydantic import BaseModel, ConfigDict
 
 from .cds_hook.generate_cards import add_card
 from .cds_hook.request_parser import get_context
-from .mydi import get_di
+from .mydi import camel_to_snake, get_di
 
+
+logger = logging.getLogger(__name__)
 
 @inject
 class BaseChain:
@@ -45,7 +46,7 @@ class BaseChain:
 
     def __init__(
         self,
-        prompt={},
+        prompt=None,
         name=None,
         description=None,
         main_llm=None,
@@ -66,8 +67,21 @@ class BaseChain:
 
     @property
     def chain(self):
-        """Get the runnable chain."""
-        """ RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch """
+        """Get the runnable chain.
+
+        Example usage of an agent in the chain:
+        BaseAgent takes llm, prompt, tools as input. If tools is not provided, it loads tools from MCP. default llm is function_llm from DI.
+        Default prompt is "You are a helpful assistant."
+        self.my_agent = BaseAgent().get_agent_response # in __init__
+        _chain = (
+            RunnablePassthrough()
+            | get_string_message_to_agent
+            | self.my_agent
+            | StrOutputParser()
+        )
+
+        RunnableParallel / RunnablePassthrough / RunnableSequential / RunnableLambda / RunnableMap / RunnableBranch
+        """
         if self.prompt is None:
             raise ValueError("Prompt must not be None when building the chain.")
         _sequential = (
@@ -116,7 +130,7 @@ class BaseChain:
     @property
     def name(self):
         if self._name is None:
-            return re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__).lower()
+            return camel_to_snake(self.__class__.__name__)
 
     @property
     def description(self):
@@ -224,3 +238,7 @@ class BaseChain:
         )
         _fast_mcp.title = self.name or self.__class__.__name__
         return _fast_mcp
+
+    def print_log(self, message):
+        logger.info(message)
+        return message

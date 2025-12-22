@@ -2,10 +2,15 @@
 
 ## [Unreleased](https://github.com/dermatologist/dhti-elixir-base/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.1.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.2.0...HEAD)
 
 **Merged pull requests:**
 
+- Add BaseChatLLM for message-based chat model invocations [\#61](https://github.com/dermatologist/dhti-elixir-base/pull/61) ([Copilot](https://github.com/apps/copilot-swe-agent))
+- \[GitHub Dependents Info\] Updated markdown file [\#60](https://github.com/dermatologist/dhti-elixir-base/pull/60) ([github-actions[bot]](https://github.com/apps/github-actions))
+- chore\(deps\): Bump nvuillam/github-dependents-info from 1.6.3 to 2.0.2 [\#59](https://github.com/dermatologist/dhti-elixir-base/pull/59) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore\(deps\): Bump peter-evans/create-pull-request from 7 to 8 [\#58](https://github.com/dermatologist/dhti-elixir-base/pull/58) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fix performance issues: mutable defaults, O\(n²\) string concat, regex recompilation [\#56](https://github.com/dermatologist/dhti-elixir-base/pull/56) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - Feature/fix fhir 1 [\#54](https://github.com/dermatologist/dhti-elixir-base/pull/54) ([dermatologist](https://github.com/dermatologist))
 - Feature/fix chain 1 [\#53](https://github.com/dermatologist/dhti-elixir-base/pull/53) ([dermatologist](https://github.com/dermatologist))
 - Feature/rag 1 [\#52](https://github.com/dermatologist/dhti-elixir-base/pull/52) ([dermatologist](https://github.com/dermatologist))
@@ -22,6 +27,10 @@
 - Feature/cds hooks 1 [\#41](https://github.com/dermatologist/dhti-elixir-base/pull/41) ([dermatologist](https://github.com/dermatologist))
 - Feature/uv build 1 [\#40](https://github.com/dermatologist/dhti-elixir-base/pull/40) ([dermatologist](https://github.com/dermatologist))
 - Feature/mcp 1 [\#39](https://github.com/dermatologist/dhti-elixir-base/pull/39) ([dermatologist](https://github.com/dermatologist))
+
+## [v1.2.0](https://github.com/dermatologist/dhti-elixir-base/tree/v1.2.0) (2025-11-10)
+
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.1.0...v1.2.0)
 
 ## [v1.1.0](https://github.com/dermatologist/dhti-elixir-base/tree/v1.1.0) (2025-11-08)
 

@@ -1,5 +1,7 @@
 import pytest
+
 from src.dhti_elixir_base.cds_hook.request_parser import get_context
+
 
 @pytest.fixture(scope="session")
 def inputs():
