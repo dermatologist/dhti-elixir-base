@@ -75,6 +75,15 @@ class BaseAgent:
     def description(self, value):
         self._description = value
 
+    def has_tool(self) -> bool:
+        """Check if the agent has any tools."""
+        try:
+            _tools = asyncio.run(self.client.get_tools())
+            return bool(_tools)
+        except Exception as e:
+            logger.error(f"Error checking tools: {e}")
+            return False
+
     def get_agent_response(self, context: str) -> str:
         if self.llm is None:
             raise ValueError("llm must not be None when initializing the agent.")
