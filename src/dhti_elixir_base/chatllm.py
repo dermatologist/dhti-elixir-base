@@ -27,26 +27,26 @@ class BaseChatLLM(BaseChatModel):
         timeout: Request timeout in seconds (default: 60)
 
     Example:
-        >>> from dhti_elixir_base import BaseChatLLM
-        >>> from langchain_core.messages import HumanMessage, SystemMessage
-        >>>
-        >>> chatllm = BaseChatLLM(
-        ...     base_url="https://api.example.com/chat",
-        ...     model="gpt-4",
-        ...     api_key="your-api-key",
-        ...     temperature=0.7
-        ... )
-        >>>
-        >>> messages = [
-        ...     SystemMessage(content="You are a helpful assistant."),
-        ...     HumanMessage(content="What is the weather like?")
-        ... ]
-        >>> response = chatllm.invoke(messages)
+        ```python
+        from dhti_elixir_base import BaseChatLLM
+        from langchain_core.messages import HumanMessage, SystemMessage
+
+        chatllm = BaseChatLLM(
+            base_url="https://api.example.com/chat",
+            model="gpt-4",
+            api_key="your-api-key",
+            temperature=0.7
+        )
+
+        messages = [
+            SystemMessage(content="You are a helpful assistant."),
+            HumanMessage(content="What is the weather like?")
+        ]
+        response = chatllm.invoke(messages)
+        ```
     """
 
-    base_url: str | None = Field(
-        None, alias="base_url"
-    )
+    base_url: str | None = Field(None, alias="base_url")
     model: str | None = Field(None, alias="model")
     api_key: str | None = Field(None, alias="api_key")
     params: Mapping[str, Any] = Field(default_factory=dict, alias="params")
@@ -121,10 +121,7 @@ class BaseChatLLM(BaseChatModel):
             else:
                 role = "user"
 
-            api_messages.append({
-                "role": role,
-                "content": message.content
-            })
+            api_messages.append({"role": role, "content": message.content})
 
         return {
             "model": self.model,
