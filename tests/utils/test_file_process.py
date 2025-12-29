@@ -15,18 +15,18 @@ def test_file_processing_request_valid():
 def test_file_processing_request_missing_file():
     # Missing 'file' field should raise ValidationError
     with pytest.raises(ValidationError):
-        FileProcessingRequest(prompt="Test prompt")
+        FileProcessingRequest(prompt="Test prompt") # type: ignore
 
 
 def test_file_processing_request_missing_prompt():
     # Missing 'prompt' field should raise ValidationError
     with pytest.raises(ValidationError):
-        FileProcessingRequest(file="dGVzdA==")
+        FileProcessingRequest(file="dGVzdA==") # type: ignore
 
 
 def test_file_processing_request_wrong_type():
     # Non-string types for fields should raise ValidationError
     with pytest.raises(ValidationError):
-        FileProcessingRequest(file=123, prompt="Test prompt")
+        FileProcessingRequest(file=123, prompt="Test prompt") # type: ignore
     with pytest.raises(ValidationError):
-        FileProcessingRequest(file="dGVzdA==", prompt=456)
+        FileProcessingRequest(file="dGVzdA==", prompt=456) # type: ignore

@@ -26,7 +26,7 @@ def test_image_prompt_structure():
     # The first message should be a SystemMessagePromptTemplate with the correct template
     system_msg = tpl.messages[0]
     assert hasattr(system_msg, "prompt")
-    assert system_msg.prompt.template == "{system_prompt}"
+    assert system_msg.prompt.template == "{system_prompt}" # type: ignore
 
     # The second message should be a HumanMessagePromptTemplate
     human = tpl.messages[1]
