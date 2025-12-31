@@ -33,6 +33,7 @@ dependencies = [
   "mcp",
   "fastapi",
   "pdfminer.six",
+  "parlant>=3.0.0,<4.0.0",
 ]
 description = "DHTI Elixir Base"
 dynamic = ["version"]
