@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import asyncio
 import logging
 from typing import Any
 
@@ -22,18 +21,11 @@ from parlant.sdk import (
     Agent,
     AgentId,
     AgentStore,
-    Application,
     Container,
-    Guideline,
     GuidelineId,
     GuidelineStore,
-    Journey,
     JourneyId,
-    JourneyPayload,
-    JourneyState,
     JourneyStore,
-    JourneyTransition,
-    Server,
     Session,
     SessionId,
     SessionStore,
@@ -42,7 +34,6 @@ from parlant.sdk import (
 from pydantic import BaseModel, ConfigDict
 
 from .agent import BaseAgent
-from .mydi import get_di
 
 logger = logging.getLogger(__name__)
 
@@ -278,7 +269,6 @@ class ParlantAgent(BaseAgent):
             # Start Parlant
             async with start_parlant(params) as container:
                 self._container = container
-                server = container[Server]
 
                 # Create or get agent
                 agent_store = container[AgentStore]
@@ -310,8 +300,8 @@ class ParlantAgent(BaseAgent):
                 self._initialized = True
                 logger.info(f"Parlant agent initialized: {agent_name}")
 
-        except Exception as e:
-            logger.error(f"Error initializing Parlant agent: {e}")
+        except Exception:
+            logger.exception("Error initializing Parlant agent")
             raise
 
     async def _setup_guidelines(self, container: Container) -> None:
@@ -379,10 +369,9 @@ class ParlantAgent(BaseAgent):
             # Note: Full async Parlant initialization is available via _get_agent_response_async
             # but for simplicity and compatibility with existing patterns, we use a
             # simplified synchronous approach here
-            result = self._process_with_guidelines_sync(context)
-            return result
-        except Exception as e:
-            logger.error(f"Error in Parlant agent processing: {e}")
+            return self._process_with_guidelines_sync(context)
+        except Exception:
+            logger.exception("Error in Parlant agent processing")
             return "I apologize, but I encountered an error processing your request. Please try again or contact support if the issue persists."
 
     async def _get_agent_response_async(self, context: str) -> str:
@@ -411,7 +400,7 @@ class ParlantAgent(BaseAgent):
             customer_id = CustomerId("default_customer")
             session_id = SessionId(f"session_{datetime.now().timestamp()}")
 
-            session = await session_store.create(
+            await session_store.create(
                 id=session_id,
                 customer_id=customer_id,
                 agent_id=self._agent.id,
@@ -421,12 +410,10 @@ class ParlantAgent(BaseAgent):
             # Process the message
             # Note: Actual message processing would use Parlant's
             # full interaction pipeline
-            response = await self._process_with_guidelines(context)
+            return await self._process_with_guidelines(context)
 
-            return response
-
-        except Exception as e:
-            logger.error(f"Error in async agent response: {e}")
+        except Exception:
+            logger.exception("Error in async agent response")
             raise
 
     def _process_with_guidelines_sync(self, context: str) -> str:
