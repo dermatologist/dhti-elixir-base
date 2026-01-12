@@ -2,10 +2,15 @@
 
 ## [Unreleased](https://github.com/dermatologist/dhti-elixir-base/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.3.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.3.1...HEAD)
+
+**Closed issues:**
+
+- Feature request: Add support for parlant agents [\#65](https://github.com/dermatologist/dhti-elixir-base/issues/65)
 
 **Merged pull requests:**
 
+- Add Parlant agent implementation for healthcare domain [\#66](https://github.com/dermatologist/dhti-elixir-base/pull/66) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - feat: Add has\_tool method to check for agent tools availability [\#63](https://github.com/dermatologist/dhti-elixir-base/pull/63) ([dermatologist](https://github.com/dermatologist))
 - Add BaseChatLLM for message-based chat model invocations [\#61](https://github.com/dermatologist/dhti-elixir-base/pull/61) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - \[GitHub Dependents Info\] Updated markdown file [\#60](https://github.com/dermatologist/dhti-elixir-base/pull/60) ([github-actions[bot]](https://github.com/apps/github-actions))
@@ -28,6 +33,10 @@
 - Feature/cds hooks 1 [\#41](https://github.com/dermatologist/dhti-elixir-base/pull/41) ([dermatologist](https://github.com/dermatologist))
 - Feature/uv build 1 [\#40](https://github.com/dermatologist/dhti-elixir-base/pull/40) ([dermatologist](https://github.com/dermatologist))
 - Feature/mcp 1 [\#39](https://github.com/dermatologist/dhti-elixir-base/pull/39) ([dermatologist](https://github.com/dermatologist))
+
+## [v1.3.1](https://github.com/dermatologist/dhti-elixir-base/tree/v1.3.1) (2025-12-28)
+
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.3.0...v1.3.1)
 
 ## [v1.3.0](https://github.com/dermatologist/dhti-elixir-base/tree/v1.3.0) (2025-12-22)
 
