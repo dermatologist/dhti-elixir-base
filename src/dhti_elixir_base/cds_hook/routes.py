@@ -6,6 +6,7 @@ from ..mydi import get_di
 
 def add_services(app: FastAPI, path: str = "/langserve/dhti_elixir_template"):
     elixir_name = path.split("/")[-1]
+
     @app.get(f"{path}/cds-services")
     async def cds_service():
         return (
@@ -48,9 +49,11 @@ def add_invokes(app: FastAPI, path: str = "/langserve/dhti_elixir_template"):
     ):
         client = TestClient(app)
         response = client.post(f"{path}/invoke", json=_add_inputs(payload))
-        return response.json()["output"]
+        data = response.json()
+        return data["output"] if "output" in data else data
 
-def _add_inputs(payload:dict):
+
+def _add_inputs(payload: dict):
     _input = {}
     _input["input"] = {}
     _input["input"]["input"] = payload
