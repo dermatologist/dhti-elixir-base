@@ -2,14 +2,12 @@
 
 ## [Unreleased](https://github.com/dermatologist/dhti-elixir-base/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.3.1...HEAD)
-
-**Closed issues:**
-
-- Feature request: Add support for parlant agents [\#65](https://github.com/dermatologist/dhti-elixir-base/issues/65)
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.4.0...HEAD)
 
 **Merged pull requests:**
 
+- fix\(routes\): Improve response handling in invoke\_chain function [\#73](https://github.com/dermatologist/dhti-elixir-base/pull/73) ([dermatologist](https://github.com/dermatologist))
+- chore\(deps\): Bump pyasn1 from 0.6.1 to 0.6.2 [\#69](https://github.com/dermatologist/dhti-elixir-base/pull/69) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Add Parlant agent implementation for healthcare domain [\#66](https://github.com/dermatologist/dhti-elixir-base/pull/66) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - feat: Add has\_tool method to check for agent tools availability [\#63](https://github.com/dermatologist/dhti-elixir-base/pull/63) ([dermatologist](https://github.com/dermatologist))
 - Add BaseChatLLM for message-based chat model invocations [\#61](https://github.com/dermatologist/dhti-elixir-base/pull/61) ([Copilot](https://github.com/apps/copilot-swe-agent))
@@ -33,6 +31,14 @@
 - Feature/cds hooks 1 [\#41](https://github.com/dermatologist/dhti-elixir-base/pull/41) ([dermatologist](https://github.com/dermatologist))
 - Feature/uv build 1 [\#40](https://github.com/dermatologist/dhti-elixir-base/pull/40) ([dermatologist](https://github.com/dermatologist))
 - Feature/mcp 1 [\#39](https://github.com/dermatologist/dhti-elixir-base/pull/39) ([dermatologist](https://github.com/dermatologist))
+
+## [v1.4.0](https://github.com/dermatologist/dhti-elixir-base/tree/v1.4.0) (2026-01-12)
+
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.3.1...v1.4.0)
+
+**Closed issues:**
+
+- Feature request: Add support for parlant agents [\#65](https://github.com/dermatologist/dhti-elixir-base/issues/65)
 
 ## [v1.3.1](https://github.com/dermatologist/dhti-elixir-base/tree/v1.3.1) (2025-12-28)
 
