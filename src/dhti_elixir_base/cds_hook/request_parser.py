@@ -16,6 +16,8 @@ limitations under the License.
 
 import json
 import logging
+from langchain_core.messages import HumanMessage
+from langchain_core.prompts import PromptTemplate
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -91,3 +93,14 @@ def get_context(input_data):
         return input_data
     logger.debug(f"Extracted context: {context}")
     return context
+
+def split_context(input_data):
+    return json.loads(input_data) if isinstance(input_data, str) else input_data
+
+def create_human_message(input_data):
+    return HumanMessage(
+        content=[
+            {"type": "text", "text": input_data["text"]},
+            {"type": "image_url", "image_url": {"url": input_data["image_url"]}},
+        ]
+    )

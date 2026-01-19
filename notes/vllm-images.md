@@ -175,3 +175,54 @@ def image_processor(image_data: str, operation: str) -> str:
     """Processes image data based on the specified operation."""
     # Implementation logic here
     return f"Successfully performed {operation} on the provided image data."
+
+
+### Example
+
+from langchain.prompts import PromptTemplate
+from langchain_core.messages import HumanMessage
+from langchain_core.runnables import RunnableLambda
+from langchain_openai import ChatOpenAI
+
+#### 1. Text prompt template
+prompt = PromptTemplate.from_template("""
+You are a dermatology triage assistant.
+Analyze the lesion image and patient description.
+
+Patient description:
+{description}
+
+Provide:
+- Key visual features
+- Differential considerations (non-diagnostic)
+- Risk level
+- Recommended next steps
+""")
+
+#### 2. Convert text prompt → multimodal message
+def to_multimodal(inputs):
+    text = prompt.format(description=inputs["description"])
+    return HumanMessage(content=[
+        {"type": "text", "text": text},
+        {"type": "image_url", "image_url": {"url": inputs["image_url"]}}
+    ])
+
+multimodal_builder = RunnableLambda(to_multimodal)
+
+#### 3. vLLM-backed model
+llm = ChatOpenAI(
+    model="your-multimodal-model",
+    base_url="http://localhost:8000/v1",
+    api_key="dummy"
+)
+
+#### 4. Final chain
+chain = multimodal_builder | llm
+
+#### 5. Run
+result = chain.invoke({
+    "description": "45-year-old with new irregular lesion on upper back.",
+    "image_url": "https://example.com/lesion.jpg"
+})
+
+print(result.content)
