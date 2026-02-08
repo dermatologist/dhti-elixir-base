@@ -10,6 +10,7 @@ copyright: Maintained by <a href="https://github.com/dermatologist">dermatologis
 nav:
   - Home: index.md
   - Modules: modules.md
+  - CrewAI Integration: crewai.md
   - Contributing: contributing.md
   - Dependents: github-dependents-info.md
 

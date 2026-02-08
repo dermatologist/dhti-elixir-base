@@ -55,6 +55,21 @@ The `fhir` module  includes advanced backend features:
 	- Automatic token management and authentication
 - **FHIRPath Support**: All resource queries can apply FHIRPath expressions for flexible data extraction and transformation.
 
+### CrewAI Integration (Optional)
+
+The `crewai` module provides wrapper classes that make DHTI's LangChain-based components compatible with the [CrewAI](https://www.crewai.com/) framework:
+- **CrewAILLMWrapper**: Wraps `BaseLLM` and `BaseChatLLM` for use with CrewAI agents
+- **CrewAIAgentWrapper**: Wraps `BaseAgent` to create CrewAI-compatible agents
+- **CrewAIChainToolWrapper**: Wraps `BaseChain` as a CrewAI tool
+- **CrewAILangChainToolWrapper**: Wraps LangChain tools for use in CrewAI
+
+To use CrewAI integration, install with the optional dependency:
+```bash
+pip install dhti-elixir-base[crewai]
+```
+
+See the [CrewAI documentation](https://dermatologist.github.io/dhti-elixir-base/crewai/) for detailed usage examples.
+
 [![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/dhti-elixir-base/)
 
 ## Project layout
