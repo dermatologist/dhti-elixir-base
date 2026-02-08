@@ -16,7 +16,10 @@ limitations under the License.
 
 from typing import Any
 
-from crewai_tools import BaseTool as CrewAIBaseTool
+try:
+    from crewai.tools import BaseTool as CrewAIBaseTool
+except ImportError:
+    from crewai_tools import BaseTool as CrewAIBaseTool
 
 from ..chain import BaseChain
 
@@ -74,11 +77,11 @@ class CrewAIChainToolWrapper(CrewAIBaseTool):
             **kwargs: Additional keyword arguments
         """
         self._dhti_chain = chain
-        
+
         # Set name and description from chain if not provided
         tool_name = name or chain.name or "chain_tool"
         tool_description = description or chain.description or "A chain tool for processing inputs"
-        
+
         # Initialize the base tool
         super().__init__(
             name=tool_name,
@@ -105,7 +108,7 @@ class CrewAIChainToolWrapper(CrewAIBaseTool):
             result = self._dhti_chain.invoke(input=args[0])
         else:
             raise ValueError("Either provide input as a keyword argument or as a positional argument")
-        
+
         # Convert result to string
         if isinstance(result, dict):
             # If result is a dict, try to extract the most relevant value
@@ -116,7 +119,7 @@ class CrewAIChainToolWrapper(CrewAIBaseTool):
                 return str(result["output"])
             else:
                 return str(result)
-        
+
         return str(result)
 
     def __str__(self) -> str:

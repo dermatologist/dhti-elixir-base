@@ -77,23 +77,23 @@ class CrewAIAgentWrapper(CrewAIAgent):
             **kwargs: Additional keyword arguments
         """
         self._dhti_agent = agent
-        
+
         # Extract information from the DHTI agent
         agent_role = role or agent.description or "Assistant"
         agent_goal = goal or f"Execute tasks related to {agent.name}"
         agent_backstory = backstory or f"An agent specialized in {agent.name} tasks"
-        
+
         # Wrap the LLM if available
         llm = None
         if agent.llm is not None:
             llm = CrewAILLMWrapper(llm=agent.llm)
-        
+
         # Convert tools if available
         tools = kwargs.pop("tools", None)
         if tools is None and hasattr(agent, "tools") and agent.tools:
             # Use the agent's tools if available
             tools = agent.tools
-        
+
         # Initialize CrewAI Agent
         super().__init__(
             role=agent_role,
@@ -118,7 +118,7 @@ class CrewAIAgentWrapper(CrewAIAgent):
         """
         # Extract the task context/input
         task_context = str(task) if not hasattr(task, "description") else task.description
-        
+
         # Use the DHTI agent's response method
         return self._dhti_agent.get_agent_response(task_context)
 

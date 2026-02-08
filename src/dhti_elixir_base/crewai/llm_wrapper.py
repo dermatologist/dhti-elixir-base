@@ -59,10 +59,10 @@ class CrewAILLMWrapper(CrewAILLM):
             **kwargs: Additional keyword arguments
         """
         self._dhti_llm = llm
-        
+
         # Extract model information for CrewAI
         model_name = getattr(llm, "model", "custom-model")
-        
+
         # Initialize CrewAI LLM with the model name
         super().__init__(model=model_name, **kwargs)
 
@@ -87,14 +87,14 @@ class CrewAILLMWrapper(CrewAILLM):
             for msg in messages:
                 role = msg.get("role", "user")
                 content = msg.get("content", "")
-                
+
                 if role == "system":
                     lc_messages.append(SystemMessage(content=content))
                 elif role == "assistant":
                     lc_messages.append(AIMessage(content=content))
                 else:  # user or any other role
                     lc_messages.append(HumanMessage(content=content))
-            
+
             result = self._dhti_llm.invoke(lc_messages)
             return result.content if hasattr(result, "content") else str(result)
         else:

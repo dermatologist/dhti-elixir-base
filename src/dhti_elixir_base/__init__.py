@@ -8,9 +8,23 @@ from .graph import BaseGraph
 from .llm import BaseLLM
 from .model import BaseDhtiModel
 from .mydi import camel_to_snake, get_di
-from .parlant_agent import ParlantAgent
 from .server import BaseServer
 from .space import BaseSpace
+
+try:
+    from .parlant_agent import ParlantAgent
+except ImportError:
+    # ParlantAgent requires parlant module which may not be installed
+
+    class ParlantAgent:  # type: ignore[no-redef]
+        """Placeholder for ParlantAgent when parlant is not installed."""
+
+        def __init__(self, *args, **kwargs):  # noqa: ARG002
+            msg = (
+                "ParlantAgent requires the 'parlant' extra. "
+                "Install it with: pip install dhti-elixir-base[parlant]"
+            )
+            raise ImportError(msg)
 
 try:
     # Change here if project is renamed and does not equal the package name

@@ -16,7 +16,11 @@ limitations under the License.
 
 from typing import Any
 
-from crewai_tools import BaseTool as CrewAIBaseTool
+try:
+    from crewai.tools import BaseTool as CrewAIBaseTool
+except ImportError:
+    from crewai_tools import BaseTool as CrewAIBaseTool
+
 from langchain_core.tools import BaseTool as LangChainBaseTool
 
 
@@ -61,15 +65,15 @@ class CrewAILangChainToolWrapper(CrewAIBaseTool):
             **kwargs: Additional keyword arguments
         """
         self._langchain_tool = langchain_tool
-        
+
         # Extract name and description from the LangChain tool
         tool_name = getattr(langchain_tool, "name", "langchain_tool")
         tool_description = getattr(
-            langchain_tool, 
-            "description", 
+            langchain_tool,
+            "description",
             "A LangChain tool wrapped for CrewAI"
         )
-        
+
         # Initialize the base tool
         super().__init__(
             name=tool_name,
@@ -119,10 +123,10 @@ class CrewAILangChainToolWrapper(CrewAIBaseTool):
                     f"LangChain tool {type(self._langchain_tool)} does not have "
                     "run, invoke, or __call__ methods"
                 )
-            
+
             # Convert result to string
             return str(result)
-            
+
         except Exception as e:
             return f"Error executing LangChain tool: {e!s}"
 
