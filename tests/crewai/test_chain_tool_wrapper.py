@@ -49,7 +49,7 @@ def test_crewai_chain_tool_wrapper_run_with_kwargs(dhti_chain):
 
     wrapper = CrewAIChainToolWrapper(chain=dhti_chain)
     result = wrapper._run(input="Test input")
-    
+
     assert result is not None
     assert isinstance(result, str)
     dhti_chain.invoke.assert_called_once_with(input="Test input")
@@ -62,7 +62,7 @@ def test_crewai_chain_tool_wrapper_run_with_args(dhti_chain):
 
     wrapper = CrewAIChainToolWrapper(chain=dhti_chain)
     result = wrapper._run("Test input")
-    
+
     assert result is not None
     assert isinstance(result, str)
     dhti_chain.invoke.assert_called_once_with(input="Test input")
@@ -76,7 +76,7 @@ def test_crewai_chain_tool_wrapper_run_no_args():
 
     chain = BaseChain()
     wrapper = CrewAIChainToolWrapper(chain=chain)
-    
+
     with pytest.raises(ValueError):
         wrapper._run()
 

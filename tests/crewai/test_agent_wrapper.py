@@ -22,7 +22,7 @@ def dhti_agent():
             model="test-model",
             api_key="test-key",
         )
-        
+
         agent = BaseAgent(
             name="test_agent",
             description="A test agent",
@@ -69,11 +69,11 @@ def test_crewai_agent_wrapper_execute_task(dhti_agent):
     # Mock the agent's get_agent_response method
     with patch.object(dhti_agent, "get_agent_response", return_value="Task completed"):
         wrapper = CrewAIAgentWrapper(agent=dhti_agent)
-        
+
         # Create a simple task-like object
         task = MagicMock()
         task.description = "Test task"
-        
+
         result = wrapper.execute_task(task)
         assert result == "Task completed"
 

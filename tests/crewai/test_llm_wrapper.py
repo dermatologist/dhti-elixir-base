@@ -85,7 +85,7 @@ def test_crewai_llm_wrapper_call_with_base_llm(mock_post, dhti_base_llm):
     messages = [
         {"role": "user", "content": "Hello"},
     ]
-    
+
     result = wrapper.call(messages)
     assert result is not None
     assert isinstance(result, str)
@@ -109,7 +109,7 @@ def test_crewai_llm_wrapper_call_with_chat_llm(mock_post, dhti_chat_llm):
         {"role": "system", "content": "You are a helpful assistant"},
         {"role": "user", "content": "Hello"},
     ]
-    
+
     result = wrapper.call(messages)
     assert result is not None
     assert isinstance(result, str)

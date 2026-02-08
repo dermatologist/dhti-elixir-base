@@ -17,9 +17,18 @@ except ImportError:
     # ParlantAgent requires parlant module which may not be installed
 
     class ParlantAgent:  # type: ignore[no-redef]
-        """Placeholder for ParlantAgent when parlant is not installed."""
+        """
+        Placeholder for ParlantAgent when parlant is not installed.
+
+        This class raises an ImportError with installation instructions
+        when instantiated without the required 'parlant' extra dependency.
+
+        Raises:
+            ImportError: Always raised with installation instructions.
+        """
 
         def __init__(self, *args, **kwargs):  # noqa: ARG002
+            """Raise ImportError with installation instructions."""
             msg = (
                 "ParlantAgent requires the 'parlant' extra. "
                 "Install it with: pip install dhti-elixir-base[parlant]"

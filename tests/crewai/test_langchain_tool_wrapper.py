@@ -33,7 +33,7 @@ def test_crewai_langchain_tool_wrapper_run_method(langchain_tool):
 
     wrapper = CrewAILangChainToolWrapper(langchain_tool=langchain_tool)
     result = wrapper._run("test query")
-    
+
     assert result == "Tool result"
     langchain_tool.run.assert_called_once_with("test query")
 
@@ -51,7 +51,7 @@ def test_crewai_langchain_tool_wrapper_invoke_method():
 
     wrapper = CrewAILangChainToolWrapper(langchain_tool=tool)
     result = wrapper._run("test query")
-    
+
     assert result == "Invoke result"
     tool.invoke.assert_called_once_with("test query")
 
@@ -70,7 +70,7 @@ def test_crewai_langchain_tool_wrapper_callable():
 
     wrapper = CrewAILangChainToolWrapper(langchain_tool=tool)
     result = wrapper._run("test query")
-    
+
     assert result == "Callable result"
     tool.__call__.assert_called_once_with("test query")
 
@@ -82,7 +82,7 @@ def test_crewai_langchain_tool_wrapper_with_kwargs(langchain_tool):
 
     wrapper = CrewAILangChainToolWrapper(langchain_tool=langchain_tool)
     result = wrapper._run(query="test query", max_results=5)
-    
+
     assert result == "Tool result"
     langchain_tool.run.assert_called_once_with(query="test query", max_results=5)
 
@@ -99,7 +99,7 @@ def test_crewai_langchain_tool_wrapper_error_handling():
 
     wrapper = CrewAILangChainToolWrapper(langchain_tool=tool)
     result = wrapper._run("test query")
-    
+
     assert "Error executing LangChain tool" in result
     assert "Tool error" in result
 
@@ -130,5 +130,5 @@ def test_crewai_langchain_tool_wrapper_no_valid_method():
 
     wrapper = CrewAILangChainToolWrapper(langchain_tool=tool)
     result = wrapper._run("test query")
-    
+
     assert "Error executing LangChain tool" in result

@@ -17,10 +17,10 @@ class BaseSpace(Agent):
 
     from typing import Optional
 
-    def __init__(self, agent: BaseAgent | None = None, **kwargs):
+    def __init__(self, agent: BaseAgent | None = None, *args, **kwargs):
         if agent:
             self.agent = agent.get_agent()
-            super().__init__(id=agent.name, **kwargs)
+            super().__init__(id=agent.name, *args, **kwargs)
 
     @action
     def say(self, content: str, current_patient_context: str = ""):
