@@ -65,8 +65,11 @@ email = "github_public@gulfdoctor.net"
 name = "Bell Eapen"
 
 
-# [project.optional-dependencies]
-# testing = ["pytest", "pytest-cov"]
+[project.optional-dependencies]
+crewai = [
+  "crewai>=0.86.0",
+  "crewai-tools>=0.18.0",
+]
 
 [project.urls]
 Documentation = "https://github.com/dermatologist/dhti"
