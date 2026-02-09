@@ -9,7 +9,6 @@ from .llm import BaseLLM
 from .model import BaseDhtiModel
 from .mydi import camel_to_snake, get_di
 from .server import BaseServer
-from .space import BaseSpace
 
 try:
     from .parlant_agent import ParlantAgent
@@ -53,7 +52,6 @@ __all__ = [
     "BaseGraph",
     "BaseLLM",
     "BaseServer",
-    "BaseSpace",
     "ParlantAgent",
     "camel_to_snake",
     "get_di",

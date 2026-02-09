@@ -68,9 +68,6 @@ crewai = [
   "crewai>=0.86.0",
   "crewai-tools>=0.18.0",
 ]
-agency = [
-  "agency",
-]
 parlant = [
   "parlant>=3.0.0,<4.0.0",
 ]
