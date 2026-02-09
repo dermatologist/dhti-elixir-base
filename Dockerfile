@@ -10,12 +10,12 @@ COPY uv.lock /app/uv.lock
 COPY pyproject.toml /app/pyproject.toml
 
 # Install dependencies
-RUN uv sync --frozen --no-install-project
+RUN uv sync --all-extras --frozen --no-install-project
 
 # Copy the project into the image
 COPY . /app
 
 # Sync the project
-RUN uv sync --frozen
+RUN uv sync --all-extras --frozen
 
 CMD [ "python", "src/dhti_elixir_base/foo.py" ]
