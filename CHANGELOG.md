@@ -2,12 +2,20 @@
 
 ## [Unreleased](https://github.com/dermatologist/dhti-elixir-base/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.4.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.4.1...HEAD)
+
+**Implemented enhancements:**
+
+- Add CrewAI wrappers for LLMs, Tools and Agents [\#77](https://github.com/dermatologist/dhti-elixir-base/issues/77)
 
 **Merged pull requests:**
 
+- Add CrewAI wrappers for LLMs, Tools, and Agents [\#78](https://github.com/dermatologist/dhti-elixir-base/pull/78) ([Copilot](https://github.com/apps/copilot-swe-agent))
+- \[Automated\] Dependencies upgrade [\#76](https://github.com/dermatologist/dhti-elixir-base/pull/76) ([github-actions[bot]](https://github.com/apps/github-actions))
 - fix\(routes\): Improve response handling in invoke\_chain function [\#73](https://github.com/dermatologist/dhti-elixir-base/pull/73) ([dermatologist](https://github.com/dermatologist))
+- chore\(deps\): Bump urllib3 from 2.5.0 to 2.6.3 [\#70](https://github.com/dermatologist/dhti-elixir-base/pull/70) ([dependabot[bot]](https://github.com/apps/dependabot))
 - chore\(deps\): Bump pyasn1 from 0.6.1 to 0.6.2 [\#69](https://github.com/dermatologist/dhti-elixir-base/pull/69) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore\(deps\): Bump virtualenv from 20.34.0 to 20.36.1 [\#67](https://github.com/dermatologist/dhti-elixir-base/pull/67) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Add Parlant agent implementation for healthcare domain [\#66](https://github.com/dermatologist/dhti-elixir-base/pull/66) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - feat: Add has\_tool method to check for agent tools availability [\#63](https://github.com/dermatologist/dhti-elixir-base/pull/63) ([dermatologist](https://github.com/dermatologist))
 - Add BaseChatLLM for message-based chat model invocations [\#61](https://github.com/dermatologist/dhti-elixir-base/pull/61) ([Copilot](https://github.com/apps/copilot-swe-agent))
@@ -31,6 +39,10 @@
 - Feature/cds hooks 1 [\#41](https://github.com/dermatologist/dhti-elixir-base/pull/41) ([dermatologist](https://github.com/dermatologist))
 - Feature/uv build 1 [\#40](https://github.com/dermatologist/dhti-elixir-base/pull/40) ([dermatologist](https://github.com/dermatologist))
 - Feature/mcp 1 [\#39](https://github.com/dermatologist/dhti-elixir-base/pull/39) ([dermatologist](https://github.com/dermatologist))
+
+## [v1.4.1](https://github.com/dermatologist/dhti-elixir-base/tree/v1.4.1) (2026-01-18)
+
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.4.0...v1.4.1)
 
 ## [v1.4.0](https://github.com/dermatologist/dhti-elixir-base/tree/v1.4.0) (2026-01-12)
 
