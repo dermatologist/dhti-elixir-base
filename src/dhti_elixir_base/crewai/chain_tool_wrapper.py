@@ -16,6 +16,8 @@ limitations under the License.
 
 from typing import Any
 
+from pydantic import PrivateAttr
+
 try:
     from crewai.tools import BaseTool as CrewAIBaseTool
 except ImportError:
@@ -59,6 +61,7 @@ class CrewAIChainToolWrapper(CrewAIBaseTool):
 
     name: str = "BaseChain Tool"
     description: str = "A tool that wraps a DHTI BaseChain for use in CrewAI"
+    _dhti_chain: BaseChain = PrivateAttr()
 
     def __init__(
         self,
@@ -76,11 +79,11 @@ class CrewAIChainToolWrapper(CrewAIBaseTool):
             description: Description of the tool
             **kwargs: Additional keyword arguments
         """
-        self._dhti_chain = chain
-
         # Set name and description from chain if not provided
         tool_name = name or chain.name or "chain_tool"
-        tool_description = description or chain.description or "A chain tool for processing inputs"
+        tool_description = (
+            description or chain.description or "A chain tool for processing inputs"
+        )
 
         # Initialize the base tool
         super().__init__(
@@ -88,6 +91,18 @@ class CrewAIChainToolWrapper(CrewAIBaseTool):
             description=tool_description,
             **kwargs,
         )
+
+        # Restore the original description since CrewAI's _generate_description
+        # prepends tool name and arguments to it
+        self.description = tool_description
+
+        # Store the DHTI chain reference
+        self._dhti_chain = chain
+
+    def _generate_description(self) -> None:
+        """Override to prevent automatic description generation."""
+        # Do nothing - we want to keep the simple description
+        pass
 
     def _run(self, *args: Any, **kwargs: Any) -> str:
         """
@@ -107,7 +122,9 @@ class CrewAIChainToolWrapper(CrewAIBaseTool):
         elif args:
             result = self._dhti_chain.invoke(input=args[0])
         else:
-            raise ValueError("Either provide input as a keyword argument or as a positional argument")
+            raise ValueError(
+                "Either provide input as a keyword argument or as a positional argument"
+            )
 
         # Convert result to string
         if isinstance(result, dict):

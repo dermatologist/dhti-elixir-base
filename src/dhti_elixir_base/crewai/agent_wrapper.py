@@ -17,6 +17,7 @@ limitations under the License.
 from typing import Any
 
 from crewai import Agent as CrewAIAgent
+from pydantic import PrivateAttr
 
 from ..agent import BaseAgent
 from .llm_wrapper import CrewAILLMWrapper
@@ -58,6 +59,8 @@ class CrewAIAgentWrapper(CrewAIAgent):
         ```
     """
 
+    _dhti_agent: BaseAgent = PrivateAttr()
+
     def __init__(
         self,
         agent: BaseAgent,
@@ -76,8 +79,6 @@ class CrewAIAgentWrapper(CrewAIAgent):
             backstory: The backstory of the agent
             **kwargs: Additional keyword arguments
         """
-        self._dhti_agent = agent
-
         # Extract information from the DHTI agent
         agent_role = role or agent.description or "Assistant"
         agent_goal = goal or f"Execute tasks related to {agent.name}"
@@ -94,6 +95,30 @@ class CrewAIAgentWrapper(CrewAIAgent):
             # Use the agent's tools if available
             tools = agent.tools
 
+        # Validate and wrap tools
+        if tools:
+            try:
+                from crewai.tools import BaseTool as CrewAIBaseTool
+            except ImportError:
+                from crewai_tools import BaseTool as CrewAIBaseTool
+
+            from .langchain_tool_wrapper import CrewAILangChainToolWrapper
+
+            validated_tools = []
+            for tool in tools if isinstance(tools, list) else [tools]:
+                # If it's already a BaseTool, use it as is
+                if isinstance(tool, CrewAIBaseTool):
+                    validated_tools.append(tool)
+                # Try to wrap as a LangChain tool
+                else:
+                    try:
+                        wrapped = CrewAILangChainToolWrapper(langchain_tool=tool)
+                        validated_tools.append(wrapped)
+                    except Exception:
+                        # Skip tools that can't be wrapped
+                        pass
+            tools = validated_tools if validated_tools else None
+
         # Initialize CrewAI Agent
         super().__init__(
             role=agent_role,
@@ -103,6 +128,9 @@ class CrewAIAgentWrapper(CrewAIAgent):
             tools=tools,
             **kwargs,
         )
+
+        # Store the DHTI agent reference
+        self._dhti_agent = agent
 
     def execute_task(self, task: Any, *args: Any, **kwargs: Any) -> str:
         """
@@ -117,7 +145,9 @@ class CrewAIAgentWrapper(CrewAIAgent):
             str: The result of the task execution
         """
         # Extract the task context/input
-        task_context = str(task) if not hasattr(task, "description") else task.description
+        task_context = (
+            str(task) if not hasattr(task, "description") else task.description
+        )
 
         # Use the DHTI agent's response method
         return self._dhti_agent.get_agent_response(task_context)

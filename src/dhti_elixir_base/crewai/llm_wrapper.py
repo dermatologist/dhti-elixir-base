@@ -16,13 +16,13 @@ limitations under the License.
 
 from typing import Any
 
-from crewai.llm import LLM as CrewAILLM
+from crewai.llms.base_llm import BaseLLM as CrewAIBaseLLM
 
 from ..chatllm import BaseChatLLM
 from ..llm import BaseLLM
 
 
-class CrewAILLMWrapper(CrewAILLM):
+class CrewAILLMWrapper(CrewAIBaseLLM):
     """
     Wrapper class to make BaseLLM and BaseChatLLM compatible with CrewAI.
 
@@ -31,7 +31,7 @@ class CrewAILLMWrapper(CrewAILLM):
 
     Args:
         llm: An instance of BaseLLM or BaseChatLLM from dhti_elixir_base
-        **kwargs: Additional keyword arguments passed to the CrewAI LLM
+        **kwargs: Additional keyword arguments
 
     Example:
         ```python
@@ -59,12 +59,7 @@ class CrewAILLMWrapper(CrewAILLM):
             **kwargs: Additional keyword arguments
         """
         self._dhti_llm = llm
-
-        # Extract model information for CrewAI
-        model_name = getattr(llm, "model", "custom-model")
-
-        # Initialize CrewAI LLM with the model name
-        super().__init__(model=model_name, **kwargs)
+        self._model_name = getattr(llm, "model", "custom-model")
 
     def call(self, messages: list[dict[str, Any]], *args: Any, **kwargs: Any) -> str:
         """
@@ -99,8 +94,46 @@ class CrewAILLMWrapper(CrewAILLM):
             return result.content if hasattr(result, "content") else str(result)
         else:
             # For BaseLLM, combine messages into a single prompt
-            prompt = "\n".join([f"{msg.get('role', 'user')}: {msg.get('content', '')}" for msg in messages])
+            prompt = "\n".join(
+                [
+                    f"{msg.get('role', 'user')}: {msg.get('content', '')}"
+                    for msg in messages
+                ]
+            )
             return self._dhti_llm.invoke(prompt)
+
+    @property
+    def is_litellm(self) -> bool:
+        """Return whether this LLM is a LiteLLM provider."""
+        return False
+
+    @property
+    def model(self) -> str:
+        """Return the model name."""
+        return self._model_name
+
+    @property
+    def provider(self) -> str:
+        """Return the provider name."""
+        return "dhti-elixir"
+
+    def get_context_window_size(self) -> int:
+        """Get the context window size for the model."""
+        # Default context window size
+        # This can be overridden in subclasses for specific models
+        return 4096
+
+    def get_token_usage_summary(self) -> dict[str, Any]:
+        """Get token usage summary."""
+        return {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+        }
+
+    def supports_stop_words(self) -> bool:
+        """Check if the model supports stop words."""
+        return False
 
     def __str__(self) -> str:
         """Return string representation of the wrapper."""
