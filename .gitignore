@@ -1,4 +1,5 @@
 notebooks/fhirdata
+parlant-data
 # Temporary and binary files
 *~
 *.py[cod]
