@@ -105,18 +105,19 @@ class CrewAIAgentWrapper(CrewAIAgent):
             from .langchain_tool_wrapper import CrewAILangChainToolWrapper
 
             validated_tools = []
-            for tool in tools if isinstance(tools, list) else [tools]:
-                # If it's already a BaseTool, use it as is
-                if isinstance(tool, CrewAIBaseTool):
-                    validated_tools.append(tool)
-                # Try to wrap as a LangChain tool
-                else:
-                    try:
+            tool_list = tools if isinstance(tools, list) else [tools]
+            for tool in tool_list:
+                try:
+                    # If it's already a BaseTool, use it as is
+                    if isinstance(tool, CrewAIBaseTool):
+                        validated_tools.append(tool)
+                    # Try to wrap as a LangChain tool
+                    else:
                         wrapped = CrewAILangChainToolWrapper(langchain_tool=tool)
                         validated_tools.append(wrapped)
-                    except Exception:
-                        # Skip tools that can't be wrapped
-                        pass
+                except Exception as e:
+                    # Log but skip tools that can't be wrapped
+                    pass
             tools = validated_tools if validated_tools else None
 
         # Initialize CrewAI Agent
