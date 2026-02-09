@@ -113,7 +113,7 @@ class MedicalAnalysisChain(BaseChain):
             name="medical_analysis",
             description="Analyzes medical records and provides insights"
         )
-    
+
     # Implement your chain logic here
 
 chain = MedicalAnalysisChain()
@@ -357,10 +357,6 @@ Wraps a LangChain tool for use in CrewAI.
 - Some advanced CrewAI features may require additional customization
 - Performance characteristics may differ from native CrewAI or DHTI implementations
 - Always test thoroughly in your specific use case
-
-## Future Improvements
-
-For planned enhancements and known issues, see the [Future Improvements](../notes/crewai_future_improvements.md) document.
 
 ## Related Documentation
 
