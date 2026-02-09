@@ -100,7 +100,7 @@ class CrewAIAgentWrapper(CrewAIAgent):
             try:
                 from crewai.tools import BaseTool as CrewAIBaseTool
             except ImportError:
-                from crewai_tools import BaseTool as CrewAIBaseTool
+                from crewai.tools.base_tool import BaseTool as CrewAIBaseTool
 
             from .langchain_tool_wrapper import CrewAILangChainToolWrapper
 

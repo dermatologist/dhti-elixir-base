@@ -21,7 +21,7 @@ from pydantic import PrivateAttr
 try:
     from crewai.tools import BaseTool as CrewAIBaseTool
 except ImportError:
-    from crewai_tools import BaseTool as CrewAIBaseTool
+    from crewai.tools.base_tool import BaseTool as CrewAIBaseTool
 
 from langchain_core.tools import BaseTool as LangChainBaseTool
 
@@ -117,7 +117,7 @@ class CrewAILangChainToolWrapper(CrewAIBaseTool):
                     elif kwargs:
                         result = self._langchain_tool.run(**kwargs)
                     else:
-                        result = self._langchain_tool.run()
+                        result = self._langchain_tool.run(tool_input={})
                     return str(result)
                 except (AttributeError, TypeError):
                     # run method doesn't exist or failed, try next option
@@ -128,7 +128,7 @@ class CrewAILangChainToolWrapper(CrewAIBaseTool):
                 try:
                     if args and not kwargs:
                         result = self._langchain_tool.invoke(
-                            args[0] if len(args) == 1 else args
+                            args[0] if len(args) == 1 else args # type: ignore
                         )
                     elif kwargs:
                         result = self._langchain_tool.invoke(kwargs)
