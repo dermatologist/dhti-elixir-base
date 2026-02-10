@@ -2,14 +2,11 @@
 
 ## [Unreleased](https://github.com/dermatologist/dhti-elixir-base/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.4.1...HEAD)
-
-**Implemented enhancements:**
-
-- Add CrewAI wrappers for LLMs, Tools and Agents [\#77](https://github.com/dermatologist/dhti-elixir-base/issues/77)
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.5.0...HEAD)
 
 **Merged pull requests:**
 
+- Feature/fix return type 1 [\#79](https://github.com/dermatologist/dhti-elixir-base/pull/79) ([dermatologist](https://github.com/dermatologist))
 - Add CrewAI wrappers for LLMs, Tools, and Agents [\#78](https://github.com/dermatologist/dhti-elixir-base/pull/78) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - \[Automated\] Dependencies upgrade [\#76](https://github.com/dermatologist/dhti-elixir-base/pull/76) ([github-actions[bot]](https://github.com/apps/github-actions))
 - fix\(routes\): Improve response handling in invoke\_chain function [\#73](https://github.com/dermatologist/dhti-elixir-base/pull/73) ([dermatologist](https://github.com/dermatologist))
@@ -39,6 +36,14 @@
 - Feature/cds hooks 1 [\#41](https://github.com/dermatologist/dhti-elixir-base/pull/41) ([dermatologist](https://github.com/dermatologist))
 - Feature/uv build 1 [\#40](https://github.com/dermatologist/dhti-elixir-base/pull/40) ([dermatologist](https://github.com/dermatologist))
 - Feature/mcp 1 [\#39](https://github.com/dermatologist/dhti-elixir-base/pull/39) ([dermatologist](https://github.com/dermatologist))
+
+## [v1.5.0](https://github.com/dermatologist/dhti-elixir-base/tree/v1.5.0) (2026-02-09)
+
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.4.1...v1.5.0)
+
+**Implemented enhancements:**
+
+- Add CrewAI wrappers for LLMs, Tools and Agents [\#77](https://github.com/dermatologist/dhti-elixir-base/issues/77)
 
 ## [v1.4.1](https://github.com/dermatologist/dhti-elixir-base/tree/v1.4.1) (2026-01-18)
 
