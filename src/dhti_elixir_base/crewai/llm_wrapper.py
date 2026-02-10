@@ -17,6 +17,7 @@ limitations under the License.
 from typing import Any
 
 from crewai.llms.base_llm import BaseLLM as CrewAIBaseLLM
+from crewai.types.usage_metrics import UsageMetrics
 
 from ..chatllm import BaseChatLLM
 from ..llm import BaseLLM
@@ -72,40 +73,51 @@ class CrewAILLMWrapper(CrewAIBaseLLM):
 
         Returns:
             str: The generated response from the LLM
+
+        Raises:
+            ValueError: If messages list is empty or malformed
+            RuntimeError: If LLM invocation fails
         """
-        # Convert messages to the format expected by DHTI LLMs
-        if isinstance(self._dhti_llm, BaseChatLLM):
-            # For BaseChatLLM, convert to LangChain messages
-            from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+        if not messages:
+            raise ValueError("Messages list cannot be empty")
 
-            lc_messages = []
-            for msg in messages:
-                role = msg.get("role", "user")
-                content = msg.get("content", "")
+        try:
+            # Convert messages to the format expected by DHTI LLMs
+            if isinstance(self._dhti_llm, BaseChatLLM):
+                # For BaseChatLLM, convert to LangChain messages
+                from langchain_core.messages import (
+                    AIMessage,
+                    HumanMessage,
+                    SystemMessage,
+                )
 
-                if role == "system":
-                    lc_messages.append(SystemMessage(content=content))
-                elif role == "assistant":
-                    lc_messages.append(AIMessage(content=content))
-                else:  # user or any other role
-                    lc_messages.append(HumanMessage(content=content))
+                lc_messages = []
+                for msg in messages:
+                    role = msg.get("role", "user")
+                    content = msg.get("content", "")
 
-            result = self._dhti_llm.invoke(lc_messages)
-            return result.content if hasattr(result, "content") else str(result)
-        else:
-            # For BaseLLM, combine messages into a single prompt
-            prompt = "\n".join(
-                [
-                    f"{msg.get('role', 'user')}: {msg.get('content', '')}"
-                    for msg in messages
-                ]
-            )
-            return self._dhti_llm.invoke(prompt)
+                    if role == "system":
+                        lc_messages.append(SystemMessage(content=content))
+                    elif role == "assistant":
+                        lc_messages.append(AIMessage(content=content))
+                    else:  # user or any other role
+                        lc_messages.append(HumanMessage(content=content))
 
-    @property
-    def is_litellm(self) -> bool:
-        """Return whether this LLM is a LiteLLM provider."""
-        return False
+                result = self._dhti_llm.invoke(lc_messages)
+                return result.content if hasattr(result, "content") else str(result)  # type: ignore
+            else:
+                # For BaseLLM, combine messages into a single prompt
+                prompt = "\n".join(
+                    [
+                        f"{msg.get('role', 'user')}: {msg.get('content', '')}"
+                        for msg in messages
+                    ]
+                )
+                return self._dhti_llm.invoke(prompt)
+        except Exception as e:
+            raise RuntimeError(f"Failed to invoke LLM: {e}") from e
+
+    is_litellm: bool = False
 
     @property
     def model(self) -> str:
@@ -117,19 +129,24 @@ class CrewAILLMWrapper(CrewAIBaseLLM):
         """Return the provider name."""
         return "dhti-elixir"
 
+    @provider.setter
+    def provider(self, value: str) -> None:
+        # Read-only property; setter is a no-op to satisfy base class signature
+        pass
+
     def get_context_window_size(self) -> int:
         """Get the context window size for the model."""
         # Default context window size
         # This can be overridden in subclasses for specific models
-        return 4096
+        return 4096 * 2
 
-    def get_token_usage_summary(self) -> dict[str, Any]:
+    def get_token_usage_summary(self) -> UsageMetrics:
         """Get token usage summary."""
-        return {
-            "prompt_tokens": 0,
-            "completion_tokens": 0,
-            "total_tokens": 0,
-        }
+        return UsageMetrics(
+            prompt_tokens=0,
+            completion_tokens=0,
+            total_tokens=0,
+        )
 
     def supports_stop_words(self) -> bool:
         """Check if the model supports stop words."""

@@ -21,7 +21,7 @@ from pydantic import PrivateAttr
 try:
     from crewai.tools import BaseTool as CrewAIBaseTool
 except ImportError:
-    from crewai_tools import BaseTool as CrewAIBaseTool
+    from crewai.tools.base_tool import BaseTool as CrewAIBaseTool
 
 from ..chain import BaseChain
 
@@ -114,30 +114,39 @@ class CrewAIChainToolWrapper(CrewAIBaseTool):
 
         Returns:
             str: The result of the chain execution
+
+        Raises:
+            ValueError: If neither positional nor keyword arguments are provided
+            RuntimeError: If chain execution fails
         """
-        # If kwargs are provided, use them directly
-        if kwargs:
-            result = self._dhti_chain.invoke(**kwargs)
-        # If a single positional arg is provided, treat it as the input
-        elif args:
-            result = self._dhti_chain.invoke(input=args[0])
-        else:
-            raise ValueError(
-                "Either provide input as a keyword argument or as a positional argument"
-            )
-
-        # Convert result to string
-        if isinstance(result, dict):
-            # If result is a dict, try to extract the most relevant value
-            if "cards" in result:
-                # Handle CDS Hook response format
-                return str(result.get("cards", []))
-            elif "output" in result:
-                return str(result["output"])
+        try:
+            # If kwargs are provided, use them directly
+            if kwargs:
+                result = self._dhti_chain.invoke(**kwargs)
+            # If a single positional arg is provided, treat it as the input
+            elif args:
+                result = self._dhti_chain.invoke(input=args[0])
             else:
-                return str(result)
+                raise ValueError(
+                    "Either provide input as a keyword argument or as a positional argument"
+                )
 
-        return str(result)
+            # Convert result to string
+            if isinstance(result, dict):
+                # If result is a dict, try to extract the most relevant value
+                if "cards" in result:
+                    # Handle CDS Hook response format
+                    return str(result.get("cards", []))
+                elif "output" in result:
+                    return str(result["output"])
+                else:
+                    return str(result)
+
+            return str(result)
+        except ValueError:
+            raise
+        except Exception as e:
+            raise RuntimeError(f"Chain execution failed: {e}") from e
 
     def __str__(self) -> str:
         """Return string representation of the wrapper."""
