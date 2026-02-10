@@ -21,7 +21,7 @@ from pydantic import PrivateAttr
 try:
     from crewai.tools import BaseTool as CrewAIBaseTool
 except ImportError:
-    from crewai_tools import BaseTool as CrewAIBaseTool
+    from crewai.tools.base_tool import BaseTool as CrewAIBaseTool
 
 from langchain_core.tools import BaseTool as LangChainBaseTool
 
@@ -104,11 +104,11 @@ class CrewAILangChainToolWrapper(CrewAIBaseTool):
 
         Returns:
             str: The result of the tool execution
-        """
-        # Try different invocation methods based on the tool type
-        try:
-            result = None
 
+        Raises:
+            AttributeError: If no valid invocation method is found on the tool
+        """
+        try:
             # Try using the run method (common in LangChain tools)
             if hasattr(self._langchain_tool, "run"):
                 try:
@@ -117,18 +117,18 @@ class CrewAILangChainToolWrapper(CrewAIBaseTool):
                     elif kwargs:
                         result = self._langchain_tool.run(**kwargs)
                     else:
-                        result = self._langchain_tool.run()
+                        result = self._langchain_tool.run(tool_input={})
                     return str(result)
                 except (AttributeError, TypeError):
                     # run method doesn't exist or failed, try next option
                     pass
 
-            # If not run, try using the invoke method (newer LangChain tools)
+            # Try using the invoke method (newer LangChain tools)
             if hasattr(self._langchain_tool, "invoke"):
                 try:
                     if args and not kwargs:
                         result = self._langchain_tool.invoke(
-                            args[0] if len(args) == 1 else args
+                            args[0] if len(args) == 1 else args # type: ignore
                         )
                     elif kwargs:
                         result = self._langchain_tool.invoke(kwargs)
@@ -139,7 +139,7 @@ class CrewAILangChainToolWrapper(CrewAIBaseTool):
                     # invoke method doesn't exist or failed, try next option
                     pass
 
-            # Check if __call__ is explicitly set onthe object (for test mocks)
+            # Check if __call__ is explicitly set on the object (for test mocks)
             if "__call__" in self._langchain_tool.__dict__:
                 __call_method = self._langchain_tool.__dict__["__call__"]
                 if args and not kwargs:
@@ -165,11 +165,14 @@ class CrewAILangChainToolWrapper(CrewAIBaseTool):
                     pass
 
             # If we got here, no valid method was found
+            tool_type = type(self._langchain_tool).__name__
             raise AttributeError(
-                f"LangChain tool {type(self._langchain_tool)} does not have "
-                "run, invoke, or __call__ methods"
+                f"LangChain tool '{tool_type}' does not have any of the following: "
+                "run(), invoke(), or __call__() methods"
             )
 
+        except AttributeError:
+            raise
         except Exception as e:
             return f"Error executing LangChain tool: {e!s}"
 
