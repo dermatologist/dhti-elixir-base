@@ -1,11 +1,16 @@
 import json
-from collections.abc import Mapping
-from typing import Any, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 import requests
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import AIMessage, BaseMessage
+from langchain_core.messages import (
+    AIMessage,
+    BaseMessage,
+    ToolMessage,
+)
 from langchain_core.outputs import ChatGeneration, ChatResult
+from langchain_core.utils.function_calling import convert_to_openai_tool
 from pydantic import Field
 
 
@@ -44,29 +49,83 @@ class BaseChatLLM(BaseChatModel):
         ]
         response = chatllm.invoke(messages)
         ```
+
+        
+    ChatModel implementation compatible with:
+
+    - invoke()
+    - ainvoke()
+    - stream()
+    - create_tool_calling_agent()
+    - LangGraph
+    - bind_tools()
+
+    Assumes OpenAI-compatible tool calling:
+    request:
+        {
+          "messages": [...],
+          "tools": [...]
+        }
+
+    response:
+        {
+          "choices": [
+            {
+              "message": {
+                "content": "",
+                "tool_calls": [...]
+              }
+            }
+          ]
+        }
     """
 
     base_url: str | None = Field(None, alias="base_url")
     model: str | None = Field(None, alias="model")
     api_key: str | None = Field(None, alias="api_key")
+
     params: Mapping[str, Any] = Field(default_factory=dict, alias="params")
+
     timeout: int = 60
     backend: str | None = "dhti"
+
     temperature: float | None = 0.1
     top_p: float | None = 0.8
     top_k: int | None = 40
+
     n_batch: int | None = 8
     n_threads: int | None = 4
     n_predict: int | None = 256
+
     max_output_tokens: int | None = 512
+
     repeat_last_n: int | None = 64
     repeat_penalty: float | None = 1.18
 
+    bound_tools: list[dict[str, Any]] = Field(default_factory=list)
+
     def __init__(self, base_url: str, model: str, **kwargs):
         super().__init__(**kwargs)
+
         self.base_url = base_url
         self.model = model
-        self.params = {**self._get_model_default_parameters, **kwargs}
+
+        self.params = {
+            **self._get_model_default_parameters,
+            **kwargs,
+        }
+
+    @property
+    def _llm_type(self) -> str:
+        return "dhti-chat"
+
+    @property
+    def _identifying_params(self) -> Mapping[str, Any]:
+        return {
+            "model": self.model,
+            "base_url": self.base_url,
+            "model_parameters": self._get_model_default_parameters,
+        }
 
     @property
     def _get_model_default_parameters(self):
@@ -81,53 +140,171 @@ class BaseChatLLM(BaseChatModel):
             "repeat_last_n": self.repeat_last_n,
         }
 
-    @property
-    def _identifying_params(self) -> Mapping[str, Any]:
-        """
-        Get all the identifying parameters
-        """
-        return {
-            "model": self.model,
-            "base_url": self.base_url,
-            "model_parameters": self._get_model_default_parameters,
-        }
+    def _prepare_payload(
+        self,
+        messages: Sequence[BaseMessage],
+    ) -> dict[str, Any]:
 
-    @property
-    def _llm_type(self) -> str:
-        return "dhti-chat"
-
-    def _prepare_payload(self, messages: list[BaseMessage]) -> dict:
-        """
-        Prepare the API payload from a list of messages.
-
-        Args:
-            messages: List of BaseMessage objects (HumanMessage, AIMessage, SystemMessage, etc.)
-
-        Returns:
-            Dictionary payload for the API request
-        """
-        # Convert LangChain messages to API format
         api_messages = []
+
         for message in messages:
-            # Extract role and content from the message
-            if hasattr(message, "type"):
-                # Map LangChain message types to API roles
-                role_map = {
-                    "human": "user",
-                    "ai": "assistant",
-                    "system": "system",
-                }
-                role = role_map.get(message.type, "user")
-            else:
-                role = "user"
 
-            api_messages.append({"role": role, "content": message.content})
+            role_map = {
+                "human": "user",
+                "ai": "assistant",
+                "system": "system",
+                "tool": "tool",
+            }
 
-        return {
+            role = role_map.get(
+                getattr(message, "type", ""),
+                "user",
+            )
+
+            msg = {
+                "role": role,
+                "content": message.content,
+            }
+
+            #
+            # Forward previous assistant tool calls
+            #
+            if isinstance(message, AIMessage) and message.tool_calls:
+                msg["tool_calls"] = [
+                    {
+                        "id": tc.get("id"),
+                        "type": "function",
+                        "function": {
+                            "name": tc.get("name"),
+                            "arguments": json.dumps(
+                                tc.get("args", {})
+                            ),
+                        },
+                    }
+                    for tc in message.tool_calls
+                ]
+
+            #
+            # Forward tool outputs
+            #
+            if isinstance(message, ToolMessage):
+                msg["tool_call_id"] = message.tool_call_id
+
+            api_messages.append(msg)
+
+        payload = {
             "model": self.model,
             "options": self._get_model_default_parameters,
             "messages": api_messages,
         }
+
+        #
+        # Add tool definitions when bound
+        #
+        if self.bound_tools:
+            payload["tools"] = self.bound_tools
+
+        return payload
+
+    def _post(
+        self,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+
+        response = requests.post(
+            self.base_url,
+            headers=headers,
+            json=payload,
+            timeout=self.timeout,
+        )
+
+        try:
+            response.raise_for_status()
+
+        except Exception as e:
+            raise RuntimeError(
+                f"API request failed: {e}; "
+                f"status={response.status_code}; "
+                f"body={response.text}"
+            )
+
+        return response.json()
+
+    def _parse_tool_calls(
+        self,
+        raw_tool_calls: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+
+        parsed = []
+
+        for tc in raw_tool_calls:
+
+            function = tc.get("function", {})
+
+            arguments = function.get("arguments", {})
+
+            if isinstance(arguments, str):
+                try:
+                    arguments = json.loads(arguments)
+                except Exception:
+                    arguments = {}
+
+            parsed.append(
+                {
+                    "id": tc.get("id"),
+                    "name": function.get("name"),
+                    "args": arguments,
+                    "type": "tool_call",
+                }
+            )
+
+        return parsed
+
+    def _extract_ai_message(
+        self,
+        data: dict[str, Any],
+    ) -> AIMessage:
+
+        content = ""
+        tool_calls = []
+
+        if data.get("choices"):
+
+            choice = data["choices"][0]
+
+            if (
+                isinstance(choice, dict)
+                and "message" in choice
+            ):
+                message = choice["message"]
+
+                content = message.get("content") or ""
+
+                raw_tool_calls = (
+                    message.get("tool_calls")
+                    or []
+                )
+
+                if raw_tool_calls:
+                    tool_calls = self._parse_tool_calls(
+                        raw_tool_calls
+                    )
+
+            elif "text" in choice:
+                content = choice["text"]
+
+        else:
+            content = json.dumps(data)
+
+        return AIMessage(
+            content=content,
+            tool_calls=tool_calls,
+        )
 
     def _generate(
         self,
@@ -136,74 +313,70 @@ class BaseChatLLM(BaseChatModel):
         run_manager: Any | None = None,
         **kwargs,
     ) -> ChatResult:
-        """
-        Generate a chat response from a list of messages.
 
-        Args:
-            messages: List of BaseMessage objects representing the conversation history
-            stop: Optional list of strings to stop generation when encountered
-            run_manager: Optional run manager for callbacks and tracing
-            **kwargs: Additional keyword arguments
-
-        Returns:
-            ChatResult containing the generated response
-        """
         payload = self._prepare_payload(messages)
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
-        }
-        resp = requests.post(
-            self.base_url, headers=headers, json=payload, timeout=self.timeout  # type: ignore
+
+        if stop:
+            payload["stop"] = stop
+
+        payload.update(kwargs)
+
+        data = self._post(payload)
+
+        ai_message = self._extract_ai_message(data)
+
+        return ChatResult(
+            generations=[
+                ChatGeneration(
+                    message=ai_message
+                )
+            ]
         )
-        try:
-            resp.raise_for_status()
-        except Exception as e:
-            raise RuntimeError(
-                f"API request failed: {e}; status={resp.status_code}; body={resp.text}"
-            )
-
-        data = resp.json()
-
-        # Parse the response to extract the assistant's message
-        message_content = None
-        if "choices" in data and len(data["choices"]) > 0:
-            choice = data["choices"][0]
-            # Support both "message" and direct "text" formats
-            if (
-                isinstance(choice, dict)
-                and "message" in choice
-                and isinstance(choice["message"], dict)
-            ):
-                message_content = choice["message"].get("content")
-            elif "text" in choice:
-                message_content = choice.get("text")
-
-        # If we couldn't extract content, use raw JSON as fallback
-        if message_content is None:
-            message_content = json.dumps(data)
-
-        # Create an AIMessage with the response
-        message = AIMessage(content=message_content)
-
-        # Wrap in ChatGeneration and ChatResult
-        generation = ChatGeneration(message=message)
-        return ChatResult(generations=[generation])
 
     def bind_tools(
-        self, tools: Sequence[Any], tool_choice: Any = None, **kwargs
-    ) -> "BaseChatLLM":
+        self,
+        tools: Sequence[Any],
+        tool_choice: Any = None,
+        **kwargs,
+    ):
         """
-        Bind external tools or functions to the LLM instance.
+        True LangChain tool binding.
 
-        Args:
-            tools: Sequence of tool objects, types, or callables to be used by the LLM.
-            tool_choice: Optional tool selection logic or identifier.
-            **kwargs: Additional keyword arguments for tool binding.
-        Returns:
-            self (to allow chaining)
+        Converts LangChain tools/functions into OpenAI
+        tool schemas and returns a copied runnable model.
+
+        Required by create_tool_calling_agent().
         """
-        if not hasattr(self, "_bound_tools"):
-            self._bound_tools = []
-        self._bound_tools.extend(tools)
-        return self
+
+        bound = self.model_copy(deep=True)
+
+        converted_tools = []
+
+        for tool in tools:
+
+            try:
+                converted_tools.append(
+                    convert_to_openai_tool(tool)
+                )
+
+            except Exception:
+                #
+                # fallback for already-converted schemas
+                #
+                if isinstance(tool, dict):
+                    converted_tools.append(tool)
+                else:
+                    raise
+
+        bound.bound_tools = converted_tools
+
+        #
+        # Optional forced tool selection
+        #
+        if tool_choice is not None:
+            bound.params = {
+                **dict(bound.params),
+                "tool_choice": tool_choice,
+            }
+
+        return bound
