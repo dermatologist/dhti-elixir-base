@@ -14,19 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Any
 import logging
+from typing import Any
+
 from kink import inject
 from langchain_community.tools import StructuredTool
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain_mcp_adapters.tools import to_fastmcp
+from mcp.server.mcpserver import MCPServer
 from pydantic import BaseModel, ConfigDict
 
 from .cds_hook.generate_cards import add_card
 from .cds_hook.request_parser import get_context
 from .mydi import camel_to_snake, get_di
-
 
 logger = logging.getLogger(__name__)
 
@@ -233,11 +233,15 @@ class BaseChain:
         Returns:
             Any: An MCP tool instance wrapping the chain.
         """
-        _fast_mcp = to_fastmcp(
-            self.get_chain_as_langchain_tool(),
+        _langchain_tool = self.get_chain_as_langchain_tool()
+        _fast_mcp = MCPServer(self.name or self.__class__.__name__)
+        _fast_mcp.add_tool(
+            _langchain_tool.invoke,
+            name=_langchain_tool.name,
+            title=self.name or self.__class__.__name__,
+            description=_langchain_tool.description,
         )
-        _fast_mcp.title = self.name or self.__class__.__name__
-        return _fast_mcp
+        return _fast_mcp._tool_manager.get_tool(_langchain_tool.name)
 
     def print_log(self, message):
         logger.info(message)
