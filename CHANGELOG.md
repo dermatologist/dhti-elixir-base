@@ -2,14 +2,11 @@
 
 ## [Unreleased](https://github.com/dermatologist/dhti-elixir-base/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.5.2...HEAD)
-
-**Closed issues:**
-
-- Update dhti-elixir-base [\#111](https://github.com/dermatologist/dhti-elixir-base/issues/111)
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.6.0...HEAD)
 
 **Merged pull requests:**
 
+- Enhance BaseChatLLM with tool handling and payload preparation improv… [\#115](https://github.com/dermatologist/dhti-elixir-base/pull/115) ([dermatologist](https://github.com/dermatologist))
 - Migrate MCP integration from `langchain-mcp-adapters` to `langchain[mcp]` and align with MCP v2 APIs [\#112](https://github.com/dermatologist/dhti-elixir-base/pull/112) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - \[GitHub Dependents Info\] Updated markdown file [\#107](https://github.com/dermatologist/dhti-elixir-base/pull/107) ([github-actions[bot]](https://github.com/apps/github-actions))
 - Refactor code structure for improved readability and maintainability [\#106](https://github.com/dermatologist/dhti-elixir-base/pull/106) ([dermatologist](https://github.com/dermatologist))
@@ -44,6 +41,14 @@
 - Feature/cds hooks 1 [\#41](https://github.com/dermatologist/dhti-elixir-base/pull/41) ([dermatologist](https://github.com/dermatologist))
 - Feature/uv build 1 [\#40](https://github.com/dermatologist/dhti-elixir-base/pull/40) ([dermatologist](https://github.com/dermatologist))
 - Feature/mcp 1 [\#39](https://github.com/dermatologist/dhti-elixir-base/pull/39) ([dermatologist](https://github.com/dermatologist))
+
+## [v1.6.0](https://github.com/dermatologist/dhti-elixir-base/tree/v1.6.0) (2026-10-21)
+
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.5.2...v1.6.0)
+
+**Closed issues:**
+
+- Update dhti-elixir-base [\#111](https://github.com/dermatologist/dhti-elixir-base/issues/111)
 
 ## [v1.5.2](https://github.com/dermatologist/dhti-elixir-base/tree/v1.5.2) (2026-04-24)
 
