@@ -27,7 +27,7 @@ This package exposes lightweight, composable base classes:
 
 - `BaseChain` – a LangChain-compatible chain scaffold with sensible defaults.
 - `BaseAgent` – an agent scaffold that can bind tools and work with LangGraph.
-- `BaseGraph`, `BaseLLM`, `BaseServer`, `BaseSpace`, and `BaseDhtiModel` – helpers to organize more complex Elixirs.
+- `BaseGraph`, `BaseLLM`, `BaseChatLLM`, `BaseServer`, `BaseSpace`, and `BaseDhtiModel` – helpers to organize more complex Elixirs.
 
 Use these to rapidly create a new Elixir with a consistent structure, tests, and docs.
 
