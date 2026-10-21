@@ -2,10 +2,16 @@
 
 ## [Unreleased](https://github.com/dermatologist/dhti-elixir-base/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.5.1...HEAD)
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.5.2...HEAD)
+
+**Closed issues:**
+
+- Update dhti-elixir-base [\#111](https://github.com/dermatologist/dhti-elixir-base/issues/111)
 
 **Merged pull requests:**
 
+- Migrate MCP integration from `langchain-mcp-adapters` to `langchain[mcp]` and align with MCP v2 APIs [\#112](https://github.com/dermatologist/dhti-elixir-base/pull/112) ([Copilot](https://github.com/apps/copilot-swe-agent))
+- \[GitHub Dependents Info\] Updated markdown file [\#107](https://github.com/dermatologist/dhti-elixir-base/pull/107) ([github-actions[bot]](https://github.com/apps/github-actions))
 - Refactor code structure for improved readability and maintainability [\#106](https://github.com/dermatologist/dhti-elixir-base/pull/106) ([dermatologist](https://github.com/dermatologist))
 - \[Automated\] Dependencies upgrade [\#84](https://github.com/dermatologist/dhti-elixir-base/pull/84) ([github-actions[bot]](https://github.com/apps/github-actions))
 - Feature/fix return type 1 [\#79](https://github.com/dermatologist/dhti-elixir-base/pull/79) ([dermatologist](https://github.com/dermatologist))
@@ -38,6 +44,10 @@
 - Feature/cds hooks 1 [\#41](https://github.com/dermatologist/dhti-elixir-base/pull/41) ([dermatologist](https://github.com/dermatologist))
 - Feature/uv build 1 [\#40](https://github.com/dermatologist/dhti-elixir-base/pull/40) ([dermatologist](https://github.com/dermatologist))
 - Feature/mcp 1 [\#39](https://github.com/dermatologist/dhti-elixir-base/pull/39) ([dermatologist](https://github.com/dermatologist))
+
+## [v1.5.2](https://github.com/dermatologist/dhti-elixir-base/tree/v1.5.2) (2026-04-24)
+
+[Full Changelog](https://github.com/dermatologist/dhti-elixir-base/compare/v1.5.1...v1.5.2)
 
 ## [v1.5.1](https://github.com/dermatologist/dhti-elixir-base/tree/v1.5.1) (2026-02-10)
 
