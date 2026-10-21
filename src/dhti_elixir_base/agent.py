@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from langchain.agents import create_agent
-from langchain_mcp_adapters.client import MultiServerMCPClient
-from langchain_mcp_adapters.tools import load_mcp_tools
-from pydantic import BaseModel, ConfigDict
 import asyncio
 import logging
-from .mydi import camel_to_snake, get_di
 
+from langchain.agents import create_agent
+from langchain.mcp import MCPAdapter
+from pydantic import BaseModel, ConfigDict
+
+from .mydi import camel_to_snake, get_di
 
 logger = logging.getLogger(__name__)
 # from langchain_core.prompts import MessagesPlaceholder
@@ -57,7 +57,17 @@ class BaseAgent:
             self.input_type = self.AgentInput
         else:
             self.input_type = input_type
-        self.client = MultiServerMCPClient(mcp)
+        self.client = MCPAdapter(self._normalize_mcp_config(mcp))
+
+    @staticmethod
+    def _normalize_mcp_config(mcp: dict) -> dict:
+        if "mcpServers" in mcp:
+            return mcp
+        normalized_servers = {
+            server_name: {k: v for k, v in server_config.items() if k != "transport"}
+            for server_name, server_config in mcp.items()
+        }
+        return {"mcpServers": normalized_servers}
 
     @property
     def name(self):
@@ -78,7 +88,7 @@ class BaseAgent:
     def has_tool(self) -> bool:
         """Check if the agent has any tools."""
         try:
-            _tools = asyncio.run(self.client.get_tools())
+            _tools = asyncio.run(self.client.list_tools())
             return bool(_tools)
         except Exception as e:
             logger.error(f"Error checking tools: {e}")
@@ -91,7 +101,7 @@ class BaseAgent:
         try:
             # if self.tools is an empty list, load tools from MCP
             if not self.tools:
-                _tools = asyncio.run(self.client.get_tools())
+                _tools = asyncio.run(self.client.list_tools())
             else:
                 _tools = self.tools
             _agent = create_agent(model=self.llm, tools=_tools, system_prompt=self.prompt)
@@ -121,8 +131,7 @@ class BaseAgent:
 
     async def get_langgraph_mcp_tools(self, session_name="dhti"):
         """Get the agent executor for async execution with session."""
+        _ = session_name
         if self.client is None:
             raise ValueError("MCP client must not be None when initializing the agent.")
-        async with self.client.session(session_name) as session:
-            tools = await load_mcp_tools(session)
-        return tools
+        return await self.client.list_tools()
