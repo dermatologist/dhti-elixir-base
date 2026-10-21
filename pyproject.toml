@@ -18,14 +18,13 @@ classifiers = [
 ]
 dependencies = [
   "langchain-core",
-  "langchain>=1.0.0",
+  "langchain[mcp]>=1.4.6",
   "kink",
   "python-dotenv",
   "httpx",
   "langserve",
   "langgraph",
   "langchain-community",
-  "langchain-mcp-adapters",
   "fhiry",
   "fhirpathpy",
   "fhirclient",
