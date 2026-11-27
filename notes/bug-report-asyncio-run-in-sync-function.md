@@ -140,3 +140,54 @@ For cases where we must maintain sync API, we could use `loop.run_in_executor()`
 - Used with FastAPI or other async web frameworks
 - Called from async contexts
 - Used in concurrent/multi-threaded environments
+
+## Resolution
+
+**Status**: Fixed  
+**Commit**: 36a1511  
+**Date**: 2026-11-27
+
+### Changes Made
+
+1. **Added async versions** of the problematic methods:
+   - `ahas_tool()` - Async version of `has_tool()`
+   - `aget_agent_response()` - Async version of `get_agent_response()`
+
+2. **Modified sync wrappers** to detect event loop context:
+   - `has_tool()` now checks for running event loop using `asyncio.get_running_loop()`
+   - `get_agent_response()` now checks for running event loop using `asyncio.get_running_loop()`
+   - Both raise helpful `RuntimeError` with clear guidance when called from async context
+
+3. **Behavior**:
+   - In **sync context**: Sync wrappers work as before using `asyncio.run()`
+   - In **async context**: Sync wrappers raise `RuntimeError` directing users to use async versions
+   - Async versions (`ahas_tool()`, `aget_agent_response()`) work in both contexts
+
+### Testing
+
+Verified fix pattern with unit tests:
+- ✓ Async methods work in async context
+- ✓ Sync wrappers detect and error in async context with helpful message
+- ✓ Sync wrappers work in sync context
+
+### Migration Guide
+
+Users calling these methods from async contexts should update their code:
+
+**Before:**
+```python
+async def my_async_function():
+    agent = BaseAgent(...)
+    has_tools = agent.has_tool()  # RuntimeError!
+    response = agent.get_agent_response("Hello")  # RuntimeError!
+```
+
+**After:**
+```python
+async def my_async_function():
+    agent = BaseAgent(...)
+    has_tools = await agent.ahas_tool()  # ✓ Works
+    response = await agent.aget_agent_response("Hello")  # ✓ Works
+```
+
+Sync contexts continue to work without changes.
