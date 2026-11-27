@@ -85,35 +85,78 @@ class BaseAgent:
     def description(self, value):
         self._description = value
 
-    def has_tool(self) -> bool:
-        """Check if the agent has any tools."""
+    async def ahas_tool(self) -> bool:
+        """Check if the agent has any tools (async version)."""
         try:
-            _tools = asyncio.run(self.client.list_tools())
+            _tools = await self.client.list_tools()
             return bool(_tools)
         except Exception as e:
             logger.error(f"Error checking tools: {e}")
             return False
 
-    def get_agent_response(self, context: str) -> str:
+    def has_tool(self) -> bool:
+        """Check if the agent has any tools (sync wrapper)."""
+        try:
+            # Check if we're in an event loop
+            loop = asyncio.get_running_loop()
+            if loop:
+                # We're in an async context, raise helpful error
+                raise RuntimeError(
+                    "has_tool() called from async context. Use ahas_tool() instead."
+                )
+            return asyncio.run(self.ahas_tool())
+        except RuntimeError as e:
+            if "already running" in str(e).lower() or "async context" in str(e):
+                raise
+            logger.error(f"Error checking tools: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Error checking tools: {e}")
+            return False
+
+    async def aget_agent_response(self, context: str) -> str:
+        """Get agent response (async version)."""
         if self.llm is None:
             raise ValueError("llm must not be None when initializing the agent.")
         result = "Agent encountered an error while processing your request."
         try:
             # if self.tools is an empty list, load tools from MCP
             if not self.tools:
-                _tools = asyncio.run(self.client.list_tools())
+                _tools = await self.client.list_tools()
             else:
                 _tools = self.tools
             _agent = create_agent(model=self.llm, tools=_tools, system_prompt=self.prompt)
 
-            result = asyncio.run(_agent.ainvoke(
+            result = await _agent.ainvoke(
                 {"messages": [{"role": "user", "content": context}]}
-            ))
+            )
             ai_message = result["messages"][-1].content
             return str(ai_message)
         except Exception as e:
             logger.error(f"Error in agent processing: {e}")
             return str(result)
+
+    def get_agent_response(self, context: str) -> str:
+        """Get agent response (sync wrapper)."""
+        if self.llm is None:
+            raise ValueError("llm must not be None when initializing the agent.")
+        try:
+            # Check if we're in an event loop
+            loop = asyncio.get_running_loop()
+            if loop:
+                # We're in an async context, raise helpful error
+                raise RuntimeError(
+                    "get_agent_response() called from async context. Use aget_agent_response() instead."
+                )
+            return asyncio.run(self.aget_agent_response(context))
+        except RuntimeError as e:
+            if "already running" in str(e).lower() or "async context" in str(e):
+                raise
+            logger.error(f"Error in agent processing: {e}")
+            return "Agent encountered an error while processing your request."
+        except Exception as e:
+            logger.error(f"Error in agent processing: {e}")
+            return "Agent encountered an error while processing your request."
 
     async def get_langgraph_mcp_agent(self):
         """Get the agent executor for async execution."""
