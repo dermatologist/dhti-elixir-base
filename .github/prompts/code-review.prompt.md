@@ -70,3 +70,5 @@ If the PR should not be approved, clearly state:
 and provide a numbered list of all required changes that must be addressed before approval.
 
 Be strict and production-oriented. Do not assume code is correct simply because tests pass. Look for hidden bugs, race conditions, security concerns, maintainability problems, and long-term operational risks.
+
+Finally, summarize the review including important findings, recommendations, and any additional context that may be helpful for the author or reviewers to be submitted as a comment on the PR.
