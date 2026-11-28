@@ -24,12 +24,15 @@ from pydantic import BaseModel, ConfigDict
 from .mydi import camel_to_snake, get_di
 
 logger = logging.getLogger(__name__)
+
+
 # from langchain_core.prompts import MessagesPlaceholder
 # from langchain.memory.buffer import ConversationBufferMemory
 class BaseAgent:
 
     class AgentInput(BaseModel):
         """Chat history with the bot."""
+
         input: str
         model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
 
@@ -97,19 +100,16 @@ class BaseAgent:
     def has_tool(self) -> bool:
         """Check if the agent has any tools (sync wrapper)."""
         try:
-            # Check if we're in an event loop
-            loop = asyncio.get_running_loop()
-            if loop:
-                # We're in an async context, raise helpful error
-                raise RuntimeError(
-                    "has_tool() called from async context. Use ahas_tool() instead."
-                )
+            asyncio.get_running_loop()
+        except RuntimeError:
+            pass
+        else:
+            raise RuntimeError(
+                "has_tool() called from async context. Use ahas_tool() instead."
+            )
+
+        try:
             return asyncio.run(self.ahas_tool())
-        except RuntimeError as e:
-            if "already running" in str(e).lower() or "async context" in str(e):
-                raise
-            logger.error(f"Error checking tools: {e}")
-            return False
         except Exception as e:
             logger.error(f"Error checking tools: {e}")
             return False
@@ -125,7 +125,9 @@ class BaseAgent:
                 _tools = await self.client.list_tools()
             else:
                 _tools = self.tools
-            _agent = create_agent(model=self.llm, tools=_tools, system_prompt=self.prompt)
+            _agent = create_agent(
+                model=self.llm, tools=_tools, system_prompt=self.prompt
+            )
 
             result = await _agent.ainvoke(
                 {"messages": [{"role": "user", "content": context}]}
@@ -140,20 +142,18 @@ class BaseAgent:
         """Get agent response (sync wrapper)."""
         if self.llm is None:
             raise ValueError("llm must not be None when initializing the agent.")
+
         try:
-            # Check if we're in an event loop
-            loop = asyncio.get_running_loop()
-            if loop:
-                # We're in an async context, raise helpful error
-                raise RuntimeError(
-                    "get_agent_response() called from async context. Use aget_agent_response() instead."
-                )
+            asyncio.get_running_loop()
+        except RuntimeError:
+            pass
+        else:
+            raise RuntimeError(
+                "get_agent_response() called from async context. Use aget_agent_response() instead."
+            )
+
+        try:
             return asyncio.run(self.aget_agent_response(context))
-        except RuntimeError as e:
-            if "already running" in str(e).lower() or "async context" in str(e):
-                raise
-            logger.error(f"Error in agent processing: {e}")
-            return "Agent encountered an error while processing your request."
         except Exception as e:
             logger.error(f"Error in agent processing: {e}")
             return "Agent encountered an error while processing your request."
@@ -161,7 +161,9 @@ class BaseAgent:
     async def get_langgraph_mcp_agent(self):
         """Get the agent executor for async execution."""
         if self.llm is None:
-            raise ValueError("llm must not be None when initializing the agent executor.")
+            raise ValueError(
+                "llm must not be None when initializing the agent executor."
+            )
         if self.client is None:
             raise ValueError("MCP client must not be None when initializing the agent.")
         tools = await self.get_langgraph_mcp_tools()
