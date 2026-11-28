@@ -1,27 +1,45 @@
 Perform a comprehensive senior-level code review of this pull request.
 
-Review the changes from the perspective of:
+## Review Perspectives
+
+### 1. Correctness and Logic
+
 - Correctness and potential bugs
 - Logic errors and edge cases
+
+### 2. Performance and Reliability
+
 - Performance and scalability
-- Security vulnerabilities
 - Reliability and fault tolerance
 - Concurrency/threading/async issues
 - Error handling and logging
+
+### 3. Security
+
+- Security vulnerabilities
+
+### 4. Architecture and Design
+
 - API and contract compatibility
 - Architecture and design quality
 - Maintainability and readability
+
+### 5. Quality Assurance
+
 - Test coverage and test quality
+- Review Codecov report; if coverage is failing, recommend specific tests to add
 - Documentation and developer experience
 - Compliance with project conventions and best practices
 
 For every issue found:
+
 1. Specify severity: Critical, High, Medium, or Low.
 2. Explain why it is a problem.
 3. Reference the affected file(s) and code section(s).
 4. Provide a concrete recommendation or code example for fixing it.
 
 Also identify:
+
 - Potential regressions
 - Missing tests
 - Breaking changes
@@ -31,13 +49,16 @@ Also identify:
 At the end, provide a final verdict in the following format:
 
 ## Review Summary
+
 - Critical Issues: X
 - High Issues: X
 - Medium Issues: X
 - Low Issues: X
 
 ## Approval Decision
+
 Choose exactly one:
+
 - ✅ APPROVED
 - ⚠️ APPROVED WITH RECOMMENDATIONS
 - ❌ CHANGES REQUIRED
